@@ -34,6 +34,11 @@
       "category": "hayvanlar hakkında yanlış bilgiler",
       "question": "Deve kuşları bir tehlike hissettiklerinde hemen başlarını kuma gömerler. Böylece düşmanlarından saklandıklarını ve tamamen güvende olduklarını sanırlar.",
       "answer": "Hayır, deve kuşları başlarını asla kuma gömmez!"
+    },
+    {
+      "category": "sağlık ve beden mitleri",
+      "question": "Havuç yemek gözlerinizi bir kartal kadar keskinleştirir ve gece görüşünüzü artırır. Bu yüzden çocukluğumuzdan beri sürekli havuç yememiz söylenir.",
+      "answer": "Hayır, havuç gözlerinize süper görüş gücü kazandırmaz!"
     }
   ]
 }
