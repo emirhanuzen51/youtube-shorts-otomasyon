@@ -64,7 +64,9 @@ yaygın BİR adet yanılgı/mit bul.
 - "answer" alanına, kısa ama vurgulu bir düzeltme cümlesi yaz (örn. "Hayır, yarasalar kör değildir!")
 - "explanation" alanına, 3-4 cümlelik, akıcı ve ilgi çekici bir açıklama yaz: gerçek ne,
   şaşırtıcı bir detay veya örnek ver, ve bu yanılgının neden bu kadar yaygın olduğunu anlat.
-  Konuşma diline yakın, samimi ve enerjik bir üslup kullan (gerektiğinde ünlem işareti kullanabilirsin)."""
+  Konuşma diline yakın, samimi ve enerjik bir üslup kullan (gerektiğinde ünlem işareti kullanabilirsin).
+Herkesin ilgisini çekecek, geniş kitleye hitap eden genel-kültür tarzı bir yanılgı seç;
+kişisel/mahrem veya bazı izleyicileri rahatsız edebilecek beden/hijyen konularından kaçın."""
     elif profile.get("is_exam_prep", True):
         intro = f"Sen, günlük YouTube Shorts {profile['topic_label']} hazırlık kanalı için soru yazan bir eğitmensin."
         task = f""""{category}" konusunda, {profile['topic_label']} tarzında, özgün BİR adet deneme sorusu üret.

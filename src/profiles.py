@@ -159,10 +159,19 @@ Kaçırmamak için abone ol, her gün seninleyiz!
     "dogru_bilinen_yanlislar": {
         "is_exam_prep": False,
         "is_myth_format": True,
+        # Hayvanlar/bilim/uzay biraz agirlikli (ilgi cekici, herkese hitap eden
+        # konular) ama liste genel olarak dengeli - tek bir dar konuya
+        # sikismasin diye "sağlık ve beden mitleri" gibi kisisel hissedilebilecek
+        # kategoriler de var olmakla birlikte agirliklandirilmadi.
         "categories": [
-            "bilim ve doğa yanılgıları", "tarih yanılgıları", "sağlık ve beden mitleri",
-            "hayvanlar hakkında yanlış bilgiler", "uzay ve evren yanılgıları",
-            "dil ve kelime yanılgıları", "gündelik hayat mitleri",
+            "hayvanlar hakkında yanlış bilgiler", "hayvanlar hakkında yanlış bilgiler",
+            "bilim ve doğa yanılgıları", "bilim ve doğa yanılgıları",
+            "uzay ve evren yanılgıları",
+            "tarih yanılgıları",
+            "coğrafya ve dünya yanılgıları",
+            "gündelik hayat mitleri",
+            "dil ve kelime yanılgıları",
+            "sağlık ve beden mitleri",
         ],
         "topic_label": "yaygın bilgi yanılgıları (mitler)",
         "history_file": "history_dogru_bilinen_yanlislar.json",
