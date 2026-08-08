@@ -3,18 +3,19 @@ import asyncio
 
 import edge_tts
 
-VOICE = "tr-TR-EmelNeural"
+DEFAULT_VOICE = "tr-TR-EmelNeural"
 
 
-async def _synthesize(text: str, out_path: str, rate: str = "+0%", pitch: str = "+0Hz"):
-    communicate = edge_tts.Communicate(text, voice=VOICE, rate=rate, pitch=pitch)
+async def _synthesize(text: str, out_path: str, voice: str, rate: str = "+0%", pitch: str = "+0Hz"):
+    communicate = edge_tts.Communicate(text, voice=voice, rate=rate, pitch=pitch)
     await communicate.save(out_path)
 
 
-def synthesize(text: str, out_path: str, rate: str = "+0%", pitch: str = "+0Hz"):
-    """Render `text` to an mp3 file at `out_path`. `rate`/`pitch` let a scene
-    sound more suspenseful (slower, lower) or excited (faster, higher)."""
-    asyncio.run(_synthesize(text, out_path, rate, pitch))
+def synthesize(text: str, out_path: str, voice: str | None = None, rate: str = "+0%", pitch: str = "+0Hz"):
+    """Render `text` to an mp3 file at `out_path`. `voice` lets each channel
+    profile pick its own narrator (defaults to DEFAULT_VOICE); `rate`/`pitch`
+    let a scene sound more suspenseful (slower, lower) or excited (faster, higher)."""
+    asyncio.run(_synthesize(text, out_path, voice or DEFAULT_VOICE, rate, pitch))
     return out_path
 
 

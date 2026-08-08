@@ -214,6 +214,60 @@ Kaçırmamak için abone ol, her gün seninleyiz!
 #DoğruBilinenYanlışlar #Mit #GenelKultur
 """,
     },
+    "dini_kissalar": {
+        "is_exam_prep": False,
+        "is_story": True,
+        "categories": [
+            "Peygamber Efendimiz'in (S.A.V) hayatından merhamet örnekleri",
+            "Kur'an-ı Kerim'de adı geçen peygamberlerin kıssaları",
+            "Sahabelerin hayatından sadakat ve doğruluk örnekleri",
+            "İslam tarihinde sabır ve şükür konulu yaşanmış olaylar",
+            "Gündelik hayata uyarlanabilecek ahlaki ve dini hikayeler",
+        ],
+        "topic_label": "dini kıssalar ve ibretlik hikayeler",
+        "history_file": "history_dini_kissalar.json",
+        "video_badge": "GÜNÜN KISSASI",
+        "guess_prompt": "Kıssadan hisse nedir?",
+        "reveal_label": "SONUÇ",
+        "answer_intro": "İşte sonuç:",
+        # Sakin, agirbasli bir anlatim: soru kismi normal hizda, sonuc/ders
+        # kismi hafif yavaslatilip alcaltilarak "hikmetli" bir hava katiliyor.
+        "voice": "tr-TR-AhmetNeural",
+        "answer_rate": "-6%",
+        "answer_pitch": "-10Hz",
+        # Islam sanatina uygun koyu yesil + altin/zeytin tonlari (diger
+        # kanallardaki mor/lacivert ve kirmizi temalardan farkli kimlik).
+        "bg_top": [10, 35, 24],
+        "bg_bottom": [8, 20, 14],
+        "bg_glow_top": [40, 70, 35],
+        "bg_glow_bottom": [55, 45, 15],
+        "badge_bg": "#D4AF37",
+        "badge_fg": "#0B1A10",
+        "accent_color": "#D4AF37",
+        "reveal_rect_color": [12, 30, 20],
+        "reveal_tint": [20, 45, 28],
+        "outro_line1": "Daha fazla kıssa için",
+        "outro_line2": "kanalımızı takip et!",
+        "title_hashtags": "#Shorts #DiniKıssalar #İslam",
+        "description_hashtags": "#Shorts #DiniKıssalar #İbretlikHikayeler #İslamTarihi #Peygamberler #KıssadanHisse",
+        "tags": ["dini hikayeler", "kıssalar", "islam tarihi", "peygamberlerin hayatı", "dini sohbet"],
+        "banner_title": "GÜNÜN KISSASI",
+        "banner_tagline": "Her gün kalplere dokunan ibretlik bir kıssa",
+        "profile_pic_text": "KISSA",
+        "channel_description": """Her gün kalplere dokunan, maneviyatınızı güçlendirecek ibretlik bir dini kıssa!
+
+Peygamber Efendimiz (S.A.V), diğer peygamberler ve sahabelerin hayatından \
+ders çıkarılabilecek hikayeleri sizlerle paylaşıyoruz.
+
+Not: Bu kanaldaki anlatımlar yapay zeka desteğiyle derlenmiştir; dini bir \
+fetva veya birebir kaynak niteliği taşımaz. Doğrulama için orijinal \
+kaynaklara başvurmanızı tavsiye ederiz.
+
+Abone olun, her gün yeni bir hikayede buluşalım.
+
+#DiniKıssalar #İbretlikHikayeler #İslamTarihi
+""",
+    },
 }
 
 

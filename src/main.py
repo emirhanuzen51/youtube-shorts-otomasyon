@@ -27,15 +27,16 @@ def run(upload: bool = True):
     q_audio = os.path.join(OUTPUT_DIR, "question.mp3")
     a_audio = os.path.join(OUTPUT_DIR, "answer.mp3")
     print("Synthesizing narration...")
+    voice = profile.get("voice")
     question_intro = profile.get("question_intro", "")
     question_narration = f"{question_intro} {question['question']}".strip()
     synthesize(
-        question_narration, q_audio,
+        question_narration, q_audio, voice=voice,
         rate=profile.get("question_rate", "+0%"), pitch=profile.get("question_pitch", "+0Hz"),
     )
     answer_intro = profile.get("answer_intro", "Cevap:")
     synthesize(
-        f"{answer_intro} {question['answer']}. {question['explanation']}", a_audio,
+        f"{answer_intro} {question['answer']}. {question['explanation']}", a_audio, voice=voice,
         rate=profile.get("answer_rate", "+0%"), pitch=profile.get("answer_pitch", "+0Hz"),
     )
 

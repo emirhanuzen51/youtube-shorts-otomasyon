@@ -54,7 +54,19 @@ def generate_question(profile: dict | None = None) -> dict:
             f"{avoid_list}\n"
         )
 
-    if profile.get("is_myth_format"):
+    if profile.get("is_story"):
+        intro = f"Sen, İslam tarihi uzmanı ve {profile['topic_label']} anlatan, huzur veren, şefkatli bir anlatıcısın."
+        task = f""""{category}" konusunda, sahih kaynaklara dayanan, etkileyici ve ders çıkarılabilecek
+kısa BİR adet dini kıssa üret. Genel olarak bilinen, yaygın kabul gören bir olayı anlat;
+kaynağı belirsiz veya tartışmalı rivayetlerden, uydurma ayrıntılardan kaçın.
+Lütfen sistemin JSON formatını bozmadan şu yapıyı bir hikaye akışı gibi kullan:
+- "question" alanına: Kıssanın girişini ve olayın gelişme kısmını sürükleyici ama KISA bir
+  dille yaz (en fazla 3-4 cümle; soru olmak zorunda değil, olayı anlat).
+- "answer" alanına: Olayın vurucu sonucunu 1 kısa cümleyle yaz.
+- "explanation" alanına: "Kıssadan Hisse:" diyerek başlayıp, bu olaydan günümüzde
+  çıkarmamız gereken ahlaki/dini dersi 2-3 KISA cümleyle (toplam en fazla ~220 karakter) yaz.
+Sakin, ağırbaşlı ve samimi bir üslup kullan; abartılı/sansasyonel ifadelerden kaçın."""
+    elif profile.get("is_myth_format"):
         intro = f"Sen, günlük YouTube Shorts {profile['topic_label']} kanalı için heyecanlı ve akıcı anlatan bir hikaye anlatıcısısın."
         task = f""""{category}" konusunda, çoğu insanın doğru sandığı ama aslında YANLIŞ olan,
 yaygın BİR adet yanılgı/mit bul.

@@ -39,6 +39,16 @@
       "category": "sağlık ve beden mitleri",
       "question": "Havuç yemek gözlerinizi bir kartal kadar keskinleştirir ve gece görüşünüzü artırır. Bu yüzden çocukluğumuzdan beri sürekli havuç yememiz söylenir.",
       "answer": "Hayır, havuç gözlerinize süper görüş gücü kazandırmaz!"
+    },
+    {
+      "category": "dil ve kelime yanılgıları",
+      "question": "Eskimoların çetin kutup şartlarında karı tanımlamak için yüzlerce farklı kelimesi vardır. Onların dilinde karın her hali için ayrı bir isim bulunur.",
+      "answer": "Hayır, Eskimoların kar için yüzlerce kelimesi yoktur!"
+    },
+    {
+      "category": "tarih yanılgıları",
+      "question": "Vikingler savaşa giderken başlarına devasa boynuzlu kasklar takardı. Bu heybetli kasklar düşmanlarına korku salmak için kullanılan en büyük simgeydi.",
+      "answer": "Hayır, Viking kasklarında hiç boynuz yoktu!"
     }
   ]
 }

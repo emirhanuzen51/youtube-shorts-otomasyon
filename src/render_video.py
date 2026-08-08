@@ -5,6 +5,7 @@ could fail in CI): the background is a procedurally generated animated gradient.
 """
 import math
 import os
+import random
 import textwrap
 
 import numpy as np
@@ -312,9 +313,9 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
     a_audio_positioned = a_clip.with_start(reveal_start)
     audio = CompositeAudioClip([q_audio_positioned, a_audio_positioned])
 
-    music_path = _find_music()
+    music_path = _find_music(profile.get("name"))
     if music_path:
-        music = AudioFileClip(music_path).with_volume_scaled(0.12)
+        music = AudioFileClip(music_path).with_volume_scaled(profile.get("music_volume", 0.22))
         if music.duration < total_duration:
             loops = int(total_duration / music.duration) + 1
             music = concatenate_audioclips([music] * loops)
@@ -329,13 +330,26 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
     return out_path
 
 
-def _find_music():
-    if not os.path.isdir(MUSIC_DIR):
-        return None
-    for name in os.listdir(MUSIC_DIR):
-        if name.lower().endswith((".mp3", ".m4a", ".wav")):
-            return os.path.join(MUSIC_DIR, name)
-    return None
+def _audio_files(directory):
+    if not os.path.isdir(directory):
+        return []
+    return [
+        os.path.join(directory, name)
+        for name in os.listdir(directory)
+        if name.lower().endswith((".mp3", ".m4a", ".wav"))
+    ]
+
+
+def _find_music(profile_name):
+    """Picks a random track from this channel's own music folder
+    (assets/music/<profile_name>/), so each channel's mood stays consistent
+    instead of mixing tracks across channels. Falls back to any shared
+    tracks directly under assets/music/ if the channel has none of its own."""
+    channel_dir = os.path.join(MUSIC_DIR, profile_name) if profile_name else None
+    candidates = _audio_files(channel_dir) if channel_dir else []
+    if not candidates:
+        candidates = _audio_files(MUSIC_DIR)
+    return random.choice(candidates) if candidates else None
 
 
 if __name__ == "__main__":
