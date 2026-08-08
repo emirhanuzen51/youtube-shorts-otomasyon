@@ -176,6 +176,18 @@ Kaçırmamak için abone ol, her gün seninleyiz!
         "topic_label": "yaygın bilgi yanılgıları (mitler)",
         "history_file": "history_dogru_bilinen_yanlislar.json",
         "video_badge": "DOĞRU MU YANLIŞ MI?",
+        # Mit-cozme konseptine ozel tema: soru ekrani koyu/gizemli lacivert-mor,
+        # rozet ve vurgular alarm kirmizisi, reveal ekrani (diger kanallardaki
+        # "dogru cevap" yesili yerine) "YANLIŞ!" hissini veren kirmizi/bordo.
+        "bg_top": [8, 8, 22],
+        "bg_bottom": [45, 8, 18],
+        "bg_glow_top": [70, 8, 30],
+        "bg_glow_bottom": [30, 6, 45],
+        "badge_bg": "#FF3B3B",
+        "badge_fg": "#FFFFFF",
+        "accent_color": "#FF5A36",
+        "reveal_rect_color": [90, 12, 12],
+        "reveal_tint": [130, 20, 20],
         "guess_prompt": "Sen de mi öyle biliyordun?",
         "reveal_label": "YANLIŞ BİLİYORSUN!",
         "question_intro": "Çoğu insan bunun doğru olduğunu düşünür.",

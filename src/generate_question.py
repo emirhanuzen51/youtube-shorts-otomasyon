@@ -62,9 +62,11 @@ yaygın BİR adet yanılgı/mit bul.
   (izleyiciye "evet bunu biliyorum" dedirtecek şekilde; örn. "Yarasalar tamamen kördür.
   Bu yüzden yönlerini bulmak için sadece sese güvenirler.")
 - "answer" alanına, kısa ama vurgulu bir düzeltme cümlesi yaz (örn. "Hayır, yarasalar kör değildir!")
-- "explanation" alanına, 3-4 cümlelik, akıcı ve ilgi çekici bir açıklama yaz: gerçek ne,
-  şaşırtıcı bir detay veya örnek ver, ve bu yanılgının neden bu kadar yaygın olduğunu anlat.
-  Konuşma diline yakın, samimi ve enerjik bir üslup kullan (gerektiğinde ünlem işareti kullanabilirsin).
+- "explanation" alanına, 3-4 KISA cümlelik (toplam en fazla ~220 karakter), akıcı ve
+  ilgi çekici bir açıklama yaz: gerçek ne, şaşırtıcı bir detay veya örnek ver, ve bu
+  yanılgının neden bu kadar yaygın olduğunu anlat. Uzun/karmaşık cümlelerden kaçın,
+  ekranda okunacak kısa cümleler kullan. Konuşma diline yakın, samimi ve enerjik bir
+  üslup kullan (gerektiğinde ünlem işareti kullanabilirsin).
 Herkesin ilgisini çekecek, geniş kitleye hitap eden genel-kültür tarzı bir yanılgı seç;
 kişisel/mahrem veya bazı izleyicileri rahatsız edebilecek beden/hijyen konularından kaçın."""
     elif profile.get("is_exam_prep", True):

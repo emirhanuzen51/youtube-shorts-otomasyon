@@ -19,6 +19,21 @@
       "category": "hayvanlar hakkında yanlış bilgiler",
       "question": "Develer çölün acımasız sıcaklarında haftalarca hiç durmadan yol alabilir. Çünkü o devasa hörgüçlerinde litrelerce su depolarlar!",
       "answer": "Hayır, develer hörgüçlerinde su değil, yağ depolar!"
+    },
+    {
+      "category": "hayvanlar hakkında yanlış bilgiler",
+      "question": "Boğalar matadorun elindeki kırmızı pelerini gördüğü anda çılgına döner. Bu yüzden matadorlar onları kışkırtmak için her zaman kırmızı kumaş kullanır.",
+      "answer": "Hayır, boğalar kırmızı renge asla sinirlenmez!"
+    },
+    {
+      "category": "gündelik hayat mitleri",
+      "question": "İnsanlar beyinlerinin sadece yüzde onunu kullanır. Geri kalan doksanlık kısım ise tamamen uyuyan bir potansiyeldir.",
+      "answer": "Hayır, beynimizin neredeyse tamamını aktif olarak kullanırız!"
+    },
+    {
+      "category": "hayvanlar hakkında yanlış bilgiler",
+      "question": "Deve kuşları bir tehlike hissettiklerinde hemen başlarını kuma gömerler. Böylece düşmanlarından saklandıklarını ve tamamen güvende olduklarını sanırlar.",
+      "answer": "Hayır, deve kuşları başlarını asla kuma gömmez!"
     }
   ]
 }
