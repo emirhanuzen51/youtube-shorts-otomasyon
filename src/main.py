@@ -27,7 +27,9 @@ def run(upload: bool = True):
     q_audio = os.path.join(OUTPUT_DIR, "question.mp3")
     a_audio = os.path.join(OUTPUT_DIR, "answer.mp3")
     print("Synthesizing narration...")
-    synthesize(question["question"], q_audio)
+    question_intro = profile.get("question_intro", "")
+    question_narration = f"{question_intro} {question['question']}".strip()
+    synthesize(question_narration, q_audio)
     answer_intro = profile.get("answer_intro", "Cevap:")
     synthesize(f"{answer_intro} {question['answer']}. {question['explanation']}", a_audio)
 

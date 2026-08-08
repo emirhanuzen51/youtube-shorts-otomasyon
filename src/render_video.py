@@ -157,7 +157,6 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
 
     font_badge = _font(46)
     font_answer_label = _font(50)
-    font_explain = _font(42)
     font_outro = _font(56)
     font_countdown = _font(140)
 
@@ -167,6 +166,9 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
 
     font_answer, a_lines = _fit_text(question["answer"], max_font=72, min_font=40, base_wrap=16, max_lines=4)
     _, a_block_h = _block_metrics(_measure_draw, a_lines, font_answer, stroke_width=8)
+
+    font_explain, exp_lines = _fit_text(question["explanation"], max_font=42, min_font=26, base_wrap=30, max_lines=9)
+    _, exp_block_h = _block_metrics(_measure_draw, exp_lines, font_explain, stroke_width=5, line_spacing=1.3)
 
     def make_frame(t):
         bg = _gradient_frame(t)
@@ -233,8 +235,8 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
                 fill="#FFD400", stroke_fill="#000000", stroke_width=8,
             )
             if t > reveal_start + 0.3:
-                exp_lines = _wrap(question["explanation"], 30)
-                exp_y = min(max(H * 0.52, answer_top + a_block_h + 70), H * 0.75)
+                exp_top_min = answer_top + a_block_h + 70
+                exp_y = min(max(H * 0.52, exp_top_min + exp_block_h / 2), H * 0.94 - exp_block_h / 2)
                 _draw_text_block(
                     draw, exp_lines, font_explain, W / 2, exp_y,
                     fill="#FFFFFF", stroke_fill="#000000", stroke_width=5, line_spacing=1.3,

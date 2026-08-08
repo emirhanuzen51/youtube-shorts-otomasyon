@@ -4,6 +4,16 @@
       "category": "tarih yanılgıları",
       "question": "Napolyon Bonapart aşırı kısa boylu bir liderdi.",
       "answer": "Hayır, Napolyon dönemine göre ortalama bir boya sahipti."
+    },
+    {
+      "category": "hayvanlar hakkında yanlış bilgiler",
+      "question": "Japon balıklarının hafızası sadece 3 saniyedir.",
+      "answer": "Hayır, japon balıklarının hafızası 3 saniye değildir."
+    },
+    {
+      "category": "hayvanlar hakkında yanlış bilgiler",
+      "question": "Bukalemunlar tehlike anında tam bir gizlenme ustasına dönüşür. Çevrelerine mükemmel şekilde uyum sağlamak için bulundukları zeminin rengini alırlar.",
+      "answer": "Hayır, bukalemunlar kamuflaj için renk değiştirmez!"
     }
   ]
 }

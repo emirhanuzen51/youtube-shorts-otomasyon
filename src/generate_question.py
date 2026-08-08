@@ -55,13 +55,16 @@ def generate_question(profile: dict | None = None) -> dict:
         )
 
     if profile.get("is_myth_format"):
-        intro = f"Sen, günlük YouTube Shorts {profile['topic_label']} kanalı için içerik yazan bir eğitmensin."
+        intro = f"Sen, günlük YouTube Shorts {profile['topic_label']} kanalı için heyecanlı ve akıcı anlatan bir hikaye anlatıcısısın."
         task = f""""{category}" konusunda, çoğu insanın doğru sandığı ama aslında YANLIŞ olan,
 yaygın BİR adet yanılgı/mit bul.
-- "question" alanına, bu yanılgıyı sanki doğruymuş gibi iddialı bir cümleyle yaz
-  (izleyiciye "evet biliyorum" dedirtecek şekilde, örn. "Yarasalar kördür.")
-- "answer" alanına, kısa ve net bir düzeltme yaz (örn. "Hayır, yarasalar kör değildir.")
-- "explanation" alanına, gerçeğin ne olduğunu ve yanılgının neden yaygın olduğunu kısaca açıkla"""
+- "question" alanına, bu yanılgıyı 2 cümlelik, meraklandırıcı ve iddialı bir dille yaz
+  (izleyiciye "evet bunu biliyorum" dedirtecek şekilde; örn. "Yarasalar tamamen kördür.
+  Bu yüzden yönlerini bulmak için sadece sese güvenirler.")
+- "answer" alanına, kısa ama vurgulu bir düzeltme cümlesi yaz (örn. "Hayır, yarasalar kör değildir!")
+- "explanation" alanına, 3-4 cümlelik, akıcı ve ilgi çekici bir açıklama yaz: gerçek ne,
+  şaşırtıcı bir detay veya örnek ver, ve bu yanılgının neden bu kadar yaygın olduğunu anlat.
+  Konuşma diline yakın, samimi ve enerjik bir üslup kullan (gerektiğinde ünlem işareti kullanabilirsin)."""
     elif profile.get("is_exam_prep", True):
         intro = f"Sen, günlük YouTube Shorts {profile['topic_label']} hazırlık kanalı için soru yazan bir eğitmensin."
         task = f""""{category}" konusunda, {profile['topic_label']} tarzında, özgün BİR adet deneme sorusu üret.
