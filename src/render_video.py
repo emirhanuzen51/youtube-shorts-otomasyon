@@ -225,7 +225,7 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
             img = Image.fromarray(blended)
             draw = ImageDraw.Draw(img)
 
-            draw.text((W / 2, H * 0.16 + (1 - p) * 20), "CEVAP", font=font_answer_label,
+            draw.text((W / 2, H * 0.16 + (1 - p) * 20), profile.get("reveal_label", "CEVAP"), font=font_answer_label,
                        fill="#FFFFFF", anchor="mm", stroke_width=3, stroke_fill="#000000")
             answer_top = H * 0.24 + (1 - p) * 20
             _draw_text_block(

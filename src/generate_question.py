@@ -54,7 +54,15 @@ def generate_question(profile: dict | None = None) -> dict:
             f"{avoid_list}\n"
         )
 
-    if profile.get("is_exam_prep", True):
+    if profile.get("is_myth_format"):
+        intro = f"Sen, günlük YouTube Shorts {profile['topic_label']} kanalı için içerik yazan bir eğitmensin."
+        task = f""""{category}" konusunda, çoğu insanın doğru sandığı ama aslında YANLIŞ olan,
+yaygın BİR adet yanılgı/mit bul.
+- "question" alanına, bu yanılgıyı sanki doğruymuş gibi iddialı bir cümleyle yaz
+  (izleyiciye "evet biliyorum" dedirtecek şekilde, örn. "Yarasalar kördür.")
+- "answer" alanına, kısa ve net bir düzeltme yaz (örn. "Hayır, yarasalar kör değildir.")
+- "explanation" alanına, gerçeğin ne olduğunu ve yanılgının neden yaygın olduğunu kısaca açıkla"""
+    elif profile.get("is_exam_prep", True):
         intro = f"Sen, günlük YouTube Shorts {profile['topic_label']} hazırlık kanalı için soru yazan bir eğitmensin."
         task = f""""{category}" konusunda, {profile['topic_label']} tarzında, özgün BİR adet deneme sorusu üret.
 Bu gerçek bir sınavda çıkmış soru DEĞİL, sınav formatına ve zorluk seviyesine uygun,

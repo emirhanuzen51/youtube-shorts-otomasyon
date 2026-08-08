@@ -30,9 +30,10 @@ def build_title_description(question: dict, profile: dict):
     if len(title) > 100:
         title = title[:97] + "..."
 
+    answer_intro = profile.get("answer_intro", "Cevap:")
     description = (
         f"{question['question']}\n\n"
-        f"Cevap: {question['answer']}\n"
+        f"{answer_intro} {question['answer']}\n"
         f"{question['explanation']}\n\n"
         f"{profile['description_hashtags']}"
     )

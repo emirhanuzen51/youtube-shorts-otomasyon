@@ -28,7 +28,8 @@ def run(upload: bool = True):
     a_audio = os.path.join(OUTPUT_DIR, "answer.mp3")
     print("Synthesizing narration...")
     synthesize(question["question"], q_audio)
-    synthesize(f"Cevap: {question['answer']}. {question['explanation']}", a_audio)
+    answer_intro = profile.get("answer_intro", "Cevap:")
+    synthesize(f"{answer_intro} {question['answer']}. {question['explanation']}", a_audio)
 
     video_path = os.path.join(OUTPUT_DIR, "short.mp4")
     thumb_path = os.path.join(OUTPUT_DIR, "short_thumb.jpg")

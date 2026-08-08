@@ -156,6 +156,38 @@ Kaçırmamak için abone ol, her gün seninleyiz!
 #İngilizce #KelimeÖğren #EnglishVocabulary
 """,
     },
+    "dogru_bilinen_yanlislar": {
+        "is_exam_prep": False,
+        "is_myth_format": True,
+        "categories": [
+            "bilim ve doğa yanılgıları", "tarih yanılgıları", "sağlık ve beden mitleri",
+            "hayvanlar hakkında yanlış bilgiler", "uzay ve evren yanılgıları",
+            "dil ve kelime yanılgıları", "gündelik hayat mitleri",
+        ],
+        "topic_label": "yaygın bilgi yanılgıları (mitler)",
+        "history_file": "history_dogru_bilinen_yanlislar.json",
+        "video_badge": "DOĞRU MU YANLIŞ MI?",
+        "guess_prompt": "Sen de mi öyle biliyordun?",
+        "reveal_label": "YANLIŞ BİLİYORSUN!",
+        "answer_intro": "Gerçek şu ki,",
+        "outro_line1": "Takip et,",
+        "outro_line2": "her gün yeni bir yanılgı!",
+        "title_hashtags": "#Shorts #YanlışBilinenDoğrular",
+        "description_hashtags": "#Shorts #DoğruBilinenYanlışlar #Mit #YanlışBilinenDoğrular #GenelKultur #BilgiVideosu",
+        "tags": ["yanlis bilinen dogrular", "dogru bilinen yanlislar", "mit", "sehir efsanesi", "genel kultur"],
+        "banner_title": "DOĞRU BİLİNEN YANLIŞLAR",
+        "banner_tagline": "Herkesin yanıldığı bilgiler, her gün bir tane",
+        "profile_pic_text": "YANLIŞ",
+        "channel_description": """Herkesin doğru sandığı ama aslında yanlış olan bilgiler!
+
+Bilim, tarih, sağlık, hayvanlar ve gündelik hayattan yaygın yanılgıları \
+her gün bir tane çürütüyoruz. Önce sen de "doğru" san, sonra gerçeği öğren.
+
+Kaçırmamak için abone ol, her gün seninleyiz!
+
+#DoğruBilinenYanlışlar #Mit #GenelKultur
+""",
+    },
 }
 
 
