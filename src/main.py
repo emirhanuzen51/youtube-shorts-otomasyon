@@ -29,9 +29,15 @@ def run(upload: bool = True):
     print("Synthesizing narration...")
     question_intro = profile.get("question_intro", "")
     question_narration = f"{question_intro} {question['question']}".strip()
-    synthesize(question_narration, q_audio)
+    synthesize(
+        question_narration, q_audio,
+        rate=profile.get("question_rate", "+0%"), pitch=profile.get("question_pitch", "+0Hz"),
+    )
     answer_intro = profile.get("answer_intro", "Cevap:")
-    synthesize(f"{answer_intro} {question['answer']}. {question['explanation']}", a_audio)
+    synthesize(
+        f"{answer_intro} {question['answer']}. {question['explanation']}", a_audio,
+        rate=profile.get("answer_rate", "+0%"), pitch=profile.get("answer_pitch", "+0Hz"),
+    )
 
     video_path = os.path.join(OUTPUT_DIR, "short.mp4")
     thumb_path = os.path.join(OUTPUT_DIR, "short_thumb.jpg")

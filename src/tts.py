@@ -6,14 +6,15 @@ import edge_tts
 VOICE = "tr-TR-EmelNeural"
 
 
-async def _synthesize(text: str, out_path: str, rate: str = "+0%"):
-    communicate = edge_tts.Communicate(text, voice=VOICE, rate=rate)
+async def _synthesize(text: str, out_path: str, rate: str = "+0%", pitch: str = "+0Hz"):
+    communicate = edge_tts.Communicate(text, voice=VOICE, rate=rate, pitch=pitch)
     await communicate.save(out_path)
 
 
-def synthesize(text: str, out_path: str, rate: str = "+0%"):
-    """Render `text` to an mp3 file at `out_path`."""
-    asyncio.run(_synthesize(text, out_path, rate))
+def synthesize(text: str, out_path: str, rate: str = "+0%", pitch: str = "+0Hz"):
+    """Render `text` to an mp3 file at `out_path`. `rate`/`pitch` let a scene
+    sound more suspenseful (slower, lower) or excited (faster, higher)."""
+    asyncio.run(_synthesize(text, out_path, rate, pitch))
     return out_path
 
 

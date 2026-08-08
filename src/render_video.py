@@ -120,6 +120,23 @@ def _badge(draw, text, cy, font, fg="#0B0B14", bg="#FFD400"):
     draw.text((W / 2 - tw / 2, y0 + pad_y - bbox[1]), text, font=font, fill=fg)
 
 
+_BAND_COLOR = np.array([6, 6, 14], dtype=np.float32)
+
+
+def _band(img, top, bottom, opacity=140):
+    """Draws a translucent dark band behind a text region for readability
+    against the busy animated gradient background. Returns a new RGB image.
+    Blends directly on the numpy array (cheap) instead of PIL alpha_composite
+    (expensive full-image RGBA round-trip), since this runs every frame."""
+    top_c, bottom_c = max(0, int(top)), min(H, int(bottom))
+    if bottom_c <= top_c:
+        return img
+    arr = np.array(img, dtype=np.float32)
+    alpha = opacity / 255.0
+    arr[top_c:bottom_c, :, :] = arr[top_c:bottom_c, :, :] * (1 - alpha) + _BAND_COLOR * alpha
+    return Image.fromarray(arr.astype(np.uint8))
+
+
 def _ease_out(p):
     return 1 - (1 - p) ** 3
 
@@ -189,20 +206,24 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
                 )
 
         elif t < countdown_start:
-            _badge(draw, question["category"].upper(), H * 0.14, font_badge)
             p = _ease_out(min((t - INTRO_DUR) / QUESTION_IN_DUR, 1.0))
             block_top = H * 0.26 + (1 - p) * 30
+            guess_y = min(max(H * 0.62, block_top + q_block_h + 70), H * 0.85)
+            img = _band(img, block_top - 30, guess_y + 55)
+            draw = ImageDraw.Draw(img)
+            _badge(draw, question["category"].upper(), H * 0.14, font_badge)
             _draw_text_block(
                 draw, q_lines, font_q, W / 2, block_top + q_block_h / 2,
                 fill="#FFFFFF", stroke_fill="#000000", stroke_width=8,
             )
-            guess_y = min(max(H * 0.62, block_top + q_block_h + 70), H * 0.85)
             draw.text((W / 2, guess_y), profile["guess_prompt"], font=font_answer_label,
                        fill="#FFD400", anchor="mm", stroke_width=3, stroke_fill="#000000")
 
         elif t < reveal_start:
-            _badge(draw, question["category"].upper(), H * 0.14, font_badge)
             block_top = H * 0.20
+            img = _band(img, block_top - 30, block_top + q_block_h + 30)
+            draw = ImageDraw.Draw(img)
+            _badge(draw, question["category"].upper(), H * 0.14, font_badge)
             _draw_text_block(
                 draw, q_lines, font_q, W / 2, block_top + q_block_h / 2,
                 fill="#FFFFFF", stroke_fill="#000000", stroke_width=8,
@@ -225,18 +246,27 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
             bg2 = _gradient_frame(t)
             blended = (np.array(bg2, dtype=float) * 0.25 + np.array([15, 90, 45]) * 0.75).astype(np.uint8)
             img = Image.fromarray(blended)
+
+            label_y = H * 0.16 + (1 - p) * 20
+            answer_top = H * 0.24 + (1 - p) * 20
+            show_exp = t > reveal_start + 0.3
+            exp_y = None
+            if show_exp:
+                exp_top_min = answer_top + a_block_h + 70
+                exp_y = min(max(H * 0.52, exp_top_min + exp_block_h / 2), H * 0.94 - exp_block_h / 2)
+                band_bottom = exp_y + exp_block_h / 2 + 30
+            else:
+                band_bottom = answer_top + a_block_h + 30
+            img = _band(img, label_y - 45, band_bottom)
             draw = ImageDraw.Draw(img)
 
-            draw.text((W / 2, H * 0.16 + (1 - p) * 20), profile.get("reveal_label", "CEVAP"), font=font_answer_label,
+            draw.text((W / 2, label_y), profile.get("reveal_label", "CEVAP"), font=font_answer_label,
                        fill="#FFFFFF", anchor="mm", stroke_width=3, stroke_fill="#000000")
-            answer_top = H * 0.24 + (1 - p) * 20
             _draw_text_block(
                 draw, a_lines, font_answer, W / 2, answer_top + a_block_h / 2,
                 fill="#FFD400", stroke_fill="#000000", stroke_width=8,
             )
-            if t > reveal_start + 0.3:
-                exp_top_min = answer_top + a_block_h + 70
-                exp_y = min(max(H * 0.52, exp_top_min + exp_block_h / 2), H * 0.94 - exp_block_h / 2)
+            if show_exp:
                 _draw_text_block(
                     draw, exp_lines, font_explain, W / 2, exp_y,
                     fill="#FFFFFF", stroke_fill="#000000", stroke_width=5, line_spacing=1.3,

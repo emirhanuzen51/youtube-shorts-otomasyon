@@ -14,6 +14,11 @@
       "category": "hayvanlar hakkında yanlış bilgiler",
       "question": "Bukalemunlar tehlike anında tam bir gizlenme ustasına dönüşür. Çevrelerine mükemmel şekilde uyum sağlamak için bulundukları zeminin rengini alırlar.",
       "answer": "Hayır, bukalemunlar kamuflaj için renk değiştirmez!"
+    },
+    {
+      "category": "hayvanlar hakkında yanlış bilgiler",
+      "question": "Develer çölün acımasız sıcaklarında haftalarca hiç durmadan yol alabilir. Çünkü o devasa hörgüçlerinde litrelerce su depolarlar!",
+      "answer": "Hayır, develer hörgüçlerinde su değil, yağ depolar!"
     }
   ]
 }
