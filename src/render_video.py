@@ -316,6 +316,7 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
 
     music_path = _find_music(profile.get("name"))
     if music_path:
+        print(f"Using background music: {music_path}")
         music = AudioFileClip(music_path).with_volume_scaled(profile.get("music_volume", 0.22))
         if music.duration < total_duration:
             loops = int(total_duration / music.duration) + 1

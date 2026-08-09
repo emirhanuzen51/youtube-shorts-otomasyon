@@ -27,14 +27,9 @@ PRESETS = {
         "breathe_rate": 0.05,
         "duration": 40.0,
     },
-    "dini_kissalar": {
-        "filename": "reflective_pad.wav",
-        # Open C-sus voicing (root/4th/5th/octave, no 3rd): warm, spacious,
-        # non-dissonant - evokes a calm, reflective, spiritual mood.
-        "freqs": [130.81, 174.61, 196.00, 261.63],
-        "breathe_rate": 0.03,
-        "duration": 40.0,
-    },
+    # dini_kissalar: kullanici kendi ney/tasavvuf kayitlarini
+    # assets/music/dini_kissalar/ altina elle ekledi, bu yuzden burada
+    # prosedurel bir preset tanimlanmiyor.
 }
 
 
