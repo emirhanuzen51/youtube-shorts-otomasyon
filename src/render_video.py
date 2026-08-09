@@ -11,6 +11,7 @@ import textwrap
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from moviepy import AudioFileClip, CompositeAudioClip, VideoClip, concatenate_audioclips
+from moviepy.audio.fx import AudioFadeIn, AudioFadeOut
 
 from profiles import get_profile
 from text_sanitize import filter_to_font
@@ -319,7 +320,15 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
         if music.duration < total_duration:
             loops = int(total_duration / music.duration) + 1
             music = concatenate_audioclips([music] * loops)
-        music = music.subclipped(0, total_duration)
+            music = music.subclipped(0, total_duration)
+        else:
+            # Long real tracks (e.g. a full song) shouldn't always play the
+            # same opening seconds - pick a random slice each time instead.
+            max_start = music.duration - total_duration
+            start = random.uniform(0, max_start)
+            music = music.subclipped(start, start + total_duration)
+        fade = min(1.5, total_duration / 4)
+        music = music.with_effects([AudioFadeIn(fade), AudioFadeOut(fade)])
         audio = CompositeAudioClip([music, q_audio_positioned, a_audio_positioned])
 
     video = video.with_audio(audio)
