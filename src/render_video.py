@@ -317,7 +317,7 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
     music_path = _find_music(profile.get("name"))
     if music_path:
         print(f"Using background music: {music_path}")
-        music = AudioFileClip(music_path).with_volume_scaled(profile.get("music_volume", 0.22))
+        music = AudioFileClip(music_path)
         if music.duration < total_duration:
             loops = int(total_duration / music.duration) + 1
             music = concatenate_audioclips([music] * loops)
@@ -328,6 +328,12 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
             max_start = music.duration - total_duration
             start = random.uniform(0, max_start)
             music = music.subclipped(start, start + total_duration)
+        # Real, user-supplied tracks can be mastered far quieter (or louder)
+        # than our own procedurally-generated pads - normalize to a common
+        # peak level first so the profile's music_volume means the same
+        # thing regardless of source file loudness.
+        music = _peak_normalize(music)
+        music = music.with_volume_scaled(profile.get("music_volume", 0.22))
         fade = min(1.5, total_duration / 4)
         music = music.with_effects([AudioFadeIn(fade), AudioFadeOut(fade)])
         audio = CompositeAudioClip([music, q_audio_positioned, a_audio_positioned])
@@ -338,6 +344,18 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
         preset="medium", threads=4, logger=None,
     )
     return out_path
+
+
+def _peak_normalize(clip, target_peak=0.5, max_gain=12.0):
+    """Scales an audio clip so its peak amplitude matches `target_peak`,
+    so a quiet source file (e.g. a low-mastered mp3) is boosted to the same
+    reference loudness our procedurally-generated pads are normalized to."""
+    arr = clip.to_soundarray(fps=22050)
+    peak = float(np.max(np.abs(arr))) if arr.size else 0.0
+    if peak < 1e-4:
+        return clip
+    factor = min(target_peak / peak, max_gain)
+    return clip.with_volume_scaled(factor)
 
 
 def _audio_files(directory):

@@ -233,6 +233,7 @@ Kaçırmamak için abone ol, her gün seninleyiz!
         # Sakin, agirbasli bir anlatim: soru kismi normal hizda, sonuc/ders
         # kismi hafif yavaslatilip alcaltilarak "hikmetli" bir hava katiliyor.
         "voice": "tr-TR-AhmetNeural",
+        "music_volume": 0.3,
         "answer_rate": "-6%",
         "answer_pitch": "-10Hz",
         # Islam sanatina uygun koyu yesil + altin/zeytin tonlari (diger
