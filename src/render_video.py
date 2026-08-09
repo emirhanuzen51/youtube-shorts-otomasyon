@@ -405,7 +405,7 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
     a_audio_positioned = a_clip.with_start(reveal_start)
     audio = CompositeAudioClip([q_audio_positioned, a_audio_positioned])
 
-    music_path = _find_music(profile.get("name"))
+    music_path = _find_music(profile)
     if music_path:
         print(f"Using background music: {music_path}")
         music = AudioFileClip(music_path)
@@ -459,12 +459,22 @@ def _audio_files(directory):
     ]
 
 
-def _find_music(profile_name):
-    """Picks a random track from this channel's own music folder
-    (assets/music/<profile_name>/), so each channel's mood stays consistent
-    instead of mixing tracks across channels. Falls back to any shared
-    tracks directly under assets/music/ if the channel has none of its own."""
+def _find_music(profile):
+    """Picks this channel's music. If the profile pins an exact track via
+    "music_file" (filename inside assets/music/<profile_name>/), that file
+    is always used. Otherwise a random track from the channel's own folder
+    is picked, so each channel's mood stays consistent instead of mixing
+    tracks across channels. Falls back to shared tracks directly under
+    assets/music/ if the channel has none of its own."""
+    profile_name = profile.get("name")
     channel_dir = os.path.join(MUSIC_DIR, profile_name) if profile_name else None
+
+    pinned = profile.get("music_file")
+    if pinned and channel_dir:
+        pinned_path = os.path.join(channel_dir, pinned)
+        if os.path.isfile(pinned_path):
+            return pinned_path
+
     candidates = _audio_files(channel_dir) if channel_dir else []
     if not candidates:
         candidates = _audio_files(MUSIC_DIR)

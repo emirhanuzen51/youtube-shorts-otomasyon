@@ -49,6 +49,16 @@
       "category": "tarih yanılgıları",
       "question": "Vikingler savaşa giderken başlarına devasa boynuzlu kasklar takardı. Bu heybetli kasklar düşmanlarına korku salmak için kullanılan en büyük simgeydi.",
       "answer": "Hayır, Viking kasklarında hiç boynuz yoktu!"
+    },
+    {
+      "category": "bilim ve doğa yanılgıları",
+      "question": "Yıldırımlar aynı yere asla iki kez düşmez. Bu yüzden bir fırtınada daha önce yıldırım düşmüş bir yer en güvenli noktadır!",
+      "answer": "Yanlış, yıldırımlar aynı yere defalarca düşebilir!"
+    },
+    {
+      "category": "coğrafya ve dünya yanılgıları",
+      "question": "Sahra Çölü dünyadaki en büyük çöldür. Sonsuz kum tepeleriyle gezegenimizin en devasa kurak alanını oluşturur.",
+      "answer": "Hayır, Sahra en büyük çöl değildir!"
     }
   ]
 }

@@ -185,6 +185,7 @@ Kaçırmamak için abone ol, her gün seninleyiz!
         "bg_glow_bottom": [30, 6, 45],
         "badge_bg": "#FF3B3B",
         "badge_fg": "#FFFFFF",
+        "music_file": "starostin-shorts-youtube-shorts-background-music-261844.mp3",
         "accent_color": "#FF5A36",
         "reveal_rect_color": [90, 12, 12],
         "reveal_tint": [130, 20, 20],
@@ -228,6 +229,7 @@ Kaçırmamak için abone ol, her gün seninleyiz!
         "answer_intro": "İşte sonuç:",
         "voice": "tr-TR-AhmetNeural",
         "music_volume": 0.3,
+        "music_file": "Ney-Gel-Gor-Beni-Ask-Neyledi-Ney-Dinle.mp3",
         # Islam sanatina uygun koyu yesil + altin/zeytin tonlari (diger
         # kanallardaki mor/lacivert ve kirmizi temalardan farkli kimlik).
         "bg_top": [10, 35, 24],
