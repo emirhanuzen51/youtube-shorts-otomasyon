@@ -31,10 +31,12 @@ def build_title_description(question: dict, profile: dict):
         title = title[:97] + "..."
 
     answer_intro = profile.get("answer_intro", "Cevap:")
+    comment_cta = profile.get("comment_cta", "Bu konuda ne düşünüyorsun? Yorumlarda paylaş 👇")
     description = (
         f"{question['question']}\n\n"
         f"{answer_intro} {question['answer']}\n"
         f"{question['explanation']}\n\n"
+        f"{comment_cta}\n\n"
         f"{profile['description_hashtags']}"
     )
     tags = [*profile["tags"], question["category"]]

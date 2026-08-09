@@ -21,6 +21,17 @@ _PUNCT_MAP = {
 
 _MARKDOWN_CHARS = re.compile(r"[*_`#~^]")
 _WHITESPACE = re.compile(r"\s+")
+_TR_UPPER_MAP = str.maketrans({"i": "İ", "ı": "I"})
+
+
+def tr_upper(text: str) -> str:
+    """Turkish-correct uppercasing. Python's plain str.upper() uses
+    Germanic casing rules where both 'i' and 'ı' collapse to dotless 'I'
+    (so "bilim" -> "BILIM" instead of the correct "BİLİM"). Swapping the
+    Turkish i/ı first, then upper-casing the rest, fixes that."""
+    if not text:
+        return text
+    return text.translate(_TR_UPPER_MAP).upper()
 
 
 def normalize_text(text: str) -> str:

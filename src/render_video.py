@@ -1,7 +1,10 @@
 """Renders a 1080x1920 Shorts video for a trivia question using PIL + MoviePy.
 
-No stock footage is used (avoids licensing issues and external downloads that
-could fail in CI): the background is a procedurally generated animated gradient.
+By default no stock footage is used (avoids licensing issues and external
+downloads that could fail in CI): the background is a procedurally generated
+animated gradient. A profile can opt into a real stock-video background via
+stock_video.py (see _load_stock_background) - that path is fully optional
+and always falls back to the gradient if it fails for any reason.
 """
 import math
 import os
@@ -10,11 +13,12 @@ import textwrap
 
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
-from moviepy import AudioFileClip, CompositeAudioClip, VideoClip, concatenate_audioclips
+from moviepy import AudioFileClip, CompositeAudioClip, VideoClip, VideoFileClip, concatenate_audioclips
 from moviepy.audio.fx import AudioFadeIn, AudioFadeOut
 
 from profiles import get_profile
-from text_sanitize import filter_to_font
+from stock_video import fetch_background_video
+from text_sanitize import filter_to_font, tr_upper
 
 W, H = 1080, 1920
 FPS = 30
@@ -72,6 +76,35 @@ def _gradient_frame(t: float, bg_top=_BG_TOP, bg_bottom=_BG_BOTTOM, glow_top=_BG
     return frame
 
 
+def _load_stock_background(profile, question, out_path):
+    """Opt-in real-video background (see stock_video.py). Returns a
+    cover-cropped 1080x1920 VideoFileClip, or None if the profile doesn't
+    request it, no PEXELS_API_KEY is configured, or anything about the
+    fetch/decode fails - callers must treat None as "use the gradient"."""
+    if not profile.get("use_stock_video"):
+        return None
+    query = profile.get("stock_video_query") or question.get("category", "")
+    tmp_path = os.path.splitext(out_path)[0] + "_stockbg.mp4"
+    fetched = fetch_background_video(query, tmp_path)
+    if not fetched:
+        return None
+    try:
+        clip = VideoFileClip(fetched)
+        scale = max(W / clip.w, H / clip.h)
+        clip = clip.resized(scale)
+        x1, y1 = (clip.w - W) / 2, (clip.h - H) / 2
+        return clip.cropped(x1=x1, y1=y1, width=W, height=H)
+    except Exception as e:
+        print(f"Stock video decode failed: {e}")
+        return None
+
+
+def _bg_frame(t, stock_bg, bg_top, bg_bottom, glow_top, glow_bottom):
+    if stock_bg is not None:
+        return stock_bg.get_frame(t % stock_bg.duration).astype(np.uint8)
+    return _gradient_frame(t, bg_top, bg_bottom, glow_top, glow_bottom)
+
+
 # --- text helpers -------------------------------------------------------
 
 
@@ -97,6 +130,35 @@ def _draw_text_block(draw, lines, font, center_x, center_y, fill, stroke_fill, s
         w = bbox[2] - bbox[0]
         x = center_x - w / 2
         draw.text((x, y), line, font=font, fill=fill, stroke_width=stroke_width, stroke_fill=stroke_fill)
+        y += line_h
+
+
+def _draw_karaoke_block(draw, lines, word_times, font, center_x, center_y, t_rel,
+                         base_fill, highlight_fill, stroke_fill, stroke_width, line_spacing=1.15):
+    """Draws a wrapped text block word-by-word in sync with narration: a word
+    only appears once its spoken moment has passed, and the word being spoken
+    right now is drawn in `highlight_fill`. Falls back to drawing everything
+    (as if fully spoken) if `word_times` doesn't cover a given word, so a
+    mismatch in word counts degrades gracefully instead of hiding text."""
+    line_h, total_h = _block_metrics(draw, lines, font, stroke_width, line_spacing)
+    space_w = draw.textlength(" ", font=font)
+    y = center_y - total_h / 2
+    word_idx = 0
+    for line in lines:
+        words = line.split(" ")
+        widths = [draw.textlength(w, font=font) for w in words]
+        line_w = sum(widths) + space_w * max(0, len(words) - 1)
+        x = center_x - line_w / 2
+        for w, ww in zip(words, widths):
+            if word_idx < len(word_times):
+                start, end = word_times[word_idx][1], word_times[word_idx][2]
+            else:
+                start, end = 0.0, 0.0
+            if t_rel >= start:
+                fill = highlight_fill if start <= t_rel < end else base_fill
+                draw.text((x, y), w, font=font, fill=fill, stroke_width=stroke_width, stroke_fill=stroke_fill)
+            word_idx += 1
+            x += ww + space_w
         y += line_h
 
 
@@ -159,7 +221,8 @@ REVEAL_IN_DUR = 0.5
 OUTRO_DUR = 2.0
 
 
-def build_video(question: dict, question_audio: str, answer_audio: str, out_path: str, profile: dict | None = None):
+def build_video(question: dict, question_audio: str, answer_audio: str, out_path: str, profile: dict | None = None,
+                 question_words=None, answer_words=None, explanation_words=None):
     profile = profile or get_profile()
     font_path = _find_font_path()
     question = {
@@ -199,6 +262,8 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
     reveal_rect_color = tuple(profile.get("reveal_rect_color", (10, 90, 40)))
     reveal_tint = np.array(profile.get("reveal_tint", [15, 90, 45]))
 
+    stock_bg = _load_stock_background(profile, question, out_path)
+
     _measure_draw = ImageDraw.Draw(Image.new("RGB", (1, 1)))
     font_q, q_lines = _fit_text(question["question"], max_font=64, min_font=38, base_wrap=22, max_lines=6)
     _, q_block_h = _block_metrics(_measure_draw, q_lines, font_q, stroke_width=8)
@@ -210,7 +275,7 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
     _, exp_block_h = _block_metrics(_measure_draw, exp_lines, font_explain, stroke_width=5, line_spacing=1.3)
 
     def make_frame(t):
-        bg = _gradient_frame(t, bg_top, bg_bottom, glow_top, glow_bottom)
+        bg = _bg_frame(t, stock_bg, bg_top, bg_bottom, glow_top, glow_bottom)
         img = Image.fromarray(bg)
         draw = ImageDraw.Draw(img)
 
@@ -220,7 +285,7 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
             _badge(draw, profile["video_badge"], alpha_badge_y, font_badge, fg=badge_fg, bg=badge_bg)
             if t > 0.6:
                 p2 = _ease_out(min((t - 0.6) / 0.6, 1.0))
-                cat_text = question["category"].upper()
+                cat_text = tr_upper(question["category"])
                 draw.text(
                     (W / 2, H * 0.55 + (1 - p2) * 30), cat_text,
                     font=font_answer_label, fill=(255, 255, 255, int(255 * p2)),
@@ -233,11 +298,17 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
             guess_y = min(max(H * 0.62, block_top + q_block_h + 70), H * 0.85)
             img = _band(img, block_top - 30, guess_y + 55)
             draw = ImageDraw.Draw(img)
-            _badge(draw, question["category"].upper(), H * 0.14, font_badge, fg=badge_fg, bg=badge_bg)
-            _draw_text_block(
-                draw, q_lines, font_q, W / 2, block_top + q_block_h / 2,
-                fill="#FFFFFF", stroke_fill="#000000", stroke_width=8,
-            )
+            _badge(draw, tr_upper(question["category"]), H * 0.14, font_badge, fg=badge_fg, bg=badge_bg)
+            if question_words:
+                _draw_karaoke_block(
+                    draw, q_lines, question_words, font_q, W / 2, block_top + q_block_h / 2, t - question_start,
+                    base_fill="#FFFFFF", highlight_fill=accent, stroke_fill="#000000", stroke_width=8,
+                )
+            else:
+                _draw_text_block(
+                    draw, q_lines, font_q, W / 2, block_top + q_block_h / 2,
+                    fill="#FFFFFF", stroke_fill="#000000", stroke_width=8,
+                )
             draw.text((W / 2, guess_y), profile["guess_prompt"], font=font_answer_label,
                        fill=accent, anchor="mm", stroke_width=3, stroke_fill="#000000")
 
@@ -245,11 +316,17 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
             block_top = H * 0.20
             img = _band(img, block_top - 30, block_top + q_block_h + 30)
             draw = ImageDraw.Draw(img)
-            _badge(draw, question["category"].upper(), H * 0.14, font_badge, fg=badge_fg, bg=badge_bg)
-            _draw_text_block(
-                draw, q_lines, font_q, W / 2, block_top + q_block_h / 2,
-                fill="#FFFFFF", stroke_fill="#000000", stroke_width=8,
-            )
+            _badge(draw, tr_upper(question["category"]), H * 0.14, font_badge, fg=badge_fg, bg=badge_bg)
+            if question_words:
+                _draw_karaoke_block(
+                    draw, q_lines, question_words, font_q, W / 2, block_top + q_block_h / 2, t - question_start,
+                    base_fill="#FFFFFF", highlight_fill=accent, stroke_fill="#000000", stroke_width=8,
+                )
+            else:
+                _draw_text_block(
+                    draw, q_lines, font_q, W / 2, block_top + q_block_h / 2,
+                    fill="#FFFFFF", stroke_fill="#000000", stroke_width=8,
+                )
             remaining = max(0, countdown_end - t)
             count_val = int(math.ceil(remaining))
             count_val = max(1, min(count_val, int(COUNTDOWN_DUR)))
@@ -265,7 +342,7 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
         elif t < outro_start:
             p = _ease_out(min((t - countdown_end) / REVEAL_IN_DUR, 1.0))
             draw.rectangle([0, 0, W, H], fill=reveal_rect_color)
-            bg2 = _gradient_frame(t, bg_top, bg_bottom, glow_top, glow_bottom)
+            bg2 = _bg_frame(t, stock_bg, bg_top, bg_bottom, glow_top, glow_bottom)
             blended = (np.array(bg2, dtype=float) * 0.25 + reveal_tint.astype(float) * 0.75).astype(np.uint8)
             img = Image.fromarray(blended)
 
@@ -284,15 +361,29 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
 
             draw.text((W / 2, label_y), profile.get("reveal_label", "CEVAP"), font=font_answer_label,
                        fill="#FFFFFF", anchor="mm", stroke_width=3, stroke_fill="#000000")
-            _draw_text_block(
-                draw, a_lines, font_answer, W / 2, answer_top + a_block_h / 2,
-                fill=accent, stroke_fill="#000000", stroke_width=8,
-            )
-            if show_exp:
-                _draw_text_block(
-                    draw, exp_lines, font_explain, W / 2, exp_y,
-                    fill="#FFFFFF", stroke_fill="#000000", stroke_width=5, line_spacing=1.3,
+            a_t_rel = t - reveal_start
+            if answer_words:
+                _draw_karaoke_block(
+                    draw, a_lines, answer_words, font_answer, W / 2, answer_top + a_block_h / 2, a_t_rel,
+                    base_fill=accent, highlight_fill="#FFFFFF", stroke_fill="#000000", stroke_width=8,
                 )
+            else:
+                _draw_text_block(
+                    draw, a_lines, font_answer, W / 2, answer_top + a_block_h / 2,
+                    fill=accent, stroke_fill="#000000", stroke_width=8,
+                )
+            if show_exp:
+                if explanation_words:
+                    _draw_karaoke_block(
+                        draw, exp_lines, explanation_words, font_explain, W / 2, exp_y, a_t_rel,
+                        base_fill="#FFFFFF", highlight_fill=accent, stroke_fill="#000000", stroke_width=5,
+                        line_spacing=1.3,
+                    )
+                else:
+                    _draw_text_block(
+                        draw, exp_lines, font_explain, W / 2, exp_y,
+                        fill="#FFFFFF", stroke_fill="#000000", stroke_width=5, line_spacing=1.3,
+                    )
 
         else:
             draw.text((W / 2, H * 0.44), profile["outro_line1"], font=font_outro, fill="#FFFFFF",

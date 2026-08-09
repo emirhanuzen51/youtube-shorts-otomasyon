@@ -192,10 +192,6 @@ Kaçırmamak için abone ol, her gün seninleyiz!
         "reveal_label": "YANLIŞ BİLİYORSUN!",
         "question_intro": "Çoğu insan bunun doğru olduğunu düşünür.",
         "answer_intro": "Ama hayır! Gerçek şu ki,",
-        "question_rate": "-4%",
-        "question_pitch": "-8Hz",
-        "answer_rate": "+10%",
-        "answer_pitch": "+18Hz",
         "outro_line1": "Takip et,",
         "outro_line2": "her gün yeni bir yanılgı!",
         "title_hashtags": "#Shorts #YanlışBilinenDoğrular",
@@ -230,12 +226,8 @@ Kaçırmamak için abone ol, her gün seninleyiz!
         "guess_prompt": "Kıssadan hisse nedir?",
         "reveal_label": "SONUÇ",
         "answer_intro": "İşte sonuç:",
-        # Sakin, agirbasli bir anlatim: soru kismi normal hizda, sonuc/ders
-        # kismi hafif yavaslatilip alcaltilarak "hikmetli" bir hava katiliyor.
         "voice": "tr-TR-AhmetNeural",
         "music_volume": 0.3,
-        "answer_rate": "-6%",
-        "answer_pitch": "-10Hz",
         # Islam sanatina uygun koyu yesil + altin/zeytin tonlari (diger
         # kanallardaki mor/lacivert ve kirmizi temalardan farkli kimlik).
         "bg_top": [10, 35, 24],

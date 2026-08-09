@@ -61,7 +61,9 @@ kısa BİR adet dini kıssa üret. Genel olarak bilinen, yaygın kabul gören bi
 kaynağı belirsiz veya tartışmalı rivayetlerden, uydurma ayrıntılardan kaçın.
 Lütfen sistemin JSON formatını bozmadan şu yapıyı bir hikaye akışı gibi kullan:
 - "question" alanına: Kıssanın girişini ve olayın gelişme kısmını sürükleyici ama KISA bir
-  dille yaz (en fazla 3-4 cümle; soru olmak zorunda değil, olayı anlat).
+  dille yaz (en fazla 3-4 cümle; soru olmak zorunda değil, olayı anlat). İLK CÜMLE bir
+  merak unsuru veya çarpıcı bir an içermeli, izleyiciyi hemen içine çeksin; ASLA "Merhaba",
+  "Bugün size..." gibi bir selamlama veya girizgahla başlama, direkt olayın içine gir.
 - "answer" alanına: Olayın vurucu sonucunu 1 kısa cümleyle yaz.
 - "explanation" alanına: "Kıssadan Hisse:" diyerek başlayıp, bu olaydan günümüzde
   çıkarmamız gereken ahlaki/dini dersi 2-3 KISA cümleyle (toplam en fazla ~220 karakter) yaz.
