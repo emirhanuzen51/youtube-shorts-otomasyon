@@ -64,6 +64,11 @@
       "category": "gündelik hayat mitleri",
       "question": "Çin Seddi o kadar devasa bir yapıdır ki uzaydan bile çıplak gözle görülebilir. Hatta astronotların Dünya'ya bakarken fark ettiği tek insan yapısı olduğu söylenir.",
       "answer": "Hayır, Çin Seddi uzaydan görünmez!"
+    },
+    {
+      "category": "bilim ve doğa yanılgıları",
+      "question": "Yavru bir kuşa elinizle dokunursanız annesi insan kokusunu alır. Bu yüzden kendi yavrusunu hemen reddeder ve ölüme terk eder!",
+      "answer": "Hayır, kuşlar yavrularını insan kokusu yüzünden terk etmez!"
     }
   ]
 }
