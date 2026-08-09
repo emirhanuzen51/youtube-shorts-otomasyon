@@ -59,6 +59,11 @@
       "category": "coğrafya ve dünya yanılgıları",
       "question": "Sahra Çölü dünyadaki en büyük çöldür. Sonsuz kum tepeleriyle gezegenimizin en devasa kurak alanını oluşturur.",
       "answer": "Hayır, Sahra en büyük çöl değildir!"
+    },
+    {
+      "category": "gündelik hayat mitleri",
+      "question": "Çin Seddi o kadar devasa bir yapıdır ki uzaydan bile çıplak gözle görülebilir. Hatta astronotların Dünya'ya bakarken fark ettiği tek insan yapısı olduğu söylenir.",
+      "answer": "Hayır, Çin Seddi uzaydan görünmez!"
     }
   ]
 }
