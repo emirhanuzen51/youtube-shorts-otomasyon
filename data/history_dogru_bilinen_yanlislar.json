@@ -69,6 +69,11 @@
       "category": "bilim ve doğa yanılgıları",
       "question": "Yavru bir kuşa elinizle dokunursanız annesi insan kokusunu alır. Bu yüzden kendi yavrusunu hemen reddeder ve ölüme terk eder!",
       "answer": "Hayır, kuşlar yavrularını insan kokusu yüzünden terk etmez!"
+    },
+    {
+      "category": "gündelik hayat mitleri",
+      "question": "Gokdelenin tepesinden asagi atilan kucuk bir bozuk para hizlandikca olumcul bir mermiye donusur. Yerdeki bir insanin kafasina carparsa onu aninda oldurebilir!",
+      "answer": "Hayir, atilan bozuk para kimseyi olduremez!"
     }
   ]
 }
