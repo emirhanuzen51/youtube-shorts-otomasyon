@@ -523,6 +523,9 @@ def _find_music(profile):
     is picked, so each channel's mood stays consistent instead of mixing
     tracks across channels. Falls back to shared tracks directly under
     assets/music/ if the channel has none of its own."""
+    if profile.get("music_enabled") is False:
+        return None
+
     profile_name = profile.get("name")
     channel_dir = os.path.join(MUSIC_DIR, profile_name) if profile_name else None
 

@@ -186,7 +186,7 @@ Kaçırmamak için abone ol, her gün seninleyiz!
         "bg_glow_bottom": [30, 6, 45],
         "badge_bg": "#FF3B3B",
         "badge_fg": "#FFFFFF",
-        "music_file": "starostin-shorts-youtube-shorts-background-music-261844.mp3",
+        "music_enabled": False,
         "accent_color": "#FF5A36",
         "reveal_rect_color": [90, 12, 12],
         "reveal_tint": [130, 20, 20],
