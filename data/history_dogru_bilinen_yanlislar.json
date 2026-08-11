@@ -104,6 +104,11 @@
       "category": "coğrafya ve dünya yanılgıları",
       "question": "Grönland haritalarda Afrika kıtası kadar devasa görünür. Bu yüzden pek çok insan onu dünyanın en büyük karalarından biri sanır.",
       "answer": "Hayır, Grönland Afrika'dan 14 kat daha küçüktür!"
+    },
+    {
+      "category": "gündelik hayat mitleri",
+      "question": "Dilimizin farklı bölgeleri sadece belirli tatları algılar. Örneğin tatlıyı en önde, acıyı ise sadece dilin arka kısmında hissederiz.",
+      "answer": "Hayır, dil haritası tamamen bir şehir efsanesidir!"
     }
   ]
 }
