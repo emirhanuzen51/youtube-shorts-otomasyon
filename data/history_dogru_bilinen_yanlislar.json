@@ -94,6 +94,11 @@
       "category": "hayvanlar hakkında yanlış bilgiler",
       "question": "Baykuşlar kafalarını tam 360 derece döndürebilirler. Bu sayede arkalarını görmek için gövdelerini hareket ettirmelerine hiç gerek kalmaz!",
       "answer": "Hayır, baykuşlar kafalarını 360 derece döndüremez!"
+    },
+    {
+      "category": "hayvanlar hakkında yanlış bilgiler",
+      "question": "Karasineklerin ömrü sadece 24 saattir. Bu yüzden tek bir gün içinde doğar, büyür ve hızlıca ölürler.",
+      "answer": "Hayır, karasinekler sadece bir gün yaşamaz!"
     }
   ]
 }
