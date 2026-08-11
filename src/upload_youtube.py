@@ -11,7 +11,7 @@ from googleapiclient.http import MediaFileUpload
 
 from profiles import get_profile
 
-SCOPES = ["https://www.googleapis.com/auth/youtube"]
+SCOPES = ["https://www.googleapis.com/auth/youtube", "https://www.googleapis.com/auth/youtube.force-ssl"]
 
 
 def _get_credentials() -> Credentials:
@@ -75,7 +75,7 @@ def upload_video(video_path: str, question: dict, thumbnail_path: str | None = N
     video_id = response["id"]
     print(f"Uploaded: https://youtube.com/shorts/{video_id}")
 
-    comment_text = profile.get("comment_cta")
+    comment_text = profile.get("comment_cta", "Bu konuda ne düşünüyorsun? Yorumlarda paylaş 👇")
     if comment_text:
         try:
             youtube.commentThreads().insert(
