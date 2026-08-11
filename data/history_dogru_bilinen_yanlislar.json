@@ -114,6 +114,11 @@
       "category": "sağlık ve beden mitleri",
       "question": "Yutulan bir sakız midede tam yedi yıl boyunca yapışıp kalır. Bu yüzden çocukken sakız yutmamamız için defalarca uyarılmışızdır.",
       "answer": "Hayır, yutulan sakız midede yedi yıl kalmaz!"
+    },
+    {
+      "category": "bilim ve doğa yanılgıları",
+      "question": "Lavabodaki suyun dönme yönü bulunduğunuz yarım küreye göre değişir. Kuzeyde saat yönünde dönerken güneyde tam tersine akar.",
+      "answer": "Hayır, suyun dönme yönü yarım küreyle alakalı değildir!"
     }
   ]
 }
