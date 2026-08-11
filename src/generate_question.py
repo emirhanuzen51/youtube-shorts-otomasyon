@@ -76,6 +76,21 @@ def _generate_with_retry(client, prompt, max_attempts=3, delay_seconds=15):
     raise last_error
 
 
+_TR_CHARS = set("ığşöüçİĞŞÖÜÇ")
+
+
+def _missing_turkish_chars(*texts) -> bool:
+    """Gemini occasionally drifts into writing Turkish sentences with the
+    diacritics stripped entirely (e.g. "doneminde" instead of "döneminde") -
+    a different failure mode than the NFD-decomposition bug normalize_text
+    already fixes, and not something sanitization can repair after the fact
+    since the information is just gone. A genuine Turkish text of any real
+    length is overwhelmingly likely to contain at least one ığşöüçİĞŞÖÜÇ, so
+    its total absence is a reliable signal to just regenerate."""
+    combined = "".join(texts)
+    return len(combined) > 60 and not any(ch in _TR_CHARS for ch in combined)
+
+
 def _sanitize_hashtags(hashtags) -> list:
     if not isinstance(hashtags, list):
         return []
@@ -184,18 +199,25 @@ ASCII karşılıklarıyla (i, g, u, s, o, c) değiştirme.
 her biri # ile başlasın, boşluk içermesin (örn. "#HzYusuf", "#SahraÇölü").
 {image_instruction}"""
 
-    response = _generate_with_retry(client, prompt)
-    data = json.loads(response.text)
-    # We already picked `category` ourselves (in Turkish); don't let the model
-    # regenerate it, since it sometimes drifts into an English paraphrase.
-    data["category"] = category
-
     required = {"category", "question", "answer", "explanation"}
-    if not required.issubset(data):
-        raise ValueError(f"Model response missing fields: {data!r}")
-
-    for field in required:
-        data[field] = normalize_text(str(data[field]))
+    data = None
+    for attempt in range(1, 4):
+        response = _generate_with_retry(client, prompt)
+        candidate = json.loads(response.text)
+        # We already picked `category` ourselves (in Turkish); don't let the
+        # model regenerate it, since it sometimes drifts into an English paraphrase.
+        candidate["category"] = category
+        if not required.issubset(candidate):
+            raise ValueError(f"Model response missing fields: {candidate!r}")
+        for field in required:
+            candidate[field] = normalize_text(str(candidate[field]))
+        if _missing_turkish_chars(candidate["question"], candidate["answer"], candidate["explanation"]):
+            print(f"Generated text is missing Turkish characters (attempt {attempt}/3), retrying...")
+            continue
+        data = candidate
+        break
+    if data is None:
+        raise ValueError("Model kept generating text without Turkish characters after 3 attempts")
 
     data["hashtags"] = _sanitize_hashtags(data.get("hashtags"))
     if data.get("image_query"):
@@ -255,28 +277,40 @@ uydurma detay eklemeden, "{format_name}" formatında bir hikaye yaz:
 GERÇEK ESER BİLGİLERİ:
 {facts}
 
-- "question" alanına: Eserle ilgili merak uyandırıcı bir girişle başla (en fazla 3-4 cümle).
-  ASLA "Merhaba" gibi bir selamlamayla başlama, direkt konunun içine gir.
+- "question" alanına: İLK KELİMELER olarak eserin adını ("{obj['title']}") mutlaka yaz
+  (Türkçeye doğal çeviriyle ya da orijinal adıyla), ardından eserle ilgili merak uyandırıcı
+  bir girişle devam et (toplam en fazla 3-4 cümle). ASLA "Merhaba" gibi bir selamlamayla
+  başlama, direkt eserin adıyla ve konunun içine gir.
 - "answer" alanına: Vurucu bir sonuç/detay cümlesi yaz.
 - "explanation" alanına: "Kısaca:" diyerek başlayıp 2-3 KISA cümleyle (toplam en fazla ~220 karakter) özetle.
 Verilmeyen hiçbir bilgiyi (tarih, isim, olay) uydurma; bir alan hakkında yeterli bilgi yoksa
 genel ama doğru ifadeler kullan, spesifik uydurma detay verme.
 Sadece düz noktalama işaretleri kullan, markdown veya emoji kullanma. Türkçe yaz, Türkçe
-karakterleri (ı, İ, ğ, ü, ş, ö, ç) doğru ve eksiksiz kullan.
+karakterleri (ı, İ, ğ, ü, ş, ö, ç) doğru ve eksiksiz kullan; bunları ASCII karşılıklarıyla
+(i, g, u, s, o, c) DEĞİŞTİRME - bu çok önemli, her Türkçe karakter doğru yazılmalı.
 "hashtags" alanına, bu içeriğe özel 3-5 adet Türkçe hashtag üret; her biri # ile başlasın,
 boşluk içermesin."""
 
     api_key = os.environ["GEMINI_API_KEY"]
     client = genai.Client(api_key=api_key)
-    response = _generate_with_retry(client, prompt)
-    data = json.loads(response.text)
-    data["category"] = format_name
 
     required = {"category", "question", "answer", "explanation"}
-    if not required.issubset(data):
-        raise ValueError(f"Model response missing fields: {data!r}")
-    for field in required:
-        data[field] = normalize_text(str(data[field]))
+    data = None
+    for attempt in range(1, 4):
+        response = _generate_with_retry(client, prompt)
+        candidate = json.loads(response.text)
+        candidate["category"] = format_name
+        if not required.issubset(candidate):
+            raise ValueError(f"Model response missing fields: {candidate!r}")
+        for field in required:
+            candidate[field] = normalize_text(str(candidate[field]))
+        if _missing_turkish_chars(candidate["question"], candidate["answer"], candidate["explanation"]):
+            print(f"Generated text is missing Turkish characters (attempt {attempt}/3), retrying...")
+            continue
+        data = candidate
+        break
+    if data is None:
+        raise ValueError("Model kept generating text without Turkish characters after 3 attempts")
     data["hashtags"] = _sanitize_hashtags(data.get("hashtags"))
     data["source_credit"] = f"Görsel: {obj['museum']}, Kamu Malı (Public Domain) - {obj['title']}"
     return data
