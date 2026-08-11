@@ -15,6 +15,7 @@ from google.genai import types
 from google.genai import errors as genai_errors
 
 from museum_source import fetch_random_object
+from nasa_source import fetch_random_nasa_item
 from profiles import get_profile
 from text_sanitize import normalize_text
 
@@ -313,6 +314,82 @@ boşluk içermesin."""
         raise ValueError("Model kept generating text without Turkish characters after 3 attempts")
     data["hashtags"] = _sanitize_hashtags(data.get("hashtags"))
     data["source_credit"] = f"Görsel: {obj['museum']}, Kamu Malı (Public Domain) - {obj['title']}"
+    return data
+
+
+_NASA_FORMAT_INSTRUCTIONS = {
+    "GÖRDÜĞÜN GERÇEK": "Görüntüde tam olarak ne olduğunu, neyin nasıl oluştuğunu çarpıcı bir dille anlat.",
+    "DEV RAKAMLAR": "Bu gök cismi/olayla ilgili büyüklük, mesafe, sıcaklık gibi akıl almaz bir ölçeği vurgula.",
+    "NASA'NIN GÖZÜYLE": "Bu görüntünün hangi görev/teleskop/araçla, nasıl elde edildiğini anlat.",
+    "EVRENİN DERİNLİĞİ": "Bu nesnenin evrendeki yerini, ne kadar uzakta/eski olduğunu merak uyandırıcı şekilde anlat.",
+}
+
+
+def generate_nasa_story(profile: dict, image_out_path: str, max_attempts: int = 3) -> dict:
+    """Like generate_museum_story(), but for the space-imagery channel:
+    fetches a real NASA-captioned image (public domain) and has Gemini
+    write ONLY from those given facts, instead of inventing a topic."""
+    obj = None
+    for _ in range(max_attempts):
+        obj = fetch_random_nasa_item(image_out_path)
+        if obj:
+            break
+    if not obj:
+        raise RuntimeError("Could not find a suitable NASA item after several attempts")
+
+    format_name = random.choice(profile["categories"])
+    facts = (
+        f"Başlık: {obj['title']}\n"
+        f"NASA açıklaması: {obj['description']}\n"
+        f"Tarih: {obj['date_created']}\n"
+        f"NASA merkezi: {obj['center']}\n"
+        f"Anahtar kelimeler: {obj['keywords']}"
+    )
+
+    prompt = f"""Sen, NASA'nın gerçek uzay görüntülerinden yola çıkarak evren hikayeleri anlatan, meraklı ve akıcı bir anlatıcısın.
+
+Aşağıda GERÇEK bir NASA görüntüsünün doğrulanmış bilgileri var. SADECE bu bilgilere dayanarak,
+uydurma detay eklemeden, "{format_name}" formatında bir hikaye yaz:
+{_NASA_FORMAT_INSTRUCTIONS[format_name]}
+
+GERÇEK NASA BİLGİLERİ:
+{facts}
+
+- "question" alanına: İLK KELİMELER olarak görüntünün/nesnenin adını ("{obj['title']}") mutlaka yaz
+  (Türkçeye doğal çeviriyle ya da orijinal adıyla), ardından merak uyandırıcı bir girişle devam et
+  (toplam en fazla 3-4 cümle). ASLA "Merhaba" gibi bir selamlamayla başlama, direkt konunun içine gir.
+- "answer" alanına: Vurucu bir sonuç/detay cümlesi yaz.
+- "explanation" alanına: "Kısaca:" diyerek başlayıp 2-3 KISA cümleyle (toplam en fazla ~220 karakter) özetle.
+Verilmeyen hiçbir bilgiyi (rakam, tarih, isim) uydurma; bir alan hakkında yeterli bilgi yoksa
+genel ama doğru ifadeler kullan, spesifik uydurma detay verme.
+Sadece düz noktalama işaretleri kullan, markdown veya emoji kullanma. Türkçe yaz, Türkçe
+karakterleri (ı, İ, ğ, ü, ş, ö, ç) doğru ve eksiksiz kullan; bunları ASCII karşılıklarıyla
+(i, g, u, s, o, c) DEĞİŞTİRME - bu çok önemli, her Türkçe karakter doğru yazılmalı.
+"hashtags" alanına, bu içeriğe özel 3-5 adet Türkçe hashtag üret; her biri # ile başlasın,
+boşluk içermesin."""
+
+    api_key = os.environ["GEMINI_API_KEY"]
+    client = genai.Client(api_key=api_key)
+
+    required = {"category", "question", "answer", "explanation"}
+    data = None
+    for attempt in range(1, 4):
+        response = _generate_with_retry(client, prompt)
+        candidate = json.loads(response.text)
+        candidate["category"] = format_name
+        if not required.issubset(candidate):
+            raise ValueError(f"Model response missing fields: {candidate!r}")
+        for field in required:
+            candidate[field] = normalize_text(str(candidate[field]))
+        if _missing_turkish_chars(candidate["question"], candidate["answer"], candidate["explanation"]):
+            print(f"Generated text is missing Turkish characters (attempt {attempt}/3), retrying...")
+            continue
+        data = candidate
+        break
+    if data is None:
+        raise ValueError("Model kept generating text without Turkish characters after 3 attempts")
+    data["hashtags"] = _sanitize_hashtags(data.get("hashtags"))
+    data["source_credit"] = f"Görsel: NASA, Kamu Malı (Public Domain) - {obj['title']}"
     return data
 
 

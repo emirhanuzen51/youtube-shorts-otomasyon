@@ -310,6 +310,55 @@ Abone olun, her gün yeni bir eserde buluşalım.
 #MüzeSırları #Tarih #SanatTarihi
 """,
     },
+    "uzayin_sirlari": {
+        "is_exam_prep": False,
+        "is_nasa_object": True,
+        "music_enabled": False,
+        # 4 rotasyonlu format ismi - generate_nasa_story() bunlardan birini
+        # rastgele secip Gemini'ye gercek NASA gorsel/verisine dayanarak o
+        # formatta yazdirir. "category" olarak kullanildigi icin rozette de
+        # gorunur.
+        "categories": ["GÖRDÜĞÜN GERÇEK", "DEV RAKAMLAR", "NASA'NIN GÖZÜYLE", "EVRENİN DERİNLİĞİ"],
+        "history_file": "history_uzayin_sirlari.json",
+        "video_badge": "UZAYIN SIRLARI",
+        "guess_prompt": "Merak ediyor musun?",
+        "reveal_label": "SONUÇ",
+        "answer_intro": "",
+        "voice": "tr-TR-AhmetNeural",
+        # Uzay temasi: derin lacivert-siyah zemin, elektrik mavisi/mor glow -
+        # diger kanallardaki bronz/yesil/kirmizi/mor temalardan ayri bir
+        # kimlik. Arka plan zaten gercek NASA fotografi oldugu icin bu
+        # renkler sadece foto yuklenemezse yedek gradyan olarak kullanilir.
+        "bg_top": [5, 8, 25],
+        "bg_bottom": [10, 5, 20],
+        "bg_glow_top": [20, 40, 90],
+        "bg_glow_bottom": [60, 20, 90],
+        "badge_bg": "#3DA9FC",
+        "badge_fg": "#03081A",
+        "accent_color": "#3DA9FC",
+        "reveal_rect_color": [10, 15, 45],
+        "reveal_tint": [20, 30, 70],
+        "comment_cta": "Bu görüntü hakkında ne düşünüyorsun? Yorumlarda paylaş 👇",
+        "outro_line1": "Takip et,",
+        "outro_line2": "her gün yeni bir uzay sırrı!",
+        "title_hashtags": "#Shorts #Uzay #NASA",
+        "description_hashtags": "#Shorts #UzayınSırları #NASA #Astronomi #Evren #Uzay",
+        "tags": ["uzay", "nasa", "astronomi", "evren", "gezegenler", "galaksi"],
+        "banner_title": "UZAYIN SIRLARI",
+        "banner_tagline": "Her gün NASA'nın gerçek görüntülerinden bir uzay sırrı",
+        "profile_pic_text": "UZAY",
+        "channel_description": """Her gün NASA'nın gerçek, halka açık görüntülerinden bir uzay sırrı!
+
+NASA'nın açık erişim kütüphanesindeki gerçek fotoğraf ve verilerden yola \
+çıkarak kara delikleri, galaksileri, gezegenleri ve uzay görevlerini \
+anlatıyoruz. Kullanılan görseller kamu malı (public domain) NASA \
+fotoğraflarıdır.
+
+Abone olun, her gün yeni bir uzay sırrında buluşalım.
+
+#UzayınSırları #NASA #Astronomi
+""",
+    },
 }
 
 
