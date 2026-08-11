@@ -84,6 +84,16 @@
       "category": "bilim ve doğa yanılgıları",
       "question": "Yuvadan düşen bir kuş yavrusuna dokunursanız annesi onu terk eder. Çünkü üzerine insan kokusu sindiği için yavrusunu artık kabul etmez.",
       "answer": "Hayır, anne kuş yavrusunu koku yüzünden terk etmez!"
+    },
+    {
+      "category": "bilim ve doğa yanılgıları",
+      "question": "Köpekler dünyayı sadece siyah ve beyaz renkte görür. Bu yüzden renkli dünyamız onlar için renksiz bir film gibidir.",
+      "answer": "Hayır, köpekler siyah beyaz görmez!"
+    },
+    {
+      "category": "hayvanlar hakkında yanlış bilgiler",
+      "question": "Baykuşlar kafalarını tam 360 derece döndürebilirler. Bu sayede arkalarını görmek için gövdelerini hareket ettirmelerine hiç gerek kalmaz!",
+      "answer": "Hayır, baykuşlar kafalarını 360 derece döndüremez!"
     }
   ]
 }

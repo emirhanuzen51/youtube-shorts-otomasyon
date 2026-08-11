@@ -7,9 +7,12 @@ import datetime
 import json
 import os
 import random
+import re
+import time
 
 from google import genai
 from google.genai import types
+from google.genai import errors as genai_errors
 
 from profiles import get_profile
 from text_sanitize import normalize_text
@@ -33,6 +36,57 @@ def load_history(history_path):
 def save_history(history, history_path):
     with open(history_path, "w", encoding="utf-8") as f:
         json.dump(history, f, ensure_ascii=False, indent=2)
+
+
+_RESPONSE_SCHEMA = {
+    "type": "OBJECT",
+    "properties": {
+        "question": {"type": "STRING"},
+        "answer": {"type": "STRING"},
+        "explanation": {"type": "STRING"},
+        "hashtags": {"type": "ARRAY", "items": {"type": "STRING"}},
+    },
+    "required": ["question", "answer", "explanation", "hashtags"],
+}
+
+
+def _generate_with_retry(client, prompt, max_attempts=3, delay_seconds=15):
+    """Gemini's free tier occasionally returns a transient 503 ("high
+    demand") even though the SDK already retries internally - we've hit this
+    enough times to fail whole workflow runs, so retry a few more times with
+    a delay before giving up for real."""
+    last_error = None
+    for attempt in range(1, max_attempts + 1):
+        try:
+            return client.models.generate_content(
+                model=MODEL_NAME,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    response_mime_type="application/json",
+                    response_schema=_RESPONSE_SCHEMA,
+                ),
+            )
+        except genai_errors.ServerError as e:
+            last_error = e
+            print(f"Gemini server error (attempt {attempt}/{max_attempts}): {e}")
+            if attempt < max_attempts:
+                time.sleep(delay_seconds)
+    raise last_error
+
+
+def _sanitize_hashtags(hashtags) -> list:
+    if not isinstance(hashtags, list):
+        return []
+    cleaned = []
+    for tag in hashtags:
+        tag = normalize_text(str(tag))
+        tag = re.sub(r"\s+", "", tag)
+        if not tag:
+            continue
+        if not tag.startswith("#"):
+            tag = "#" + tag
+        cleaned.append(tag)
+    return cleaned[:5]
 
 
 def generate_question(profile: dict | None = None) -> dict:
@@ -112,24 +166,11 @@ Soru ilgi çekici, bilgilendirici ve birkaç kelimeyle cevaplanabilir olmalı.
 Sadece düz noktalama işaretleri kullan (düz tırnak, tire), markdown, emoji veya özel sembol kullanma.
 Tüm alanları Türkçe yaz (İngilizce kelime örnekleri gibi zorunlu durumlar hariç).
 Türkçe karakterleri (ı, İ, ğ, ü, ş, ö, ç) doğru ve eksiksiz kullan; bunları
-ASCII karşılıklarıyla (i, g, u, s, o, c) değiştirme."""
+ASCII karşılıklarıyla (i, g, u, s, o, c) değiştirme.
+"hashtags" alanına, bu içeriğe özel (genel/sabit değil) 3-5 adet Türkçe hashtag üret;
+her biri # ile başlasın, boşluk içermesin (örn. "#HzYusuf", "#SahraÇölü")."""
 
-    response = client.models.generate_content(
-        model=MODEL_NAME,
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            response_mime_type="application/json",
-            response_schema={
-                "type": "OBJECT",
-                "properties": {
-                    "question": {"type": "STRING"},
-                    "answer": {"type": "STRING"},
-                    "explanation": {"type": "STRING"},
-                },
-                "required": ["question", "answer", "explanation"],
-            },
-        ),
-    )
+    response = _generate_with_retry(client, prompt)
     data = json.loads(response.text)
     # We already picked `category` ourselves (in Turkish); don't let the model
     # regenerate it, since it sometimes drifts into an English paraphrase.
@@ -141,6 +182,8 @@ ASCII karşılıklarıyla (i, g, u, s, o, c) değiştirme."""
 
     for field in required:
         data[field] = normalize_text(str(data[field]))
+
+    data["hashtags"] = _sanitize_hashtags(data.get("hashtags"))
 
     history["questions"].append(
         {

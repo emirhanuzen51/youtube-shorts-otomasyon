@@ -390,6 +390,11 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
                        anchor="mm", stroke_width=5, stroke_fill="#000000")
             draw.text((W / 2, H * 0.51), profile["outro_line2"], font=font_outro, fill=accent,
                        anchor="mm", stroke_width=5, stroke_fill="#000000")
+            # Pulsing subscribe/like call-to-action badge for the outro.
+            pulse = 1.0 + 0.08 * math.sin((t - outro_start) * 5)
+            sub_font = _font(max(32, int(44 * pulse)))
+            _badge(draw, profile.get("subscribe_cta", "ABONE OL & BEĞEN"), H * 0.62, sub_font,
+                   fg=badge_fg, bg=badge_bg)
 
         return np.array(img)
 

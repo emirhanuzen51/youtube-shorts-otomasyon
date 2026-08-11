@@ -32,14 +32,16 @@ def build_title_description(question: dict, profile: dict):
 
     answer_intro = profile.get("answer_intro", "Cevap:")
     comment_cta = profile.get("comment_cta", "Bu konuda ne düşünüyorsun? Yorumlarda paylaş 👇")
+    dynamic_hashtags = " ".join(question.get("hashtags", []))
+    hashtag_line = f"{profile['description_hashtags']} {dynamic_hashtags}".strip()
     description = (
         f"{question['question']}\n\n"
         f"{answer_intro} {question['answer']}\n"
         f"{question['explanation']}\n\n"
         f"{comment_cta}\n\n"
-        f"{profile['description_hashtags']}"
+        f"{hashtag_line}"
     )
-    tags = [*profile["tags"], question["category"]]
+    tags = [*profile["tags"], question["category"], *[h.lstrip("#") for h in question.get("hashtags", [])]]
     return title, description, tags
 
 
@@ -72,6 +74,25 @@ def upload_video(video_path: str, question: dict, thumbnail_path: str | None = N
 
     video_id = response["id"]
     print(f"Uploaded: https://youtube.com/shorts/{video_id}")
+
+    comment_text = profile.get("comment_cta")
+    if comment_text:
+        try:
+            youtube.commentThreads().insert(
+                part="snippet",
+                body={
+                    "snippet": {
+                        "videoId": video_id,
+                        "topLevelComment": {"snippet": {"textOriginal": comment_text}},
+                    }
+                },
+            ).execute()
+            print("Posted the channel's own opening comment.")
+        except Exception as e:
+            # Pinning a comment isn't exposed by the Data API (Studio-only),
+            # and comments could be disabled on a channel - never fail the
+            # upload itself over this cosmetic extra step.
+            print(f"Could not post opening comment: {e}")
 
     if thumbnail_path and os.path.exists(thumbnail_path):
         try:
