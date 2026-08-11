@@ -182,9 +182,20 @@ def _fit_text(text, max_font, min_font, base_wrap, max_lines, step_font=6, step_
 
 
 def _badge(draw, text, cy, font, fg="#0B0B14", bg="#FFD400"):
+    pad_x, pad_y = 36, 18
+    max_w = W - 40
     bbox = draw.textbbox((0, 0), text, font=font)
     tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
-    pad_x, pad_y = 36, 18
+    # Long category names (some channels use full sentences) can render
+    # wider than the frame at the default badge size - shrink the font
+    # until the pill actually fits, instead of letting it run off both
+    # edges of the video.
+    size = getattr(font, "size", 46)
+    while tw + pad_x * 2 > max_w and size > 22:
+        size -= 4
+        font = _font(size)
+        bbox = draw.textbbox((0, 0), text, font=font)
+        tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
     box_w, box_h = tw + pad_x * 2, th + pad_y * 2
     x0 = (W - box_w) / 2
     y0 = cy - box_h / 2
