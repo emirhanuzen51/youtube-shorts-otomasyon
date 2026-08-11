@@ -38,6 +38,15 @@ def normalize_text(text: str) -> str:
     """Font-agnostic cleanup: typographic punctuation -> plain ASCII, strip markdown."""
     if not text:
         return text
+    # Gemini's JSON output can occasionally return Turkish letters (ı, ğ, ş,
+    # ö, ü, ç) as a base letter + combining diacritic instead of the normal
+    # single precomposed character. That decomposed form isn't in the video
+    # font's charset (so filter_to_font silently mangles it) and isn't
+    # recognized as a real word by edge-tts (so it gets spelled out letter
+    # by letter instead of pronounced). Canonicalizing to NFC here, right
+    # after the Gemini response is parsed, keeps both the on-screen text and
+    # the narration audio consistent and normal.
+    text = unicodedata.normalize("NFC", text)
     for src, dst in _PUNCT_MAP.items():
         text = text.replace(src, dst)
     text = _MARKDOWN_CHARS.sub("", text)

@@ -74,6 +74,16 @@
       "category": "gündelik hayat mitleri",
       "question": "Gokdelenin tepesinden asagi atilan kucuk bir bozuk para hizlandikca olumcul bir mermiye donusur. Yerdeki bir insanin kafasina carparsa onu aninda oldurebilir!",
       "answer": "Hayir, atilan bozuk para kimseyi olduremez!"
+    },
+    {
+      "category": "bilim ve doğa yanılgıları",
+      "question": "Ay'ın arkasında kalan gizemli bölge zifiri karanlığa gömülmüştür. Güneş ışığı oraya asla ulaşmadığı için burası karanlık taraf olarak bilinir.",
+      "answer": "Hayır, Ay'ın karanlık tarafı diye bir yer yoktur!"
+    },
+    {
+      "category": "bilim ve doğa yanılgıları",
+      "question": "Yuvadan düşen bir kuş yavrusuna dokunursanız annesi onu terk eder. Çünkü üzerine insan kokusu sindiği için yavrusunu artık kabul etmez.",
+      "answer": "Hayır, anne kuş yavrusunu koku yüzünden terk etmez!"
     }
   ]
 }
