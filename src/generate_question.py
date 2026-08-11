@@ -14,6 +14,7 @@ from google import genai
 from google.genai import types
 from google.genai import errors as genai_errors
 
+from museum_source import fetch_random_object
 from profiles import get_profile
 from text_sanitize import normalize_text
 
@@ -194,6 +195,75 @@ her biri # ile başlasın, boşluk içermesin (örn. "#HzYusuf", "#SahraÇölü"
     )
     save_history(history, history_path)
 
+    return data
+
+
+_MUSEUM_FORMAT_INSTRUCTIONS = {
+    "TEK ESER": "Bu tek eserin hikayesini anlat: ne, kim tarafından, ne zaman yapıldı, neden önemli.",
+    "ALTIN ÇAĞ": "Bu eserin ortaya çıktığı dönemin/medeniyetin altın çağını, o dönemin bilim/sanat/zanaat ortamını anlat.",
+    "YÜZYILLARA MEYDAN OKUYAN": "Bu eserin nasıl yapıldığını, ne kadar dayanıklı olduğunu, bugüne nasıl ulaştığını anlat.",
+    "BÖYLE ÖĞRENDİK": "Bu eserle/döneminle ilişkili bilim, ölçüm ya da keşif yöntemlerini anlat.",
+}
+
+
+def generate_museum_story(profile: dict, image_out_path: str, max_attempts: int = 3) -> dict:
+    """Like generate_question(), but for the museum-object channel: fetches
+    a real, catalogued public-domain artifact (photo + verified metadata)
+    and has Gemini write ONLY from those given facts, instead of inventing
+    a topic - this both avoids hallucination and gives us a genuine,
+    correctly-licensed image to use as the video's background."""
+    obj = None
+    for _ in range(max_attempts):
+        obj = fetch_random_object(image_out_path)
+        if obj:
+            break
+    if not obj:
+        raise RuntimeError("Could not find a suitable museum object after several attempts")
+
+    format_name = random.choice(profile["categories"])
+    facts = (
+        f"Eser adı: {obj['title']}\n"
+        f"Kültür/Dönem: {obj['culture']} {obj['period']} {obj['dynasty']}\n"
+        f"Tarih: {obj['date']}\n"
+        f"Sanatçı: {obj['artist'] or 'bilinmiyor'}\n"
+        f"Malzeme: {obj['medium']}\n"
+        f"Bölüm: {obj['department']}\n"
+        f"Müze notu: {obj['description'] or obj['credit_line']}"
+    )
+
+    prompt = f"""Sen, müze eserlerinden yola çıkarak tarih hikayeleri anlatan, meraklı ve akıcı bir anlatıcısın.
+
+Aşağıda GERÇEK bir müze eserinin doğrulanmış bilgileri var. SADECE bu bilgilere dayanarak,
+uydurma detay eklemeden, "{format_name}" formatında bir hikaye yaz:
+{_MUSEUM_FORMAT_INSTRUCTIONS[format_name]}
+
+GERÇEK ESER BİLGİLERİ:
+{facts}
+
+- "question" alanına: Eserle ilgili merak uyandırıcı bir girişle başla (en fazla 3-4 cümle).
+  ASLA "Merhaba" gibi bir selamlamayla başlama, direkt konunun içine gir.
+- "answer" alanına: Vurucu bir sonuç/detay cümlesi yaz.
+- "explanation" alanına: "Kısaca:" diyerek başlayıp 2-3 KISA cümleyle (toplam en fazla ~220 karakter) özetle.
+Verilmeyen hiçbir bilgiyi (tarih, isim, olay) uydurma; bir alan hakkında yeterli bilgi yoksa
+genel ama doğru ifadeler kullan, spesifik uydurma detay verme.
+Sadece düz noktalama işaretleri kullan, markdown veya emoji kullanma. Türkçe yaz, Türkçe
+karakterleri (ı, İ, ğ, ü, ş, ö, ç) doğru ve eksiksiz kullan.
+"hashtags" alanına, bu içeriğe özel 3-5 adet Türkçe hashtag üret; her biri # ile başlasın,
+boşluk içermesin."""
+
+    api_key = os.environ["GEMINI_API_KEY"]
+    client = genai.Client(api_key=api_key)
+    response = _generate_with_retry(client, prompt)
+    data = json.loads(response.text)
+    data["category"] = format_name
+
+    required = {"category", "question", "answer", "explanation"}
+    if not required.issubset(data):
+        raise ValueError(f"Model response missing fields: {data!r}")
+    for field in required:
+        data[field] = normalize_text(str(data[field]))
+    data["hashtags"] = _sanitize_hashtags(data.get("hashtags"))
+    data["source_credit"] = f"Görsel: {obj['museum']}, Kamu Malı (Public Domain) - {obj['title']}"
     return data
 
 

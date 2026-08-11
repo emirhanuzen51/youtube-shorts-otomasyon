@@ -99,7 +99,44 @@ def _load_stock_background(profile, question, out_path):
         return None
 
 
-def _bg_frame(t, stock_bg, bg_top, bg_bottom, glow_top, glow_bottom):
+def _load_image_background(image_path):
+    """Static-photo background (e.g. a real museum artifact image) with a
+    slow "Ken Burns" zoom/pan applied per-frame in _ken_burns_frame. Loaded
+    oversized once here so cropping a moving window from it is cheap."""
+    if not image_path or not os.path.exists(image_path):
+        return None
+    try:
+        img = Image.open(image_path).convert("RGB")
+        scale = max(W / img.width, H / img.height) * 1.15
+        img = img.resize((max(1, int(img.width * scale)), max(1, int(img.height * scale))), Image.LANCZOS)
+        return np.array(img)
+    except Exception as e:
+        print(f"Museum image load failed: {e}")
+        return None
+
+
+def _ken_burns_frame(bg_array, t, total_duration):
+    h, w = bg_array.shape[:2]
+    progress = min(t / max(total_duration, 1), 1.0)
+    zoom = 1.0 + 0.10 * progress
+    view_w = min(w, max(1, int(W / zoom)))
+    view_h = min(h, max(1, int(H / zoom)))
+    if view_w / view_h > W / H:
+        view_w = int(view_h * W / H)
+    else:
+        view_h = int(view_w * H / W)
+    x0 = int(max(0, w - view_w) * (0.25 + 0.5 * progress))
+    y0 = int(max(0, h - view_h) * 0.5)
+    crop = bg_array[y0:y0 + view_h, x0:x0 + view_w]
+    return np.array(Image.fromarray(crop).resize((W, H), Image.LANCZOS))
+
+
+def _bg_frame(t, stock_bg, image_bg, bg_top, bg_bottom, glow_top, glow_bottom, total_duration=30):
+    if image_bg is not None:
+        frame = _ken_burns_frame(image_bg, t, total_duration)
+        # A real photo can be visually busy - dim it uniformly so text stays
+        # legible even outside the readability bands drawn on top later.
+        return (frame.astype(np.float32) * 0.55).astype(np.uint8)
     if stock_bg is not None:
         return stock_bg.get_frame(t % stock_bg.duration).astype(np.uint8)
     return _gradient_frame(t, bg_top, bg_bottom, glow_top, glow_bottom)
@@ -233,7 +270,7 @@ OUTRO_DUR = 2.0
 
 
 def build_video(question: dict, question_audio: str, answer_audio: str, out_path: str, profile: dict | None = None,
-                 question_words=None, answer_words=None, explanation_words=None):
+                 question_words=None, answer_words=None, explanation_words=None, bg_image_path=None):
     profile = profile or get_profile()
     font_path = _find_font_path()
     question = {
@@ -274,6 +311,7 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
     reveal_tint = np.array(profile.get("reveal_tint", [15, 90, 45]))
 
     stock_bg = _load_stock_background(profile, question, out_path)
+    image_bg = _load_image_background(bg_image_path)
 
     _measure_draw = ImageDraw.Draw(Image.new("RGB", (1, 1)))
     font_q, q_lines = _fit_text(question["question"], max_font=64, min_font=38, base_wrap=22, max_lines=6)
@@ -286,7 +324,7 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
     _, exp_block_h = _block_metrics(_measure_draw, exp_lines, font_explain, stroke_width=5, line_spacing=1.3)
 
     def make_frame(t):
-        bg = _bg_frame(t, stock_bg, bg_top, bg_bottom, glow_top, glow_bottom)
+        bg = _bg_frame(t, stock_bg, image_bg, bg_top, bg_bottom, glow_top, glow_bottom, total_duration)
         img = Image.fromarray(bg)
         draw = ImageDraw.Draw(img)
 
@@ -353,7 +391,7 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
         elif t < outro_start:
             p = _ease_out(min((t - countdown_end) / REVEAL_IN_DUR, 1.0))
             draw.rectangle([0, 0, W, H], fill=reveal_rect_color)
-            bg2 = _bg_frame(t, stock_bg, bg_top, bg_bottom, glow_top, glow_bottom)
+            bg2 = _bg_frame(t, stock_bg, image_bg, bg_top, bg_bottom, glow_top, glow_bottom, total_duration)
             blended = (np.array(bg2, dtype=float) * 0.25 + reveal_tint.astype(float) * 0.75).astype(np.uint8)
             img = Image.fromarray(blended)
 

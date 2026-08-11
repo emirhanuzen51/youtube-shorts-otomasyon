@@ -6,7 +6,7 @@ Which channel/exam this runs for is picked via the CONTENT_PROFILE env var
 import argparse
 import os
 
-from generate_question import generate_question
+from generate_question import generate_museum_story, generate_question
 from profiles import get_profile
 from render_video import build_video
 from tts import synthesize_with_words
@@ -29,7 +29,12 @@ def run(upload: bool = True):
     print(f"Profile: {profile['name']}")
 
     print("Generating question...")
-    question = generate_question(profile)
+    bg_image_path = None
+    if profile.get("is_museum_object"):
+        bg_image_path = os.path.join(OUTPUT_DIR, "museum_bg.jpg")
+        question = generate_museum_story(profile, bg_image_path)
+    else:
+        question = generate_question(profile)
     print(f"  {question['category']}: {question['question']} -> {question['answer']}")
 
     q_audio = os.path.join(OUTPUT_DIR, "question.mp3")
@@ -59,6 +64,7 @@ def run(upload: bool = True):
     build_video(
         question, q_audio, a_audio, video_path, profile,
         question_words=question_words, answer_words=answer_words, explanation_words=explanation_words,
+        bg_image_path=bg_image_path,
     )
     print(f"  wrote {video_path}")
 

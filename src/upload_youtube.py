@@ -34,11 +34,13 @@ def build_title_description(question: dict, profile: dict):
     comment_cta = profile.get("comment_cta", "Bu konuda ne düşünüyorsun? Yorumlarda paylaş 👇")
     dynamic_hashtags = " ".join(question.get("hashtags", []))
     hashtag_line = f"{profile['description_hashtags']} {dynamic_hashtags}".strip()
+    source_line = f"{question['source_credit']}\n\n" if question.get("source_credit") else ""
     description = (
         f"{question['question']}\n\n"
         f"{answer_intro} {question['answer']}\n"
         f"{question['explanation']}\n\n"
         f"{comment_cta}\n\n"
+        f"{source_line}"
         f"{hashtag_line}"
     )
     tags = [*profile["tags"], question["category"], *[h.lstrip("#") for h in question.get("hashtags", [])]]

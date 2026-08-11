@@ -263,6 +263,52 @@ Abone olun, her gün yeni bir hikayede buluşalım.
 #DiniKıssalar #İbretlikHikayeler #İslamTarihi
 """,
     },
+    "muze_sirlari": {
+        "is_exam_prep": False,
+        "is_museum_object": True,
+        # 4 rotasyonlu format ismi - generate_museum_story() bunlardan birini
+        # rastgele secip Gemini'ye gercek muze verisine dayanarak o formatta
+        # yazdirir. "category" olarak kullanildigi icin de rozette gorunur.
+        "categories": ["TEK ESER", "ALTIN ÇAĞ", "YÜZYILLARA MEYDAN OKUYAN", "BÖYLE ÖĞRENDİK"],
+        "history_file": "history_muze_sirlari.json",
+        "video_badge": "MÜZE SIRLARI",
+        "guess_prompt": "Merak ediyor musun?",
+        "reveal_label": "SONUÇ",
+        "answer_intro": "",
+        "voice": "tr-TR-AhmetNeural",
+        # Antika/muze havasi: sicak bronz-altin tonlari, diger kanallardaki
+        # yesil/kirmizi/mor temalardan ayri bir kimlik. Arka plan zaten
+        # gercek muze fotografi oldugu icin bu renkler sadece foto
+        # yuklenemezse yedek gradyan olarak kullanilir.
+        "bg_top": [35, 25, 15],
+        "bg_bottom": [15, 10, 8],
+        "bg_glow_top": [90, 60, 20],
+        "bg_glow_bottom": [50, 30, 10],
+        "badge_bg": "#D4A017",
+        "badge_fg": "#1A1208",
+        "accent_color": "#D4A017",
+        "reveal_rect_color": [40, 25, 10],
+        "reveal_tint": [60, 40, 15],
+        "comment_cta": "Bu eser hakkında ne düşünüyorsun? Yorumlarda paylaş 👇",
+        "outro_line1": "Takip et,",
+        "outro_line2": "her gün yeni bir sır!",
+        "title_hashtags": "#Shorts #Müze #Tarih",
+        "description_hashtags": "#Shorts #MüzeSırları #Tarih #ArkeolojiTarihi #SanatTarihi #Medeniyet",
+        "tags": ["muze", "tarih", "arkeoloji", "sanat tarihi", "eski medeniyetler", "tarihi eserler"],
+        "banner_title": "MÜZE SIRLARI",
+        "banner_tagline": "Her gün dünya müzelerinden gerçek bir eser, gerçek bir hikaye",
+        "profile_pic_text": "MÜZE",
+        "channel_description": """Her gün dünya müzelerinden gerçek bir eser, gerçek bir hikaye!
+
+Met Museum'un halka açık koleksiyonundaki gerçek, katalog kayıtlı eserlerden \
+yola çıkarak eski medeniyetlerin, sanatın ve zanaatın hikayelerini anlatıyoruz. \
+Kullanılan görseller kamu malı (public domain) müze fotoğraflarıdır.
+
+Abone olun, her gün yeni bir eserde buluşalım.
+
+#MüzeSırları #Tarih #SanatTarihi
+""",
+    },
 }
 
 
