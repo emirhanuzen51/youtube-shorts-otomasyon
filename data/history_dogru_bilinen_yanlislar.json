@@ -109,6 +109,11 @@
       "category": "gündelik hayat mitleri",
       "question": "Dilimizin farklı bölgeleri sadece belirli tatları algılar. Örneğin tatlıyı en önde, acıyı ise sadece dilin arka kısmında hissederiz.",
       "answer": "Hayır, dil haritası tamamen bir şehir efsanesidir!"
+    },
+    {
+      "category": "sağlık ve beden mitleri",
+      "question": "Yutulan bir sakız midede tam yedi yıl boyunca yapışıp kalır. Bu yüzden çocukken sakız yutmamamız için defalarca uyarılmışızdır.",
+      "answer": "Hayır, yutulan sakız midede yedi yıl kalmaz!"
     }
   ]
 }
