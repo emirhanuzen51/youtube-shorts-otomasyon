@@ -400,7 +400,10 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
 
     # Grab a frame from the question scene (not the answer reveal!) to use as
     # the YouTube thumbnail, so the auto-selected preview doesn't spoil the answer.
-    thumb_time = max(question_start + 0.1, min(question_start + 0.6, countdown_start - 0.2))
+    # Must be late in the scene (just before the countdown starts), not early:
+    # the karaoke captions reveal words progressively as they're spoken, so an
+    # early frame would catch the question text mostly still hidden/blank.
+    thumb_time = max(question_start + 0.1, countdown_start - 0.3)
     thumb_path = os.path.splitext(out_path)[0] + "_thumb.jpg"
     Image.fromarray(make_frame(thumb_time)).convert("RGB").save(thumb_path, quality=90)
 

@@ -99,6 +99,11 @@
       "category": "hayvanlar hakkında yanlış bilgiler",
       "question": "Karasineklerin ömrü sadece 24 saattir. Bu yüzden tek bir gün içinde doğar, büyür ve hızlıca ölürler.",
       "answer": "Hayır, karasinekler sadece bir gün yaşamaz!"
+    },
+    {
+      "category": "coğrafya ve dünya yanılgıları",
+      "question": "Grönland haritalarda Afrika kıtası kadar devasa görünür. Bu yüzden pek çok insan onu dünyanın en büyük karalarından biri sanır.",
+      "answer": "Hayır, Grönland Afrika'dan 14 kat daha küçüktür!"
     }
   ]
 }
