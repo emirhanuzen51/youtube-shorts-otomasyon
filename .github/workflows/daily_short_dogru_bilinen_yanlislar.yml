@@ -27,6 +27,7 @@ jobs:
         env:
           CONTENT_PROFILE: dogru_bilinen_yanlislar
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
           YT_CLIENT_ID: ${{ secrets.DOGRUBILINENYANLISLAR_YT_CLIENT_ID }}
           YT_CLIENT_SECRET: ${{ secrets.DOGRUBILINENYANLISLAR_YT_CLIENT_SECRET }}
           YT_REFRESH_TOKEN: ${{ secrets.DOGRUBILINENYANLISLAR_YT_REFRESH_TOKEN }}

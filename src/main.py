@@ -9,6 +9,7 @@ import os
 from generate_question import generate_museum_story, generate_question
 from profiles import get_profile
 from render_video import build_video
+from stock_video import fetch_background_photo
 from tts import synthesize_with_words
 from upload_youtube import upload_video
 
@@ -36,6 +37,13 @@ def run(upload: bool = True):
     else:
         question = generate_question(profile)
     print(f"  {question['category']}: {question['question']} -> {question['answer']}")
+
+    if profile.get("use_topic_image") and question.get("image_query"):
+        candidate_path = os.path.join(OUTPUT_DIR, "topic_bg.jpg")
+        fetched = fetch_background_photo(question["image_query"], candidate_path)
+        if fetched:
+            bg_image_path = fetched
+            print(f"  Topic photo: {question['image_query']!r}")
 
     q_audio = os.path.join(OUTPUT_DIR, "question.mp3")
     a_audio = os.path.join(OUTPUT_DIR, "answer.mp3")

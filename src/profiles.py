@@ -159,6 +159,7 @@ Kaçırmamak için abone ol, her gün seninleyiz!
     "dogru_bilinen_yanlislar": {
         "is_exam_prep": False,
         "is_myth_format": True,
+        "use_topic_image": True,
         # Hayvanlar/bilim/uzay biraz agirlikli (ilgi cekici, herkese hitap eden
         # konular) ama liste genel olarak dengeli - tek bir dar konuya
         # sikismasin diye "sağlık ve beden mitleri" gibi kisisel hissedilebilecek

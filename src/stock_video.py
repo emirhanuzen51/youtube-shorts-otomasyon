@@ -13,6 +13,7 @@ import random
 import requests
 
 PEXELS_API = "https://api.pexels.com/videos/search"
+PEXELS_PHOTO_API = "https://api.pexels.com/v1/search"
 
 
 def fetch_background_video(query: str, out_path: str, min_duration: int = 15) -> str | None:
@@ -45,4 +46,36 @@ def fetch_background_video(query: str, out_path: str, min_duration: int = 15) ->
         return out_path
     except Exception as e:
         print(f"Stock video fetch failed ({query!r}): {e}")
+        return None
+
+
+def fetch_background_photo(query: str, out_path: str) -> str | None:
+    """Downloads a single stock photo matching `query` (e.g. the concrete
+    subject of a myth, like "housefly" or "Great Wall of China") to
+    `out_path`. Returns the path on success, None on any failure - callers
+    must fall back to the procedural gradient background."""
+    api_key = os.environ.get("PEXELS_API_KEY")
+    if not api_key or not query:
+        return None
+    try:
+        resp = requests.get(
+            PEXELS_PHOTO_API,
+            headers={"Authorization": api_key},
+            params={"query": query, "orientation": "portrait", "per_page": 10},
+            timeout=15,
+        )
+        resp.raise_for_status()
+        photos = resp.json().get("photos", [])
+        if not photos:
+            return None
+        photo = random.choice(photos)
+        image_url = photo["src"]["large2x"]
+
+        img_resp = requests.get(image_url, timeout=30)
+        img_resp.raise_for_status()
+        with open(out_path, "wb") as f:
+            f.write(img_resp.content)
+        return out_path
+    except Exception as e:
+        print(f"Stock photo fetch failed ({query!r}): {e}")
         return None
