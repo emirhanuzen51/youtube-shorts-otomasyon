@@ -1,0 +1,38 @@
+name: Admin - Delete Video
+
+on:
+  workflow_dispatch:
+    inputs:
+      channel_secret_prefix:
+        description: "Channel secret prefix (e.g. MUZESIRLARI, DOGRUBILINENYANLISLAR, DINIKISSALAR, EHLIYET, INGILIZCEKELIME, TARIHTEBUGUN, ULKEBASKENT, or KPSS for the unprefixed secrets)"
+        required: true
+        type: string
+      video_id:
+        description: "YouTube video ID to delete"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  delete:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install google-auth google-auth-oauthlib google-api-python-client
+
+      - name: Delete video
+        working-directory: src
+        env:
+          YT_CLIENT_ID: ${{ secrets[format('{0}_YT_CLIENT_ID', github.event.inputs.channel_secret_prefix)] || secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets[format('{0}_YT_CLIENT_SECRET', github.event.inputs.channel_secret_prefix)] || secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets[format('{0}_YT_REFRESH_TOKEN', github.event.inputs.channel_secret_prefix)] || secrets.YT_REFRESH_TOKEN }}
+        run: python delete_video.py "${{ github.event.inputs.video_id }}"
