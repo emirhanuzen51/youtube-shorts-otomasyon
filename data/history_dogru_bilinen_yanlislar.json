@@ -119,6 +119,11 @@
       "category": "bilim ve doğa yanılgıları",
       "question": "Lavabodaki suyun dönme yönü bulunduğunuz yarım küreye göre değişir. Kuzeyde saat yönünde dönerken güneyde tam tersine akar.",
       "answer": "Hayır, suyun dönme yönü yarım küreyle alakalı değildir!"
+    },
+    {
+      "category": "coğrafya ve dünya yanılgıları",
+      "question": "Avustralya denince akla ilk olarak görkemli opera binasıyla Sidney gelir. Ülkenin başkentinin de Sidney olduğuna neredeyse eminizdir!",
+      "answer": "Hayır, Avustralya'nın başkenti Sidney değildir!"
     }
   ]
 }
