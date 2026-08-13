@@ -53,11 +53,13 @@ _RESPONSE_SCHEMA = {
 }
 
 
-def _generate_with_retry(client, prompt, max_attempts=3, delay_seconds=15):
+def _generate_with_retry(client, prompt, max_attempts=6, delay_seconds=20):
     """Gemini's free tier occasionally returns a transient 503 ("high
     demand") even though the SDK already retries internally - we've hit this
     enough times to fail whole workflow runs, so retry a few more times with
-    a delay before giving up for real."""
+    a growing delay before giving up for real. A demand spike can outlast a
+    short retry burst, so this backs off (20s, 40s, 60s, ...) to spread
+    attempts over a few minutes instead of hammering the API back-to-back."""
     last_error = None
     for attempt in range(1, max_attempts + 1):
         try:
@@ -73,7 +75,9 @@ def _generate_with_retry(client, prompt, max_attempts=3, delay_seconds=15):
             last_error = e
             print(f"Gemini server error (attempt {attempt}/{max_attempts}): {e}")
             if attempt < max_attempts:
-                time.sleep(delay_seconds)
+                time.sleep(delay_seconds * attempt)
+                continue
+            raise last_error
     raise last_error
 
 
