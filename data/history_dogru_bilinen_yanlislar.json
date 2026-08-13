@@ -124,6 +124,11 @@
       "category": "coğrafya ve dünya yanılgıları",
       "question": "Avustralya denince akla ilk olarak görkemli opera binasıyla Sidney gelir. Ülkenin başkentinin de Sidney olduğuna neredeyse eminizdir!",
       "answer": "Hayır, Avustralya'nın başkenti Sidney değildir!"
+    },
+    {
+      "category": "coğrafya ve dünya yanılgıları",
+      "question": "Everest Dağı Dünya'nın en yüksek noktası olduğu için uzaya en yakın yerdir. Zirvesine çıkan bir dağcı gezegenimizin Güneş'e en yakın noktasında durur.",
+      "answer": "Hayır, uzaya en yakın yer Everest değildir!"
     }
   ]
 }
