@@ -53,13 +53,18 @@ _RESPONSE_SCHEMA = {
 }
 
 
-def _generate_with_retry(client, prompt, max_attempts=6, delay_seconds=20):
+def _generate_with_retry(client, prompt, max_attempts=4, delay_seconds=20):
     """Gemini's free tier occasionally returns a transient 503 ("high
     demand") even though the SDK already retries internally - we've hit this
     enough times to fail whole workflow runs, so retry a few more times with
     a growing delay before giving up for real. A demand spike can outlast a
-    short retry burst, so this backs off (20s, 40s, 60s, ...) to spread
-    attempts over a few minutes instead of hammering the API back-to-back."""
+    short retry burst, so this backs off (20s, 40s, 60s...) to spread attempts
+    over a couple minutes. Kept deliberately modest (not higher): the free
+    tier's daily quota is only 20 requests/day total, and each retry attempt
+    here is itself a metered request - retrying too aggressively on a single
+    generation can burn through the whole day's budget by itself. A 429
+    (quota exhausted) isn't a ServerError so it isn't caught/retried here -
+    retrying it would just fail identically and waste more quota."""
     last_error = None
     for attempt in range(1, max_attempts + 1):
         try:
