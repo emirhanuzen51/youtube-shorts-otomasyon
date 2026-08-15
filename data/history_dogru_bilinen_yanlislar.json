@@ -129,6 +129,11 @@
       "category": "coğrafya ve dünya yanılgıları",
       "question": "Everest Dağı Dünya'nın en yüksek noktası olduğu için uzaya en yakın yerdir. Zirvesine çıkan bir dağcı gezegenimizin Güneş'e en yakın noktasında durur.",
       "answer": "Hayır, uzaya en yakın yer Everest değildir!"
+    },
+    {
+      "category": "gündelik hayat mitleri",
+      "question": "Tıraş olmak kılların çok daha kalın, sert ve gür çıkmasını sağlar. Bu yüzden sakalını sık sık kesenlerin tüyleri hızla çoğalır ve gürleşir.",
+      "answer": "Hayır, tıraş olmak kılları asla kalınlaştırmaz veya çoğaltmaz!"
     }
   ]
 }
