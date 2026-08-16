@@ -359,6 +359,23 @@ Abone olun, her gün yeni bir uzay sırrında buluşalım.
 #UzayınSırları #NASA #Astronomi
 """,
     },
+    "komedihanem": {
+        # Branding-only profile - this channel doesn't go through the
+        # generate/render pipeline (main.py); videos are user-supplied,
+        # ready-made clips uploaded via upload_manual.py. Only the fields
+        # channel_branding.py needs are defined here.
+        "banner_title": "KOMEDİ HANEM",
+        "banner_tagline": "Günlük gülme dozunuz burada",
+        "profile_pic_text": "HANEM",
+        "channel_description": """😂 Günlük gülme dozunuz burada!
+
+Stresi bırak, biraz gül. Her gün yeni bir komik anla karşınızdayız.
+
+Kaçırmamak için abone ol, her gün seninleyiz!
+
+#Komedi #Mizah #GünlükGülme
+""",
+    },
 }
 
 

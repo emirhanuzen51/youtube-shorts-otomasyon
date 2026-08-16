@@ -15,6 +15,7 @@ committed - see .gitignore).
 """
 import json
 import os
+import random
 import sys
 
 from google.oauth2.credentials import Credentials
@@ -26,20 +27,36 @@ SCOPES = ["https://www.googleapis.com/auth/youtube", "https://www.googleapis.com
 BASE_DIR = os.path.join(os.path.dirname(__file__), "..", "manual_uploads")
 VIDEO_EXTENSIONS = (".mp4", ".mov", ".mkv", ".avi", ".webm")
 
-# Generic template - deliberately not video-specific, applied to every
-# upload in this channel's folder.
+# Generic template - deliberately not video-specific (filenames for
+# reposted/downloaded clips are junk, e.g. "sictim.shitpost-20260817-0001.mp4"),
+# applied the same way to every upload in this channel's folder. Titles rotate
+# through a fixed pool + a running counter so consecutive uploads don't look
+# like literal duplicates in the channel's video list.
 TEMPLATES = {
     "komedihanem": {
+        "title_pool": [
+            "Günün Komedisi",
+            "Bugünkü Gülme Krizi",
+            "Günlük Gülme Dozu",
+            "İşte Yine Güldürdü",
+            "Gülmemek Elde Değil",
+            "Komedi Zamanı",
+        ],
         "description": (
-            "😂 Gülmek bulaşıcıdır!\n\n"
-            "Kaçırmamak için abone ol, her gün yeni bir komedi anı için buradayız.\n\n"
-            "#Komedi #Shorts #Mizah #Gülme #Espri"
+            "😂 Günlük gülme dozunuz burada!\n\n"
+            "Stresi bırak, biraz gül. Her gün yeni bir komik anla karşınızdayız.\n\n"
+            "Kaçırmamak için abone ol!\n\n"
+            "#Komedi #Shorts #Mizah #GünlükGülme #KomikVideo #Gülme #Espri"
         ),
-        "tags": ["komedi", "mizah", "gulme", "espri", "eglence", "shorts", "komik video"],
+        "tags": ["komedi", "komik video", "mizah", "gulme", "gunluk komedi", "eglence", "shorts", "gulmece"],
         "category_id": "23",  # Comedy
-        "title_prefix": "",
     },
 }
+
+
+def _next_title(template: dict, count_so_far: int) -> str:
+    base = random.choice(template["title_pool"])
+    return f"{base} #{count_so_far + 1}"
 
 
 def _credentials(channel: str) -> Credentials:
@@ -73,16 +90,6 @@ def _credentials(channel: str) -> Credentials:
     )
 
 
-def _title_from_filename(filename: str, prefix: str) -> str:
-    name = os.path.splitext(filename)[0]
-    name = name.replace("_", " ").replace("-", " ").strip()
-    name = " ".join(name.split())
-    title = f"{prefix}{name}".strip() if name else "Komedi Anı"
-    if len(title) > 100:
-        title = title[:97] + "..."
-    return title
-
-
 def _load_log(log_path: str) -> dict:
     if os.path.exists(log_path):
         with open(log_path, encoding="utf-8") as f:
@@ -95,7 +102,11 @@ def _save_log(log_path: str, log: dict):
         json.dump(log, f, ensure_ascii=False, indent=2)
 
 
-def upload_folder(channel: str):
+def upload_folder(channel: str, count: int = 1):
+    """Uploads up to `count` pending videos (oldest-added first). Defaults
+    to 1 so a daily scheduled run drips out videos one at a time even if
+    many were dropped into the folder at once, instead of dumping them all
+    on the channel in one go."""
     template = TEMPLATES[channel]
     folder = os.path.join(BASE_DIR, channel)
     os.makedirs(folder, exist_ok=True)
@@ -103,9 +114,9 @@ def upload_folder(channel: str):
     log = _load_log(log_path)
 
     files = sorted(
-        f for f in os.listdir(folder)
-        if f.lower().endswith(VIDEO_EXTENSIONS) and f not in log
-    )
+        (f for f in os.listdir(folder) if f.lower().endswith(VIDEO_EXTENSIONS) and f not in log),
+        key=lambda f: os.path.getmtime(os.path.join(folder, f)),
+    )[:count]
     if not files:
         print("No new video files to upload.")
         return
@@ -115,7 +126,7 @@ def upload_folder(channel: str):
 
     for filename in files:
         path = os.path.join(folder, filename)
-        title = _title_from_filename(filename, template["title_prefix"])
+        title = _next_title(template, len(log))
         print(f"Uploading {filename!r} as {title!r}...")
 
         body = {
@@ -143,7 +154,8 @@ def upload_folder(channel: str):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2 or sys.argv[1] not in TEMPLATES:
-        print(f"Usage: python upload_manual.py <channel>  (choices: {list(TEMPLATES)})")
+    if len(sys.argv) < 2 or sys.argv[1] not in TEMPLATES:
+        print(f"Usage: python upload_manual.py <channel> [count]  (choices: {list(TEMPLATES)})")
         sys.exit(1)
-    upload_folder(sys.argv[1])
+    upload_count = int(sys.argv[2]) if len(sys.argv) > 2 else 1
+    upload_folder(sys.argv[1], count=upload_count)
