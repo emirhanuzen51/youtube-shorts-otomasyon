@@ -134,6 +134,11 @@
       "category": "gündelik hayat mitleri",
       "question": "Tıraş olmak kılların çok daha kalın, sert ve gür çıkmasını sağlar. Bu yüzden sakalını sık sık kesenlerin tüyleri hızla çoğalır ve gürleşir.",
       "answer": "Hayır, tıraş olmak kılları asla kalınlaştırmaz veya çoğaltmaz!"
+    },
+    {
+      "category": "hayvanlar hakkında yanlış bilgiler",
+      "question": "Bir toprak solucanını ortadan ikiye keserseniz iki ayrı solucan oluşur. Her iki parça da bağımsız birer canlı olarak yaşamına devam eder.",
+      "answer": "Hayır, solucan ikiye bölününce çoğalmaz!"
     }
   ]
 }
