@@ -9,3 +9,4 @@ output/
 !assets/music/*.mp3
 venv/
 .venv/
+manual_uploads/
