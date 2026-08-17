@@ -139,6 +139,11 @@
       "category": "hayvanlar hakkında yanlış bilgiler",
       "question": "Bir toprak solucanını ortadan ikiye keserseniz iki ayrı solucan oluşur. Her iki parça da bağımsız birer canlı olarak yaşamına devam eder.",
       "answer": "Hayır, solucan ikiye bölününce çoğalmaz!"
+    },
+    {
+      "category": "bilim ve doğa yanılgıları",
+      "question": "Ayçiçekleri gün boyunca aralıksız Güneş'in hareketini takip eder. Sabah doğuya, akşam ise batıya doğru yönelirler.",
+      "answer": "Hayır, bunu sadece genç ayçiçekleri yapar!"
     }
   ]
 }
