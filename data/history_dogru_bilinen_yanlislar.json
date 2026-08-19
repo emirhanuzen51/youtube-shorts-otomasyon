@@ -144,6 +144,11 @@
       "category": "bilim ve doğa yanılgıları",
       "question": "Ayçiçekleri gün boyunca aralıksız Güneş'in hareketini takip eder. Sabah doğuya, akşam ise batıya doğru yönelirler.",
       "answer": "Hayır, bunu sadece genç ayçiçekleri yapar!"
+    },
+    {
+      "category": "coğrafya ve dünya yanılgıları",
+      "question": "Kuzey Kutbu devasa buzullarla kaplı gizemli bir kara parçasıdır. Tıpkı Antarktika gibi altında sağlam bir kıta toprağı yatar.",
+      "answer": "Hayır, Kuzey Kutbu'nda hiç kara parçası yoktur!"
     }
   ]
 }
