@@ -149,6 +149,11 @@
       "category": "coğrafya ve dünya yanılgıları",
       "question": "Kuzey Kutbu devasa buzullarla kaplı gizemli bir kara parçasıdır. Tıpkı Antarktika gibi altında sağlam bir kıta toprağı yatar.",
       "answer": "Hayır, Kuzey Kutbu'nda hiç kara parçası yoktur!"
+    },
+    {
+      "category": "hayvanlar hakkında yanlış bilgiler",
+      "question": "Farelerin dünyadaki en sevdiği yiyecek şüphesiz sarı peynirdir. Bu yüzden bir fareyi yakalamanın en garanti yolu kapana mutlaka peynir koymaktır.",
+      "answer": "Hayır, fareler peynire bayılmaz!"
     }
   ]
 }
