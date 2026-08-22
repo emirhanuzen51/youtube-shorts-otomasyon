@@ -154,6 +154,11 @@
       "category": "hayvanlar hakkında yanlış bilgiler",
       "question": "Farelerin dünyadaki en sevdiği yiyecek şüphesiz sarı peynirdir. Bu yüzden bir fareyi yakalamanın en garanti yolu kapana mutlaka peynir koymaktır.",
       "answer": "Hayır, fareler peynire bayılmaz!"
+    },
+    {
+      "category": "uzay ve evren yanılgıları",
+      "question": "Güneş sisteminin Güneş'e en yakın gezegeni Merkür'dür. Bu yüzden sistemimizin en sıcak ve kavurucu gezegeni de şüphesiz Merkür'dür!",
+      "answer": "Hayır, en sıcak gezegen Merkür değil, Venüs'tür!"
     }
   ]
 }
