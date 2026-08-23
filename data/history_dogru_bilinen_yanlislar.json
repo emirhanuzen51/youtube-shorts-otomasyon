@@ -159,6 +159,11 @@
       "category": "uzay ve evren yanılgıları",
       "question": "Güneş sisteminin Güneş'e en yakın gezegeni Merkür'dür. Bu yüzden sistemimizin en sıcak ve kavurucu gezegeni de şüphesiz Merkür'dür!",
       "answer": "Hayır, en sıcak gezegen Merkür değil, Venüs'tür!"
+    },
+    {
+      "category": "bilim ve doğa yanılgıları",
+      "question": "Mevsimlerin oluşması Dünya'nın Güneş'e olan mesafesine bağlıdır. Yaz mevsiminde Güneş'e çok yaklaşır, kışın ise ondan iyice uzaklaşırız.",
+      "answer": "Hayır, mevsimlerin Güneş'e olan uzaklıkla hiç ilgisi yoktur!"
     }
   ]
 }
