@@ -164,6 +164,11 @@
       "category": "bilim ve doğa yanılgıları",
       "question": "Mevsimlerin oluşması Dünya'nın Güneş'e olan mesafesine bağlıdır. Yaz mevsiminde Güneş'e çok yaklaşır, kışın ise ondan iyice uzaklaşırız.",
       "answer": "Hayır, mevsimlerin Güneş'e olan uzaklıkla hiç ilgisi yoktur!"
+    },
+    {
+      "category": "tarih yanılgıları",
+      "question": "Fransız Kraliçesi Marie Antoinette halk açlıktan kırılırken 'Ekmek bulamıyorlarsa pasta yesinler!' demiştir. Bu kibirli sözüyle Fransız İhtilali'nin fitilini ateşlemiştir.",
+      "answer": "Hayır, Marie Antoinette bu sözü asla söylemedi!"
     }
   ]
 }
