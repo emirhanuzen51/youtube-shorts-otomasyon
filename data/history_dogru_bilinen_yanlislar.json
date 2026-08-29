@@ -169,6 +169,11 @@
       "category": "tarih yanılgıları",
       "question": "Fransız Kraliçesi Marie Antoinette halk açlıktan kırılırken 'Ekmek bulamıyorlarsa pasta yesinler!' demiştir. Bu kibirli sözüyle Fransız İhtilali'nin fitilini ateşlemiştir.",
       "answer": "Hayır, Marie Antoinette bu sözü asla söylemedi!"
+    },
+    {
+      "category": "coğrafya ve dünya yanılgıları",
+      "question": "Bermuda Şeytan Üçgeni açıklanamayan gizemli güçlerle doludur. Bu bölgeden geçen sayısız gemi ve uçak arkasında hiçbir iz bırakmadan esrarengizce yok olmuştur!",
+      "answer": "Hayır, Bermuda Üçgeni diğer denizlerden daha tehlikeli değildir!"
     }
   ]
 }
