@@ -174,6 +174,11 @@
       "category": "coğrafya ve dünya yanılgıları",
       "question": "Bermuda Şeytan Üçgeni açıklanamayan gizemli güçlerle doludur. Bu bölgeden geçen sayısız gemi ve uçak arkasında hiçbir iz bırakmadan esrarengizce yok olmuştur!",
       "answer": "Hayır, Bermuda Üçgeni diğer denizlerden daha tehlikeli değildir!"
+    },
+    {
+      "category": "dil ve kelime yanılgıları",
+      "question": "Denizcilikte acil durum sinyali olan SOS 'Save Our Souls' yani 'Ruhlarımızı Kurtarın' ifadesinin baş harfleridir. Tehlikedeki gemiler bu dokunaklı mesajla dünyaya yardım çağrısı yapar.",
+      "answer": "Hayır, SOS hiçbir cümlenin kısaltması değildir!"
     }
   ]
 }
