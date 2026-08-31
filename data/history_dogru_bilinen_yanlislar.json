@@ -179,6 +179,11 @@
       "category": "dil ve kelime yanılgıları",
       "question": "Denizcilikte acil durum sinyali olan SOS 'Save Our Souls' yani 'Ruhlarımızı Kurtarın' ifadesinin baş harfleridir. Tehlikedeki gemiler bu dokunaklı mesajla dünyaya yardım çağrısı yapar.",
       "answer": "Hayır, SOS hiçbir cümlenin kısaltması değildir!"
+    },
+    {
+      "category": "coğrafya ve dünya yanılgıları",
+      "question": "Brezilya denince herkesin aklına hemen Rio de Janeiro gelir. Bu devasa ve renkli metropol ülkenin resmi başkentidir.",
+      "answer": "Hayır, Brezilya'nın başkenti Rio de Janeiro değildir!"
     }
   ]
 }
