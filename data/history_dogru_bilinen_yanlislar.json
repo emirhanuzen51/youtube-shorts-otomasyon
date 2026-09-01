@@ -184,6 +184,11 @@
       "category": "coğrafya ve dünya yanılgıları",
       "question": "Brezilya denince herkesin aklına hemen Rio de Janeiro gelir. Bu devasa ve renkli metropol ülkenin resmi başkentidir.",
       "answer": "Hayır, Brezilya'nın başkenti Rio de Janeiro değildir!"
+    },
+    {
+      "category": "dil ve kelime yanılgıları",
+      "question": "Dünyanın en popüler kelimesi olan OK savaş meydanlarından doğmuştur. Sıfır can kaybı anlamına gelen Zero Killed yani 0K ifadesinden türediği bilinir.",
+      "answer": "Hayır, OK kelimesi sıfır ölü anlamına gelmez!"
     }
   ]
 }
