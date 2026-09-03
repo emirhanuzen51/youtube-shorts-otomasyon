@@ -194,6 +194,11 @@
       "category": "coğrafya ve dünya yanılgıları",
       "question": "Atlas Okyanusu ile Büyük Okyanus suları birbirine asla karışmaz. İki denizin buluştuğu noktadaki o keskin çizgi suların birbirine geçmesini engeller.",
       "answer": "Hayır, bu iki okyanus birbirine tamamen karışır!"
+    },
+    {
+      "category": "gündelik hayat mitleri",
+      "question": "Damarlarımızdaki kirli kan oksijensiz kaldığı için mavidir. Bir yerimiz kesilip kan havayla temas ettiği anda anında kırmızıya dönüşür!",
+      "answer": "Hayır, insan kanı vücudumuzda her zaman kırmızıdır!"
     }
   ]
 }
