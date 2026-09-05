@@ -199,6 +199,11 @@
       "category": "gündelik hayat mitleri",
       "question": "Damarlarımızdaki kirli kan oksijensiz kaldığı için mavidir. Bir yerimiz kesilip kan havayla temas ettiği anda anında kırmızıya dönüşür!",
       "answer": "Hayır, insan kanı vücudumuzda her zaman kırmızıdır!"
+    },
+    {
+      "category": "bilim ve doğa yanılgıları",
+      "question": "Amazon yağmur ormanları dünyamızın akciğerleridir. Gezegendeki oksijenin büyük kısmını tek başına üreterek insanlığa nefes aldırır.",
+      "answer": "Hayır, Amazonlar soluduğumuz oksijeni sağlamaz!"
     }
   ]
 }
