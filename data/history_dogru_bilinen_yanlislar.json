@@ -204,6 +204,11 @@
       "category": "bilim ve doğa yanılgıları",
       "question": "Amazon yağmur ormanları dünyamızın akciğerleridir. Gezegendeki oksijenin büyük kısmını tek başına üreterek insanlığa nefes aldırır.",
       "answer": "Hayır, Amazonlar soluduğumuz oksijeni sağlamaz!"
+    },
+    {
+      "category": "dil ve kelime yanılgıları",
+      "question": "Kaptan Cook Avustralya'ya çıktığında gördüğü ilginç hayvanın adını yerlilere sormuştur. Yerliler ise kendi dillerinde 'seni anlamıyorum' anlamına gelen 'kanguru' cevabını vermiştir.",
+      "answer": "Hayır, kanguru kelimesi 'seni anlamıyorum' demek değildir!"
     }
   ]
 }
