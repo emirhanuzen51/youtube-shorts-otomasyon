@@ -209,6 +209,11 @@
       "category": "dil ve kelime yanılgıları",
       "question": "Kaptan Cook Avustralya'ya çıktığında gördüğü ilginç hayvanın adını yerlilere sormuştur. Yerliler ise kendi dillerinde 'seni anlamıyorum' anlamına gelen 'kanguru' cevabını vermiştir.",
       "answer": "Hayır, kanguru kelimesi 'seni anlamıyorum' demek değildir!"
+    },
+    {
+      "category": "gündelik hayat mitleri",
+      "question": "Yere düşen bir yiyeceği beş saniye içinde alırsanız mikroplar ona bulaşamaz. Bu ünlü beş saniye kuralı sayesinde düşen lokmayı güvenle yiyebilirsiniz!",
+      "answer": "Hayır, beş saniye kuralı tamamen bir uydurmadır!"
     }
   ]
 }
