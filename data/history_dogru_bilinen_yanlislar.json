@@ -214,6 +214,11 @@
       "category": "gündelik hayat mitleri",
       "question": "Yere düşen bir yiyeceği beş saniye içinde alırsanız mikroplar ona bulaşamaz. Bu ünlü beş saniye kuralı sayesinde düşen lokmayı güvenle yiyebilirsiniz!",
       "answer": "Hayır, beş saniye kuralı tamamen bir uydurmadır!"
+    },
+    {
+      "category": "bilim ve doğa yanılgıları",
+      "question": "Lemmingler nüfusları aşırı çoğaldığında topluca uçurumlardan atlayarak intihar ederler. Bu trajik davranış doğadaki popülasyon dengesini korumak için yaptıkları inanılmaz bir fedakarlıktır.",
+      "answer": "Hayır, lemmingler asla topluca intihar etmez!"
     }
   ]
 }
