@@ -219,6 +219,11 @@
       "category": "bilim ve doğa yanılgıları",
       "question": "Lemmingler nüfusları aşırı çoğaldığında topluca uçurumlardan atlayarak intihar ederler. Bu trajik davranış doğadaki popülasyon dengesini korumak için yaptıkları inanılmaz bir fedakarlıktır.",
       "answer": "Hayır, lemmingler asla topluca intihar etmez!"
+    },
+    {
+      "category": "gündelik hayat mitleri",
+      "question": "Kurbağalara çıplak elle dokunursanız cildinizde hemen siğiller çıkar. Çocukluğumuzdan beri kurbağaların o pütürlü derisinin siğil bulaştırdığı anlatılır.",
+      "answer": "Hayır, kurbağalar asla siğil yapmaz!"
     }
   ]
 }
