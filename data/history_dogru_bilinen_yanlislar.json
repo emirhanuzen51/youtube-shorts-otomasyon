@@ -229,6 +229,11 @@
       "category": "bilim ve doğa yanılgıları",
       "question": "Piranalar suya giren her canlıyı saniyeler içinde paramparça eden acımasız canavarlardır. Kan kokusu aldıkları anda koca bir hayvanı dakikalar içinde kuru bir iskelete dönüştürürler!",
       "answer": "Hayır, piranalar ölümcül canavarlar değildir!"
+    },
+    {
+      "category": "gündelik hayat mitleri",
+      "question": "Uyurgezer birini uykusundan uyandırmak son derece tehlikelidir. Ani bir şokla uyanan kişinin kalp krizi geçirebileceği veya kalıcı hasar alacağı söylenir.",
+      "answer": "Hayır, uyurgezer birini uyandırmak tehlikeli veya ölümcül değildir!"
     }
   ]
 }
