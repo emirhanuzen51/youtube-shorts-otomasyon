@@ -234,6 +234,11 @@
       "category": "gündelik hayat mitleri",
       "question": "Uyurgezer birini uykusundan uyandırmak son derece tehlikelidir. Ani bir şokla uyanan kişinin kalp krizi geçirebileceği veya kalıcı hasar alacağı söylenir.",
       "answer": "Hayır, uyurgezer birini uyandırmak tehlikeli veya ölümcül değildir!"
+    },
+    {
+      "category": "coğrafya ve dünya yanılgıları",
+      "question": "Ekvator çizgisi gezegenimizin en sıcak bölgesidir. Güneş ışınlarını yıl boyu dik açıyla aldığı için en kavurucu sıcaklıklar her zaman burada yaşanır.",
+      "answer": "Hayır, Dünya'nın en sıcak yeri Ekvator değildir!"
     }
   ]
 }
