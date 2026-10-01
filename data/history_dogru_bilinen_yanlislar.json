@@ -239,6 +239,11 @@
       "category": "coğrafya ve dünya yanılgıları",
       "question": "Ekvator çizgisi gezegenimizin en sıcak bölgesidir. Güneş ışınlarını yıl boyu dik açıyla aldığı için en kavurucu sıcaklıklar her zaman burada yaşanır.",
       "answer": "Hayır, Dünya'nın en sıcak yeri Ekvator değildir!"
+    },
+    {
+      "category": "bilim ve doğa yanılgıları",
+      "question": "Elmaslar yerin altındaki kömürün yüksek basınçla sıkışmasıyla meydana gelir. Dünyanın en değerli taşları aslında milyonlarca yıllık kömür parçalarıdır.",
+      "answer": "Hayır, elmaslar kömürden oluşmaz!"
     }
   ]
 }
