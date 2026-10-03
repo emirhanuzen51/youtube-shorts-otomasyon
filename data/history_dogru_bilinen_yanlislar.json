@@ -244,6 +244,11 @@
       "category": "bilim ve doğa yanılgıları",
       "question": "Elmaslar yerin altındaki kömürün yüksek basınçla sıkışmasıyla meydana gelir. Dünyanın en değerli taşları aslında milyonlarca yıllık kömür parçalarıdır.",
       "answer": "Hayır, elmaslar kömürden oluşmaz!"
+    },
+    {
+      "category": "tarih yanılgıları",
+      "question": "Kristof Kolomb okyanusa açıldığında herkes Dünya'nın düz olduğunu sanıyordu. Cesur kaşif bu tehlikeli yolculuğuyla gezegenin yuvarlak olduğunu tüm dünyaya kanıtladı.",
+      "answer": "Hayır, o dönemde Dünya'nın yuvarlak olduğu zaten biliniyordu!"
     }
   ]
 }
