@@ -249,6 +249,11 @@
       "category": "tarih yanılgıları",
       "question": "Kristof Kolomb okyanusa açıldığında herkes Dünya'nın düz olduğunu sanıyordu. Cesur kaşif bu tehlikeli yolculuğuyla gezegenin yuvarlak olduğunu tüm dünyaya kanıtladı.",
       "answer": "Hayır, o dönemde Dünya'nın yuvarlak olduğu zaten biliniyordu!"
+    },
+    {
+      "category": "bilim ve doğa yanılgıları",
+      "question": "Akrepler etrafları ateşle çevrildiğinde çaresiz kalıp kendilerini sokarlar. Bu ölümcül refleksle acı çekmek yerine intihar ettiklerine inanılır.",
+      "answer": "Hayır, akrepler asla intihar etmez!"
     }
   ]
 }
