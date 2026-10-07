@@ -254,6 +254,11 @@
       "category": "bilim ve doğa yanılgıları",
       "question": "Akrepler etrafları ateşle çevrildiğinde çaresiz kalıp kendilerini sokarlar. Bu ölümcül refleksle acı çekmek yerine intihar ettiklerine inanılır.",
       "answer": "Hayır, akrepler asla intihar etmez!"
+    },
+    {
+      "category": "tarih yanılgıları",
+      "question": "Napolyon Bonapart aşırı kısa boylu ve cüceye yakın bir liderdi. Hatta boy kompleksini bastırmak için durmaksızın savaşlar açıp dünyayı fethetmeye çalıştığı söylenir.",
+      "answer": "Hayır, Napolyon dönemin standartlarına göre kısa değildi!"
     }
   ]
 }
