@@ -264,6 +264,11 @@
       "category": "uzay ve evren yanılgıları",
       "question": "Güneş gökyüzünde parıldayan devasa sarı bir alev topudur. Çocukluğumuzdan beri çizdiğimiz resimlerde onu her zaman sapsarı boyarız.",
       "answer": "Hayır, Güneş aslında sarı değil, bembeyazdır!"
+    },
+    {
+      "category": "bilim ve doğa yanılgıları",
+      "question": "Japon balıklarının hafızası sadece üç saniyedir. Bu yüzden akvaryumun içinde yüzerken her an dünyayı baştan keşfederler!",
+      "answer": "Hayır, Japon balıklarının hafızası üç saniye değildir!"
     }
   ]
 }
