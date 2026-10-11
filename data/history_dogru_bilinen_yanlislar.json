@@ -274,6 +274,11 @@
       "category": "uzay ve evren yanılgıları",
       "question": "Uzayda yerçekimi tamamen yok olur. Bu yüzden uzay istasyonundaki astronotlar sıfır yerçekimi sayesinde boşlukta rahatça süzülürler.",
       "answer": "Hayır, uzayda yerçekimi sıfır değildir!"
+    },
+    {
+      "category": "gündelik hayat mitleri",
+      "question": "Boğalar kırmızı rengi gördüklerinde adeta çılgına dönerler. Matadorun elindeki kırmızı pelerini öfkeyle hedef almalarının sebebi de bu renktir.",
+      "answer": "Hayır, boğalar kırmızı renge öfkelenmez!"
     }
   ]
 }
