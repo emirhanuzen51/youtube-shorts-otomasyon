@@ -261,12 +261,12 @@ def _ease_out(p):
     return 1 - (1 - p) ** 3
 
 
-# --- scene timings -------------------------------------------------------
-INTRO_DUR = 1.6
-QUESTION_IN_DUR = 0.5
-COUNTDOWN_DUR = 4.0
-REVEAL_IN_DUR = 0.5
-OUTRO_DUR = 2.0
+# --- scene timings (optimized for high retention / fast pacing) ---
+INTRO_DUR = 0.8
+QUESTION_IN_DUR = 0.4
+COUNTDOWN_DUR = 2.8
+REVEAL_IN_DUR = 0.4
+OUTRO_DUR = 1.8
 
 
 def build_video(question: dict, question_audio: str, answer_audio: str, out_path: str, profile: dict | None = None,
@@ -444,6 +444,10 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
             sub_font = _font(max(32, int(44 * pulse)))
             _badge(draw, profile.get("subscribe_cta", "ABONE OL & BEĞEN"), H * 0.62, sub_font,
                    fg=badge_fg, bg=badge_bg)
+
+        # Dynamic Top Progress Bar (Boosts retention and watch time)
+        bar_progress = min(max(t / max(total_duration, 1.0), 0.0), 1.0)
+        draw.rectangle([0, 0, int(W * bar_progress), 12], fill=accent)
 
         return np.array(img)
 

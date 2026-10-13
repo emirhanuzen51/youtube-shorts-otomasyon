@@ -1,6 +1,6 @@
-"""Generates an original Turkish trivia/exam-prep question using the free Google Gemini API tier.
+"""Generates content using the free Google Gemini API tier.
 
-Which channel (KPSS, ehliyet, tarihte_bugun, ...) is controlled by the
+Which channel (dogru_bilinen_yanlislar, dini_kissalar, muze_sirlari, uzayin_sirlari) is controlled by the
 CONTENT_PROFILE env var / profiles.py.
 """
 import datetime
@@ -153,17 +153,12 @@ Sakin, ağırbaşlı ve samimi bir üslup kullan; abartılı/sansasyonel ifadele
         intro = f"Sen, günlük YouTube Shorts {profile['topic_label']} kanalı için heyecanlı ve akıcı anlatan bir hikaye anlatıcısısın."
         task = f""""{category}" konusunda, çoğu insanın doğru sandığı ama aslında YANLIŞ olan,
 yaygın BİR adet yanılgı/mit bul.
-- "question" alanına, bu yanılgıyı 2 cümlelik, meraklandırıcı ve iddialı bir dille yaz
-  (izleyiciye "evet bunu biliyorum" dedirtecek şekilde; örn. "Yarasalar tamamen kördür.
-  Bu yüzden yönlerini bulmak için sadece sese güvenirler.")
-- "answer" alanına, kısa ama vurgulu bir düzeltme cümlesi yaz (örn. "Hayır, yarasalar kör değildir!")
-- "explanation" alanına, 3-4 KISA cümlelik (toplam en fazla ~220 karakter), akıcı ve
-  ilgi çekici bir açıklama yaz: gerçek ne, şaşırtıcı bir detay veya örnek ver, ve bu
-  yanılgının neden bu kadar yaygın olduğunu anlat. Uzun/karmaşık cümlelerden kaçın,
-  ekranda okunacak kısa cümleler kullan. Konuşma diline yakın, samimi ve enerjik bir
-  üslup kullan (gerektiğinde ünlem işareti kullanabilirsin).
+- "question" alanına: İlk 2-3 saniyede izleyiciyi ekrana kilitleyecek şok edici bir kanca (Hook) ile başla. Bu yanılgıyı 2 cümlelik, meraklandırıcı ve iddialı bir dille yaz (izleyiciye "evet ben de böyle biliyordum" dedirtecek şekilde).
+- "answer" alanına: Kısa, enerjik ve tokat gibi çarpan net bir düzeltme cümlesi yaz (örn. "Hayır, yarasalar kör değildir!").
+- "explanation" alanına: 3-4 KISA cümlelik (toplam ~180-220 karakter), aşırı akıcı bir açıklama yaz: gerçek ne, şaşırtıcı detay ne ve neden yanlış biliniyor.
+- SONSUZ DÖNGÜ (Infinite Loop) KURALI: "explanation" alanının en son cümlesini, videonun başındaki kancaya pürüzsüz bağlanabilecek bir geçişle bitir (örn. "...işte tam da bu yüzden herkes şunu sanıyor:"). Böylece video başa sardığında izleyici fark etmeden 2. kez izlesin!
 Herkesin ilgisini çekecek, geniş kitleye hitap eden genel-kültür tarzı bir yanılgı seç;
-kişisel/mahrem veya bazı izleyicileri rahatsız edebilecek beden/hijyen konularından kaçın."""
+kişisel/mahrem konulardan kaçın."""
     elif profile.get("is_exam_prep", True):
         intro = f"Sen, günlük YouTube Shorts {profile['topic_label']} hazırlık kanalı için soru yazan bir eğitmensin."
         task = f""""{category}" konusunda, {profile['topic_label']} tarzında, özgün BİR adet deneme sorusu üret.
@@ -287,12 +282,10 @@ uydurma detay eklemeden, "{format_name}" formatında bir hikaye yaz:
 GERÇEK ESER BİLGİLERİ:
 {facts}
 
-- "question" alanına: İLK KELİMELER olarak eserin adını ("{obj['title']}") mutlaka yaz
-  (Türkçeye doğal çeviriyle ya da orijinal adıyla), ardından eserle ilgili merak uyandırıcı
-  bir girişle devam et (toplam en fazla 3-4 cümle). ASLA "Merhaba" gibi bir selamlamayla
-  başlama, direkt eserin adıyla ve konunun içine gir.
-- "answer" alanına: Vurucu bir sonuç/detay cümlesi yaz.
-- "explanation" alanına: "Kısaca:" diyerek başlayıp 2-3 KISA cümleyle (toplam en fazla ~220 karakter) özetle.
+- "question" alanına: İlk 2 saniyede izleyiciyi ekrana kilitleyecek merak uyandırıcı bir kanca (Hook) ile başla; eserin adını ("{obj['title']}") doğal şekilde geçirerek konunun tam içine gir (toplam en fazla 2-3 kısa cümle). ASLA selamlama ile başlama.
+- "answer" alanına: Vurucu, şaşırtıcı bir sonuç/detay cümlesi yaz.
+- "explanation" alanına: 2-3 KISA cümleyle (toplam ~180-220 karakter) eserin en gizemli veya büyüleyici yanını özetle.
+- SONSUZ DÖNGÜ (Infinite Loop) KURALI: "explanation" kısmının son cümlesini videonun başına akıcı bağlayacak bir köprüyle bitir (örn. "...işte bu gizem bizi şu soruya götürüyor:"). Böylece video kesintisiz döngüye girsin!
 Verilmeyen hiçbir bilgiyi (tarih, isim, olay) uydurma; bir alan hakkında yeterli bilgi yoksa
 genel ama doğru ifadeler kullan, spesifik uydurma detay verme.
 Sadece düz noktalama işaretleri kullan, markdown veya emoji kullanma. Türkçe yaz, Türkçe
@@ -364,11 +357,10 @@ uydurma detay eklemeden, "{format_name}" formatında bir hikaye yaz:
 GERÇEK NASA BİLGİLERİ:
 {facts}
 
-- "question" alanına: İLK KELİMELER olarak görüntünün/nesnenin adını ("{obj['title']}") mutlaka yaz
-  (Türkçeye doğal çeviriyle ya da orijinal adıyla), ardından merak uyandırıcı bir girişle devam et
-  (toplam en fazla 3-4 cümle). ASLA "Merhaba" gibi bir selamlamayla başlama, direkt konunun içine gir.
-- "answer" alanına: Vurucu bir sonuç/detay cümlesi yaz.
-- "explanation" alanına: "Kısaca:" diyerek başlayıp 2-3 KISA cümleyle (toplam en fazla ~220 karakter) özetle.
+- "question" alanına: İlk 2 saniyede izleyiciyi şaşırtacak merak uyandırıcı bir kanca (Hook) ile başla; görüntünün/nesnenin adını ("{obj['title']}") geçirerek konunun tam içine gir (toplam en fazla 2-3 cümle). ASLA selamlama ile başlama.
+- "answer" alanına: Vurucu, akıl almaz bir sonuç/ölçek cümlesi yaz.
+- "explanation" alanına: 2-3 KISA cümleyle (toplam ~180-220 karakter) bu uzay olayının en çarpıcı yönünü özetle.
+- SONSUZ DÖNGÜ (Infinite Loop) KURALI: "explanation" kısmının en son cümlesini videonun başındaki kancaya pürüzsüz bağlanacak bir köprüyle bitir (örn. "...işte tam da bu yüzden bilim insanları şunu merak ediyor:"). Böylece video başa sardığında izleyici 2. tura geçsin!
 Verilmeyen hiçbir bilgiyi (rakam, tarih, isim) uydurma; bir alan hakkında yeterli bilgi yoksa
 genel ama doğru ifadeler kullan, spesifik uydurma detay verme.
 Sadece düz noktalama işaretleri kullan, markdown veya emoji kullanma. Türkçe yaz, Türkçe

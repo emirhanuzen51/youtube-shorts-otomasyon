@@ -9,7 +9,7 @@ Usage (from the project root), credentials for the TARGET channel:
     YT_CLIENT_ID=... YT_CLIENT_SECRET=... YT_REFRESH_TOKEN=... \
         python setup/channel_branding.py <profile-name>
 
-<profile-name> is one of the keys in src/profiles.py (e.g. kpss, ehliyet).
+<profile-name> is one of the keys in src/profiles.py (e.g. dogru_bilinen_yanlislar, dini_kissalar).
 """
 import os
 import sys
