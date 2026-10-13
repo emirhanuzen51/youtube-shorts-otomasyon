@@ -464,7 +464,26 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
 
     q_audio_positioned = q_clip.with_start(question_start)
     a_audio_positioned = a_clip.with_start(reveal_start)
-    audio = CompositeAudioClip([q_audio_positioned, a_audio_positioned])
+
+    # Sound effects: countdown ticks and answer reveal chime for audio immersion
+    sfx_clips = []
+    tick_path = os.path.join(ASSETS_DIR, "sfx", "tick.wav")
+    chime_path = os.path.join(ASSETS_DIR, "sfx", "chime.wav")
+    try:
+        if os.path.exists(tick_path):
+            tick_clip = AudioFileClip(tick_path).with_volume_scaled(0.35)
+            for sec in range(int(math.ceil(COUNTDOWN_DUR))):
+                t_offset = countdown_start + sec
+                if t_offset < reveal_start:
+                    sfx_clips.append(tick_clip.with_start(t_offset))
+        if os.path.exists(chime_path):
+            chime_clip = AudioFileClip(chime_path).with_volume_scaled(0.40)
+            sfx_clips.append(chime_clip.with_start(reveal_start))
+    except Exception as e:
+        print(f"SFX load note: {e}")
+
+    audio_tracks = [q_audio_positioned, a_audio_positioned, *sfx_clips]
+    audio = CompositeAudioClip(audio_tracks)
 
     music_path = _find_music(profile)
     if music_path:
@@ -488,7 +507,7 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
         music = music.with_volume_scaled(profile.get("music_volume", 0.22))
         fade = min(1.5, total_duration / 4)
         music = music.with_effects([AudioFadeIn(fade), AudioFadeOut(fade)])
-        audio = CompositeAudioClip([music, q_audio_positioned, a_audio_positioned])
+        audio = CompositeAudioClip([music, *audio_tracks])
 
     video = video.with_audio(audio)
     video.write_videofile(
