@@ -41,12 +41,20 @@ def run(upload: bool = True):
         question = generate_question(profile)
     print(f"  {question['category']}: {question['question']} -> {question['answer']}")
 
-    if profile.get("use_topic_image") and question.get("image_query"):
-        candidate_path = os.path.join(OUTPUT_DIR, "topic_bg.jpg")
-        fetched = fetch_background_photo(question["image_query"], candidate_path)
-        if fetched:
-            bg_image_path = fetched
-            print(f"  Topic photo: {question['image_query']!r}")
+    reveal_bg_image_path = None
+    if profile.get("use_topic_image"):
+        if question.get("image_query"):
+            candidate_path = os.path.join(OUTPUT_DIR, "topic_bg.jpg")
+            fetched = fetch_background_photo(question["image_query"], candidate_path)
+            if fetched:
+                bg_image_path = fetched
+                print(f"  Topic photo (Question): {question['image_query']!r}")
+        if question.get("reveal_image_query"):
+            candidate_reveal_path = os.path.join(OUTPUT_DIR, "reveal_bg.jpg")
+            fetched_reveal = fetch_background_photo(question["reveal_image_query"], candidate_reveal_path)
+            if fetched_reveal:
+                reveal_bg_image_path = fetched_reveal
+                print(f"  Topic photo (Reveal B-Roll): {question['reveal_image_query']!r}")
 
     q_audio = os.path.join(OUTPUT_DIR, "question.mp3")
     a_audio = os.path.join(OUTPUT_DIR, "answer.mp3")
@@ -76,6 +84,7 @@ def run(upload: bool = True):
         question, q_audio, a_audio, video_path, profile,
         question_words=question_words, answer_words=answer_words, explanation_words=explanation_words,
         bg_image_path=bg_image_path,
+        reveal_bg_image_path=reveal_bg_image_path,
     )
     print(f"  wrote {video_path}")
 

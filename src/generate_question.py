@@ -48,6 +48,7 @@ _RESPONSE_SCHEMA = {
         "explanation": {"type": "STRING"},
         "hashtags": {"type": "ARRAY", "items": {"type": "STRING"}},
         "image_query": {"type": "STRING"},
+        "reveal_image_query": {"type": "STRING"},
     },
     "required": ["question", "answer", "explanation", "hashtags"],
 }
@@ -171,12 +172,11 @@ senin ürettiğin doğru ve güncel bilgilere dayanan orijinal bir deneme sorusu
     image_instruction = ""
     if profile.get("use_topic_image"):
         image_instruction = (
-            "\n\"image_query\" alanına, bu yanılgının somut, görsel olarak "
-            "fotoğraflanabilir konusunu (bir hayvan, bina, nesne, doğa olayı vb.) "
-            "1-3 kelimelik İNGİLİZCE bir stok-fotoğraf arama terimi olarak yaz "
-            "(örn. konu sinekse \"housefly close up\", konu Çin Seddi ise "
-            "\"Great Wall of China\"). Konu somut/fotoğraflanabilir bir şey "
-            "değilse (soyut bir kavramsa), en yakın somut görseli seç.\n"
+            "\n\"image_query\" alanına: Soruda geçen yanılgının/konunun somut görselini "
+            "1-3 kelimelik İNGİLİZCE bir stok-fotoğraf arama terimi olarak yaz (örn. \"housefly close up\").\n"
+            "\"reveal_image_query\" alanına: Cevap/açıklama sahnesinde ekrana gelecek GERÇEK kanıtı "
+            "veya doğrulayıcı farklı bir açıyı 1-3 kelimelik İNGİLİZCE arama terimi olarak yaz "
+            "(örn. \"microscope fly head\" veya \"fly flying slow motion\").\n"
         )
 
     extra_instruction = ""
@@ -227,6 +227,8 @@ her biri # ile başlasın, boşluk içermesin (örn. "#HzYusuf", "#SahraÇölü"
     data["hashtags"] = _sanitize_hashtags(data.get("hashtags"))
     if data.get("image_query"):
         data["image_query"] = normalize_text(str(data["image_query"]))
+    if data.get("reveal_image_query"):
+        data["reveal_image_query"] = normalize_text(str(data["reveal_image_query"]))
 
     history["questions"].append(
         {

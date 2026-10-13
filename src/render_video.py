@@ -270,7 +270,8 @@ OUTRO_DUR = 1.8
 
 
 def build_video(question: dict, question_audio: str, answer_audio: str, out_path: str, profile: dict | None = None,
-                 question_words=None, answer_words=None, explanation_words=None, bg_image_path=None):
+                 question_words=None, answer_words=None, explanation_words=None,
+                 bg_image_path=None, reveal_bg_image_path=None):
     profile = profile or get_profile()
     font_path = _find_font_path()
     question = {
@@ -312,6 +313,7 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
 
     stock_bg = _load_stock_background(profile, question, out_path)
     image_bg = _load_image_background(bg_image_path)
+    reveal_image_bg = _load_image_background(reveal_bg_image_path)
 
     _measure_draw = ImageDraw.Draw(Image.new("RGB", (1, 1)))
     font_q, q_lines = _fit_text(question["question"], max_font=64, min_font=38, base_wrap=22, max_lines=6)
@@ -324,7 +326,11 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
     _, exp_block_h = _block_metrics(_measure_draw, exp_lines, font_explain, stroke_width=5, line_spacing=1.3)
 
     def make_frame(t):
-        bg = _bg_frame(t, stock_bg, image_bg, bg_top, bg_bottom, glow_top, glow_bottom, total_duration)
+        # Dual Scene B-Roll switching: switch to reveal_image_bg during answer phase
+        is_reveal = (t >= reveal_start)
+        cur_img_bg = reveal_image_bg if (is_reveal and reveal_image_bg is not None) else image_bg
+        t_for_bg = (t - reveal_start) if (is_reveal and reveal_image_bg is not None) else t
+        bg = _bg_frame(t_for_bg, stock_bg, cur_img_bg, bg_top, bg_bottom, glow_top, glow_bottom, total_duration)
         img = Image.fromarray(bg)
         draw = ImageDraw.Draw(img)
 
