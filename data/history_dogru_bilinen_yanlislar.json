@@ -279,6 +279,11 @@
       "category": "gündelik hayat mitleri",
       "question": "Boğalar kırmızı rengi gördüklerinde adeta çılgına dönerler. Matadorun elindeki kırmızı pelerini öfkeyle hedef almalarının sebebi de bu renktir.",
       "answer": "Hayır, boğalar kırmızı renge öfkelenmez!"
+    },
+    {
+      "category": "sağlık ve beden mitleri",
+      "question": "İnsanlar beyin kapasitelerinin sadece yüzde onunu kullanabilir. Kalan yüzde doksanlık gizemli kısmı açığa çıkarabilseydik olağanüstü güçlere ulaşırdık!",
+      "answer": "Hayır, beynimizin neredeyse tamamını her gün aktif olarak kullanıyoruz!"
     }
   ]
 }
