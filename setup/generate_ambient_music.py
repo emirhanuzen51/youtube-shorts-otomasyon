@@ -27,9 +27,20 @@ PRESETS = {
         "breathe_rate": 0.05,
         "duration": 40.0,
     },
-    # dini_kissalar: kullanici kendi ney/tasavvuf kayitlarini
-    # assets/music/dini_kissalar/ altina elle ekledi, bu yuzden burada
-    # prosedurel bir preset tanimlanmiyor.
+    "uzayin_sirlari": {
+        "filename": "cosmic_ambient.wav",
+        # Deep space atmospheric pad: resonant, expansive cosmic harmonics.
+        "freqs": [130.81, 196.00, 261.63, 329.63, 392.00],
+        "breathe_rate": 0.035,
+        "duration": 45.0,
+    },
+    "muze_sirlari": {
+        "filename": "ancient_relic.wav",
+        # Antique mystic pad: D-minor ancient history harmonics.
+        "freqs": [146.83, 174.61, 220.00, 293.66, 349.23],
+        "breathe_rate": 0.04,
+        "duration": 45.0,
+    },
 }
 
 

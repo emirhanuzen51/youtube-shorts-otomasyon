@@ -35,7 +35,8 @@ PROFILES = {
         "bg_glow_bottom": [30, 6, 45],
         "badge_bg": "#FF3B3B",
         "badge_fg": "#FFFFFF",
-        "music_enabled": False,
+        "music_enabled": True,
+        "music_volume": 0.22,
         "accent_color": "#FF5A36",
         "reveal_rect_color": [90, 12, 12],
         "reveal_tint": [130, 20, 20],
@@ -164,7 +165,8 @@ Abone olun, her gün yeni bir eserde buluşalım.
     "uzayin_sirlari": {
         "is_exam_prep": False,
         "is_nasa_object": True,
-        "music_enabled": False,
+        "music_enabled": True,
+        "music_volume": 0.25,
         # 4 rotasyonlu format ismi - generate_nasa_story() bunlardan birini
         # rastgele secip Gemini'ye gercek NASA gorsel/verisine dayanarak o
         # formatta yazdirir. "category" olarak kullanildigi icin rozette de

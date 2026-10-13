@@ -465,10 +465,11 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
     q_audio_positioned = q_clip.with_start(question_start)
     a_audio_positioned = a_clip.with_start(reveal_start)
 
-    # Sound effects: countdown ticks and answer reveal chime for audio immersion
+    # Sound effects: countdown ticks, whoosh transition and reveal chime
     sfx_clips = []
     tick_path = os.path.join(ASSETS_DIR, "sfx", "tick.wav")
     chime_path = os.path.join(ASSETS_DIR, "sfx", "chime.wav")
+    whoosh_path = os.path.join(ASSETS_DIR, "sfx", "whoosh.wav")
     try:
         if os.path.exists(tick_path):
             tick_clip = AudioFileClip(tick_path).with_volume_scaled(0.35)
@@ -476,6 +477,9 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
                 t_offset = countdown_start + sec
                 if t_offset < reveal_start:
                     sfx_clips.append(tick_clip.with_start(t_offset))
+        if os.path.exists(whoosh_path):
+            whoosh_clip = AudioFileClip(whoosh_path).with_volume_scaled(0.35)
+            sfx_clips.append(whoosh_clip.with_start(max(0, reveal_start - 0.15)))
         if os.path.exists(chime_path):
             chime_clip = AudioFileClip(chime_path).with_volume_scaled(0.40)
             sfx_clips.append(chime_clip.with_start(reveal_start))
