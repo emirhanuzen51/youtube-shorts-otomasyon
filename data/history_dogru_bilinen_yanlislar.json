@@ -284,6 +284,11 @@
       "category": "sağlık ve beden mitleri",
       "question": "İnsanlar beyin kapasitelerinin sadece yüzde onunu kullanabilir. Kalan yüzde doksanlık gizemli kısmı açığa çıkarabilseydik olağanüstü güçlere ulaşırdık!",
       "answer": "Hayır, beynimizin neredeyse tamamını her gün aktif olarak kullanıyoruz!"
+    },
+    {
+      "category": "bilim ve doğa yanılgıları",
+      "question": "Bukalemunlar düşmanlarından saklanmak için bulundukları ortamın rengine bürünürler. Çevrelerindeki dala veya yaprağa kusursuzca kamufle olmak için renk değiştirdikleri anlatılır.",
+      "answer": "Hayır, bukalemunlar kamufle olmak için renk değiştirmez!"
     }
   ]
 }
