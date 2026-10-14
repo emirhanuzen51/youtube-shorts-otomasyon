@@ -9,8 +9,9 @@ import random
 
 import requests
 
-SEARCH_URL = "https://collectionapi.metmuseum.org/public/collection/v1/search"
+SEARCH_URL = "https://collectionapi.metmuseum.org/public/collection/v1.1/search"
 OBJECT_URL = "https://collectionapi.metmuseum.org/public/collection/v1/objects/{}"
+HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
 
 # Broad, history-rich search terms so consecutive videos don't cluster on
 # the same culture/era.
@@ -28,7 +29,7 @@ def fetch_random_object(out_image_path: str) -> dict | None:
     over a single museum API hiccup."""
     query = random.choice(SEARCH_TERMS)
     try:
-        resp = requests.get(SEARCH_URL, params={"q": query, "hasImages": "true"}, timeout=15)
+        resp = requests.get(SEARCH_URL, params={"q": query, "hasImages": "true"}, headers=HEADERS, timeout=15)
         resp.raise_for_status()
         object_ids = resp.json().get("objectIDs") or []
     except Exception as e:
@@ -38,7 +39,7 @@ def fetch_random_object(out_image_path: str) -> dict | None:
     random.shuffle(object_ids)
     for object_id in object_ids[:25]:
         try:
-            obj_resp = requests.get(OBJECT_URL.format(object_id), timeout=15)
+            obj_resp = requests.get(OBJECT_URL.format(object_id), headers=HEADERS, timeout=15)
             obj_resp.raise_for_status()
             obj = obj_resp.json()
         except Exception:
@@ -59,7 +60,7 @@ def fetch_random_object(out_image_path: str) -> dict | None:
             continue
 
         try:
-            img_resp = requests.get(image_url, timeout=30)
+            img_resp = requests.get(image_url, headers=HEADERS, timeout=30)
             img_resp.raise_for_status()
             with open(out_image_path, "wb") as f:
                 f.write(img_resp.content)
