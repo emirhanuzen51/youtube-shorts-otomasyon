@@ -11,9 +11,18 @@ import os
 import random
 import textwrap
 
+import wave
+
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
-from moviepy import AudioFileClip, CompositeAudioClip, VideoClip, VideoFileClip, concatenate_audioclips
+from moviepy import (
+    AudioArrayClip,
+    AudioFileClip,
+    CompositeAudioClip,
+    VideoClip,
+    VideoFileClip,
+    concatenate_audioclips,
+)
 from moviepy.audio.fx import AudioFadeIn, AudioFadeOut
 
 from profiles import get_profile
@@ -472,23 +481,37 @@ def build_video(question: dict, question_audio: str, answer_audio: str, out_path
     a_audio_positioned = a_clip.with_start(reveal_start)
 
     # Sound effects: countdown ticks, whoosh transition and reveal chime
+    # We load SFX into memory via wave + AudioArrayClip so short audio files
+    # can be repositioned and repeated cleanly without MoviePy reader stream bounds errors.
+    def _load_sfx_clip(wav_path, volume=1.0):
+        with wave.open(wav_path, "rb") as w:
+            nchannels = w.getnchannels()
+            sampwidth = w.getsampwidth()
+            framerate = w.getframerate()
+            frames = w.readframes(w.getnframes())
+        dtype = {1: np.uint8, 2: np.int16, 4: np.int32}.get(sampwidth, np.int16)
+        norm = {1: 128.0, 2: 32768.0, 4: 2147483648.0}.get(sampwidth, 32768.0)
+        data = np.frombuffer(frames, dtype=dtype).astype(np.float32) / norm
+        if nchannels > 1:
+            data = data.reshape(-1, nchannels)
+        else:
+            data = np.column_stack([data, data])
+        return AudioArrayClip(data * volume, fps=framerate)
+
     sfx_clips = []
     tick_path = os.path.join(ASSETS_DIR, "sfx", "tick.wav")
     chime_path = os.path.join(ASSETS_DIR, "sfx", "chime.wav")
     whoosh_path = os.path.join(ASSETS_DIR, "sfx", "whoosh.wav")
     try:
         if os.path.exists(tick_path):
-            tick_clip = AudioFileClip(tick_path).with_volume_scaled(0.35)
             for sec in range(int(math.ceil(COUNTDOWN_DUR))):
                 t_offset = countdown_start + sec
                 if t_offset < reveal_start:
-                    sfx_clips.append(tick_clip.with_start(t_offset))
+                    sfx_clips.append(_load_sfx_clip(tick_path, volume=0.35).with_start(t_offset))
         if os.path.exists(whoosh_path):
-            whoosh_clip = AudioFileClip(whoosh_path).with_volume_scaled(0.35)
-            sfx_clips.append(whoosh_clip.with_start(max(0, reveal_start - 0.15)))
+            sfx_clips.append(_load_sfx_clip(whoosh_path, volume=0.35).with_start(max(0, reveal_start - 0.15)))
         if os.path.exists(chime_path):
-            chime_clip = AudioFileClip(chime_path).with_volume_scaled(0.40)
-            sfx_clips.append(chime_clip.with_start(reveal_start))
+            sfx_clips.append(_load_sfx_clip(chime_path, volume=0.40).with_start(reveal_start))
     except Exception as e:
         print(f"SFX load note: {e}")
 
