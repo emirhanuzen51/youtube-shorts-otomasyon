@@ -289,6 +289,11 @@
       "category": "bilim ve doğa yanılgıları",
       "question": "Bukalemunlar düşmanlarından saklanmak için bulundukları ortamın rengine bürünürler. Çevrelerindeki dala veya yaprağa kusursuzca kamufle olmak için renk değiştirdikleri anlatılır.",
       "answer": "Hayır, bukalemunlar kamufle olmak için renk değiştirmez!"
+    },
+    {
+      "category": "dil ve kelime yanılgıları",
+      "question": "Telefona her 'Alo!' dediğimizde Graham Bell'in büyük aşkını andığımızı sanırız. Bu kelimenin mucidin sevgilisi Allessandra Lolita Oswaldo'nun baş harfleri olduğu anlatılır!",
+      "answer": "Hayır, tarihte Allessandra Lolita Oswaldo diye biri asla yaşamadı!"
     }
   ]
 }
