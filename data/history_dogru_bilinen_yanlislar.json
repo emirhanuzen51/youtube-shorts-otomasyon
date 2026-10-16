@@ -294,6 +294,11 @@
       "category": "dil ve kelime yanılgıları",
       "question": "Telefona her 'Alo!' dediğimizde Graham Bell'in büyük aşkını andığımızı sanırız. Bu kelimenin mucidin sevgilisi Allessandra Lolita Oswaldo'nun baş harfleri olduğu anlatılır!",
       "answer": "Hayır, tarihte Allessandra Lolita Oswaldo diye biri asla yaşamadı!"
+    },
+    {
+      "category": "hayvanlar hakkında yanlış bilgiler",
+      "question": "Devekuşları bir tehlike hissettiklerinde korkudan hemen kafalarını kuma gömerler. Böylece düşmanlarından saklanıp görünmez olduklarını sanırlar.",
+      "answer": "Hayır, hiçbir devekuşu kafasını kuma gömmez!"
     }
   ]
 }
