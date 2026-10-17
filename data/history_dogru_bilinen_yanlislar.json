@@ -299,6 +299,11 @@
       "category": "hayvanlar hakkında yanlış bilgiler",
       "question": "Devekuşları bir tehlike hissettiklerinde korkudan hemen kafalarını kuma gömerler. Böylece düşmanlarından saklanıp görünmez olduklarını sanırlar.",
       "answer": "Hayır, hiçbir devekuşu kafasını kuma gömmez!"
+    },
+    {
+      "category": "coğrafya ve dünya yanılgıları",
+      "question": "İsviçre denince akla hemen dev bankaları ve uluslararası merkezleriyle Zürih veya Cenevre gelir. Pek çok insan ülkenin başkentinin bu iki mega şehirden biri olduğuna neredeyse emindir!",
+      "answer": "Hayır, İsviçre'nin yasal olarak hiçbir başkenti yoktur!"
     }
   ]
 }
