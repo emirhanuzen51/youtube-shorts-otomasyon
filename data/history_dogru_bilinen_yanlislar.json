@@ -304,6 +304,11 @@
       "category": "coğrafya ve dünya yanılgıları",
       "question": "İsviçre denince akla hemen dev bankaları ve uluslararası merkezleriyle Zürih veya Cenevre gelir. Pek çok insan ülkenin başkentinin bu iki mega şehirden biri olduğuna neredeyse emindir!",
       "answer": "Hayır, İsviçre'nin yasal olarak hiçbir başkenti yoktur!"
+    },
+    {
+      "category": "dil ve kelime yanılgıları",
+      "question": "Haber anlamına gelen İngilizce News kelimesi North, East, West ve South yönlerinin baş harfleridir. Dünyanın dört bir yanından toplanan havadisleri özetlediği için bu kısaltmanın doğduğu anlatılır.",
+      "answer": "Hayır, News kelimesi bir kısaltma değildir!"
     }
   ]
 }
