@@ -1,0 +1,48 @@
+name: Daily AnimAI Studio Short (Akşam)
+
+on:
+  schedule:
+    - cron: "30 15 * * *"   # 18:30 Turkey time (UTC+3)
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install SpeechRecognition pynacl google-genai
+
+      - name: Run AnimAI Studio prerendered uploader
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ANIMAI_YT_CLIENT_ID: ${{ secrets.ANIMAI_YT_CLIENT_ID }}
+          ANIMAI_YT_CLIENT_SECRET: ${{ secrets.ANIMAI_YT_CLIENT_SECRET }}
+          ANIMAI_YT_REFRESH_TOKEN: ${{ secrets.ANIMAI_YT_REFRESH_TOKEN }}
+        run: |
+          python src/upload_prerendered.py animai_studio
+
+      - name: Commit updated history
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/history_animai_studio.json
+          git diff --cached --quiet && exit 0
+          git commit -m "chore: log today's AnimAI Studio short"
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin master && git push && exit 0
+            sleep 5
+          done
+          exit 1
