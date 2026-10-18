@@ -1,8 +1,9 @@
 """
-Pre-rendered video auto-uploader for YouTube Channels.
-Supports:
-  - Local mode (runs on user's PC using local folder 'Yeni klasör')
-  - Cloud mode (runs in GitHub Actions: checks 'Yeni klasör' locally or downloads from GitHub Release Vault)
+Pre-rendered video auto-uploader for YouTube Channels with Viral Growth Enhancements:
+1. Auto Pinned/Engaging Comment (Drives comment section activity & algorithmic boost)
+2. Dual-Language / Global Titles for Minik Maceralar (Unlocks international audience: US/EU/Global)
+3. Previous Episode Linking (Looping binge-watch effect for serials)
+4. Dynamic Viral Trend Hashtags & SEO Tag Enrichment
 """
 import os
 import sys
@@ -66,23 +67,23 @@ HIKAYE_TOPICS = {
 }
 
 BEBEK_TITLES = [
-    "Minik Kahramanın Büyük Keşfi! 🍼✨ #Shorts #CuteBaby",
-    "Dünyanın En Tatlı Bebeği ve Sevimli Dostu 🐾👶 #Shorts",
-    "Gülümsemenizi Garanti Edecek En Tatlı Anlar! ❤️🍼 #Shorts",
-    "Minik Maceralar: Meraklı Bebeğin İlk Adımları 🌟👶 #Shorts",
-    "Günün Neşesi: Sevimli Bebeğin Komik Halleri! 😂🍼 #Shorts",
-    "Minik Kaşif Orman Maceralarında! 🌲👶 #Shorts #BabyAdventures",
-    "Tatlılık Abidesi: Sevimli Dostuyla Oyunda! 🐶🍼 #Shorts",
-    "Kalpleri Eriten En Sevimli Bebek Anı! 🥰✨ #Shorts",
-    "Minik Mucize: Eğlenceli ve Sevimli Dakikalar 🍼🎈 #Shorts",
-    "Bebek Leo'nun Macera Dolu Günü! 🦁👶 #Shorts",
-    "En Komik ve Tatlı Bebek Hareketleri! 👶💖 #Shorts",
-    "Bebek ve Minik Hayvan Dostunun Maceraları 🐾✨ #Shorts",
-    "Neşe Dolu Minik Gülüşler! 🍼🌈 #Shorts",
-    "Gözlerinizi Alamayacağınız Sevimli Anlar! 😍👶 #Shorts",
-    "Minik Dünyanın Büyük Kahramanı! 🌟🍼 #Shorts",
-    "Eğlenceli Oyun Zamanı: Sevimli Bebek! 🧸👶 #Shorts",
-    "Günün En Tatlı Videosu ile Gülümseyin! 💖🍼 #Shorts"
+    "Minik Kahramanın Büyük Keşfi! 🍼 | Cute Baby Big Adventure ✨ #Shorts",
+    "Dünyanın En Tatlı Bebeği ve Sevimli Dostu 🐾 | Cute Baby & Puppy 👶 #Shorts",
+    "Gülümsemenizi Garanti Eden Anlar! ❤️ | Sweetest Baby Moments 🍼 #Shorts",
+    "Minik Kaşifin İlk Adımları 🌟 | Little Baby Steps to Adventure 👶 #Shorts",
+    "Günün Neşesi: Sevimli Bebeğin Komik Halleri! 😂 | Funny Baby Moments 🍼 #Shorts",
+    "Minik Kahraman Orman Maceralarında! 🌲 | Cute Baby in the Wild 👶 #Shorts",
+    "Tatlılık Abidesi: Sevimli Dostuyla Oyunda! 🐶 | Baby & Animal Friends 🍼 #Shorts",
+    "Kalpleri Eriten En Tatlı Bebek Anı! 🥰 | Heartwarming Cute Baby ✨ #Shorts",
+    "Minik Mucize: Eğlenceli Dakikalar 🍼 | Tiny Wonders & Baby Fun 🎈 #Shorts",
+    "Bebek Leo'nun Macera Dolu Günü! 🦁 | Baby Leo's Fun Day 👶 #Shorts",
+    "En Komik ve Tatlı Bebek Hareketleri! 👶 | Adorable Baby Laughs 💖 #Shorts",
+    "Bebek ve Minik Hayvan Dostunun Maceraları 🐾 | Baby & Little Buddy ✨ #Shorts",
+    "Neşe Dolu Minik Gülüşler! 🍼 | Sweetest Baby Smiles 🌈 #Shorts",
+    "Gözlerinizi Alamayacağınız Sevimli Anlar! 😍 | Cutest Baby Ever 👶 #Shorts",
+    "Minik Dünyanın Büyük Kahramanı! 🌟 | Tiny Hero Baby 🍼 #Shorts",
+    "Eğlenceli Oyun Zamanı: Sevimli Bebek! 🧸 | Baby Playtime Fun 👶 #Shorts",
+    "Günün En Tatlı Videosu ile Gülümseyin! 💖 | Smile with Cute Baby 🍼 #Shorts"
 ]
 
 def extract_episode_num(filename: str) -> int:
@@ -110,7 +111,7 @@ def auto_listen_and_summarize(video_path: str, ep_num: int):
                 topic = "Büyük Pazarlık ve Kasa Katlama"
             elif any(w in text.lower() for w in ["uçak", "yol", "tatil", "gezi", "dubai"]):
                 topic = "Yeni Şehir ve Yeni Fırsatlar"
-            return topic, f"Kasa katlama serisinde yeni bölüm! Ekip bu bölümde: {first_sentence}..."
+            return topic, f"Kasa katlama serisinde yeni macera! Ekip bu bölümde: {first_sentence}..."
     except Exception as e:
         print(f"Otomatik dinleme notu: {e}")
         if os.path.exists(temp_wav):
@@ -153,14 +154,12 @@ def get_next_video(profile_key: str, folder: str, history_file: str):
             
     uploaded_files = {item.get("filename") for item in history}
     
-    # 1. Önce yerel klasöre bak
     local_videos = sorted(glob.glob(os.path.join(folder, "*.mp4")), key=extract_episode_num) if os.path.exists(folder) else []
     for v in local_videos:
         base = os.path.basename(v)
         if base not in uploaded_files:
             return v, history
 
-    # 2. Yerelde yoksa (CI / Bulut ortamındaysa) GitHub Release Kasasından bul
     remote_assets = get_remote_assets()
     candidate_remotes = []
     for asset in remote_assets:
@@ -178,9 +177,15 @@ def get_next_video(profile_key: str, folder: str, history_file: str):
 
     return None, history
 
-def build_metadata(profile_key: str, video_path: str, upload_index: int):
+def build_metadata(profile_key: str, video_path: str, history: list):
     base = os.path.basename(video_path)
+    upload_index = len(history)
     
+    prev_link_text = ""
+    if history:
+        last_uploaded = history[-1]
+        prev_link_text = f"⏮️ Önceki Bölüm: {last_uploaded.get('video_url', '')}\n"
+        
     if profile_key == "animai_studio":
         ep_num = extract_episode_num(base)
         if ep_num in HIKAYE_TOPICS:
@@ -196,37 +201,67 @@ def build_metadata(profile_key: str, video_path: str, upload_index: int):
         description = (
             f"🎬 Kasa Katlama Serisi - Bölüm {ep_num}: {topic}\n\n"
             f"📌 Bu Bölümde: {desc_plot}\n\n"
-            f"Sizce bir sonraki bölümde hangi ürünü alıp satmalılar? Yorumlarda tahmininizi yazın! 👇\n\n"
-            f"🔔 Serinin devamını kaçırmamak için kanala abone olmayı ve videoyu beğenmeyi unutmayın!\n\n"
-            f"#AnimAIStudio #KasaKatlama #SıfırdanZengin #AlSat #Ticaret #Shorts #AIAnimasyon #ViralShorts #3DAnimation #YapayZeka"
+            f"{prev_link_text}"
+            f"⏭️ Sonraki bölümleri kaçırmamak için Abone Olun & Bildirimleri Açın! 🔔\n\n"
+            f"💬 Sizce bir sonraki bölümde hangi ürünü alıp satmalılar? Yorumlarda tahmininizi yazın! 👇\n\n"
+            f"#AnimAIStudio #KasaKatlama #SıfırdanZengin #AlSat #Ticaret #KeşfetBeniÖneÇıkar #TrendShorts #AIAnimasyon #ViralShorts #3DAnimation #Shorts #YapayZeka"
         )
         tags = [
             "AnimAI Studio", "kasa katlama", f"kasa katlama bölüm {ep_num}", "sıfırdan zengin", 
-            "al sat", "ticaret", "shorts", "yapay zeka", "ai animasyon", "3d animasyon", 
-            "hikaye", "animasyon", "viral shorts"
+            "al sat", "ticaret", "keşfet", "trend shorts", "shorts", "yapay zeka", "ai animasyon", 
+            "3d animasyon", "hikaye", "animasyon", "viral shorts"
         ]
+        pinned_comment = (
+            f"🔥 Kasa Katlama Bölüm {ep_num} yayında!\n"
+            f"Sizce bir sonraki bölümde kasayı neye basmalılar? En iyi tahmini sabitleyeceğim! 👇👇\n"
+            f"🔔 Serinin devamı için abone olmayı unutmayın!"
+        )
         category_id = "1"
         
     else:  # minik_maceralar
         title_idx = upload_index % len(BEBEK_TITLES)
         title = BEBEK_TITLES[title_idx]
+        
         description = (
-            f"Minik Maceralar dünyasından kalpleri eriten sıcacık bir an! 🍼✨\n\n"
-            f"Her gün yepyeni sevimli bebek maceraları ve neşe dolu anlar için kanalımıza abone olmayı unutmayın! ❤️🐾\n\n"
-            f"#MinikMaceralar #BebekVideoları #CuteBaby #Shorts #BabyAdventures #SevimliBebekler #BabyShorts"
+            f"Minik Maceralar dünyasından kalpleri eriten sıcacık bir an! 🍼✨\n"
+            f"Welcome to tiny cute adventures! Sweetest moments to make your day! ❤️🐾\n\n"
+            f"{prev_link_text}"
+            f"🔔 Her gün yeni maceralar için ailemize katılın / Subscribe for daily cute shorts! 🥰\n\n"
+            f"#MinikMaceralar #CuteBaby #BabyShorts #BabyAdventures #FunnyBaby #SevimliBebekler #BebekVideoları #TrendingShorts #ViralShorts #Shorts #Cute"
         )
         tags = [
-            "Minik Maceralar", "bebek videoları", "sevimli bebekler", "cute baby", 
-            "baby shorts", "baby adventures", "komik bebekler", "tatlı bebek", "shorts"
+            "Minik Maceralar", "cute baby", "baby shorts", "baby adventures", "funny baby",
+            "sevimli bebekler", "bebek videoları", "tatlı bebek", "cute animals", "cute moments",
+            "trending shorts", "viral shorts", "shorts", "for kids"
         ]
+        pinned_comment = (
+            f"Bu tatlılığa 10 üzerinden kaç verirsiniz? 🍼❤️ / Rate this cuteness from 1 to 10! 👇🥰\n"
+            f"Her gün yeni videolar için abone olmayı unutmayın! 🔔"
+        )
         category_id = "15"
         
-    return title, description, tags, category_id
+    return title, description, tags, pinned_comment, category_id
+
+def post_comment(youtube, video_id: str, comment_text: str):
+    try:
+        body = {
+            "snippet": {
+                "videoId": video_id,
+                "topLevelComment": {
+                    "snippet": {
+                        "textOriginal": comment_text
+                    }
+                }
+            }
+        }
+        res = youtube.commentThreads().insert(part="snippet", body=body).execute()
+        print(f"BAŞARILI: Otomatik etkileşim yorumu eklendi! (Comment ID: {res.get('id')})")
+    except Exception as e:
+        print(f"Yorum ekleme notu: {e}")
 
 def upload_prerendered_video(profile_key: str):
     root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     
-    # Creds environment variable'dan mı yoksa yerel json'dan mı alınacak?
     p_upper = profile_key.upper().replace('_', '')
     p_prefix = "ANIMAI" if "ANIMAI" in p_upper else p_upper
     client_id = os.environ.get(f"{p_prefix}_YT_CLIENT_ID") or os.environ.get(f"{p_upper}_YT_CLIENT_ID") or os.environ.get("YT_CLIENT_ID")
@@ -255,7 +290,7 @@ def upload_prerendered_video(profile_key: str):
         return None
         
     base = os.path.basename(video_path)
-    title, description, tags, category_id = build_metadata(profile_key, video_path, len(history))
+    title, description, tags, pinned_comment, category_id = build_metadata(profile_key, video_path, history)
     
     print(f"\n==========================================")
     print(f"Kanal: {profile_key}")
@@ -299,6 +334,8 @@ def upload_prerendered_video(profile_key: str):
     video_id = response.get("id")
     video_url = f"https://youtube.com/shorts/{video_id}"
     print(f"\nBAŞARILI: Video yayınlandı! URL: {video_url}")
+    
+    post_comment(youtube, video_id, pinned_comment)
     
     history.append({
         "filename": base,
