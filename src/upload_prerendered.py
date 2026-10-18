@@ -336,6 +336,30 @@ def upload_prerendered_video(profile_key: str):
     print(f"\nBAŞARILI: Video yayınlandı! URL: {video_url}")
     
     post_comment(youtube, video_id, pinned_comment)
+
+    # Otomatik Oynatma Listesine Ekle
+    playlist_map = {
+        'animai_studio': os.environ.get('ANIMAI_PLAYLIST_ID', 'PLKdPAh8ARgHA'),
+        'minik_maceralar': os.environ.get('MINIKMACERALAR_PLAYLIST_ID', 'PLEiYrhkomZ2k')
+    }
+    target_pl = playlist_map.get(channel_key)
+    if target_pl:
+        try:
+            youtube.playlistItems().insert(
+                part='snippet',
+                body={
+                    'snippet': {
+                        'playlistId': target_pl,
+                        'resourceId': {
+                            'kind': 'youtube#video',
+                            'videoId': video_id
+                        }
+                    }
+                }
+            ).execute()
+            print(f'Video {video_id} otomatik olarak oynatma listesine ({target_pl}) eklendi!')
+        except Exception as pl_err:
+            print(f'Oynatma listesine eklenirken hata olustu: {pl_err}')
     
     history.append({
         "filename": base,
