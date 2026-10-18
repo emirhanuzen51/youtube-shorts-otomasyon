@@ -86,8 +86,9 @@ BEBEK_TITLES = [
 ]
 
 def extract_episode_num(filename: str) -> int:
-    m = re.search(r"(\d+)", os.path.basename(filename))
-    return int(m.group(1)) if m else 9999
+    name = os.path.splitext(os.path.basename(filename))[0]
+    matches = re.findall(r"(\d+)", name)
+    return int(matches[-1]) if matches else 9999
 
 def auto_listen_and_summarize(video_path: str, ep_num: int):
     temp_wav = os.path.join(os.path.dirname(video_path), f"temp_listen_{ep_num}.wav")
@@ -226,9 +227,11 @@ def upload_prerendered_video(profile_key: str):
     root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     
     # Creds environment variable'dan mı yoksa yerel json'dan mı alınacak?
-    client_id = os.environ.get(f"{profile_key.upper().replace('_', '')}_YT_CLIENT_ID") or os.environ.get("YT_CLIENT_ID")
-    client_secret = os.environ.get(f"{profile_key.upper().replace('_', '')}_YT_CLIENT_SECRET") or os.environ.get("YT_CLIENT_SECRET")
-    refresh_token = os.environ.get(f"{profile_key.upper().replace('_', '')}_YT_REFRESH_TOKEN") or os.environ.get("YT_REFRESH_TOKEN")
+    p_upper = profile_key.upper().replace('_', '')
+    p_prefix = "ANIMAI" if "ANIMAI" in p_upper else p_upper
+    client_id = os.environ.get(f"{p_prefix}_YT_CLIENT_ID") or os.environ.get(f"{p_upper}_YT_CLIENT_ID") or os.environ.get("YT_CLIENT_ID")
+    client_secret = os.environ.get(f"{p_prefix}_YT_CLIENT_SECRET") or os.environ.get(f"{p_upper}_YT_CLIENT_SECRET") or os.environ.get("YT_CLIENT_SECRET")
+    refresh_token = os.environ.get(f"{p_prefix}_YT_REFRESH_TOKEN") or os.environ.get(f"{p_upper}_YT_REFRESH_TOKEN") or os.environ.get("YT_REFRESH_TOKEN")
     
     creds_file = os.path.join(root_dir, "channel_creds.json")
     if os.path.exists(creds_file) and not (client_id and client_secret and refresh_token):
