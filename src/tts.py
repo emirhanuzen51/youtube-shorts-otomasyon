@@ -6,9 +6,22 @@ import edge_tts
 DEFAULT_VOICE = "tr-TR-EmelNeural"
 
 
-async def _synthesize(text: str, out_path: str, voice: str, rate: str = "+0%", pitch: str = "+0Hz"):
+async def _synthesize_core(text: str, out_path: str, voice: str, rate: str = "+0%", pitch: str = "+0Hz"):
     communicate = edge_tts.Communicate(text, voice=voice, rate=rate, pitch=pitch)
     await communicate.save(out_path)
+
+
+async def _synthesize(text: str, out_path: str, voice: str, rate: str = "+0%", pitch: str = "+0Hz"):
+    try:
+        await _synthesize_core(text, out_path, voice, rate, pitch)
+    except Exception as err:
+        if voice != DEFAULT_VOICE:
+            print(f"[TTS WARNING] Voice '{voice}' failed ({err}). Falling back to '{DEFAULT_VOICE}'...")
+            await _synthesize_core(text, out_path, DEFAULT_VOICE, rate, pitch)
+        else:
+            print(f"[TTS RETRY] Default voice failed ({err}), retrying once...")
+            await asyncio.sleep(2)
+            await _synthesize_core(text, out_path, DEFAULT_VOICE, rate, pitch)
 
 
 def synthesize(text: str, out_path: str, voice: str | None = None, rate: str = "+0%", pitch: str = "+0Hz"):
@@ -19,7 +32,7 @@ def synthesize(text: str, out_path: str, voice: str | None = None, rate: str = "
     return out_path
 
 
-async def _synthesize_with_words(text: str, out_path: str, voice: str, rate: str, pitch: str):
+async def _stream_with_words(text: str, out_path: str, voice: str, rate: str, pitch: str):
     communicate = edge_tts.Communicate(text, voice=voice, rate=rate, pitch=pitch, boundary="WordBoundary")
     words = []
     with open(out_path, "wb") as f:
@@ -30,6 +43,19 @@ async def _synthesize_with_words(text: str, out_path: str, voice: str, rate: str
                 start = chunk["offset"] / 10_000_000
                 words.append((chunk["text"], start, start + chunk["duration"] / 10_000_000))
     return words
+
+
+async def _synthesize_with_words(text: str, out_path: str, voice: str, rate: str, pitch: str):
+    try:
+        return await _stream_with_words(text, out_path, voice, rate, pitch)
+    except Exception as err:
+        if voice != DEFAULT_VOICE:
+            print(f"[TTS WARNING] Voice '{voice}' failed ({err}). Falling back to '{DEFAULT_VOICE}'...")
+            return await _stream_with_words(text, out_path, DEFAULT_VOICE, rate, pitch)
+        else:
+            print(f"[TTS RETRY] Default voice failed ({err}), retrying once...")
+            await asyncio.sleep(2)
+            return await _stream_with_words(text, out_path, DEFAULT_VOICE, rate, pitch)
 
 
 def synthesize_with_words(text: str, out_path: str, voice: str | None = None, rate: str = "+0%", pitch: str = "+0Hz"):

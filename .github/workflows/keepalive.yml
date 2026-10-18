@@ -14,6 +14,13 @@ jobs:
     name: Prevent GitHub Inactivity Workflow Suspension
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Keepalive step
-        uses: gautamkrishnar/keepalive-workflow@v2
+      - uses: actions/checkout@v7
+      - name: Keep repository active
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          date -u > .github/keepalive.txt
+          git add .github/keepalive.txt
+          git diff --cached --quiet && exit 0
+          git commit -m "chore: keepalive ping [skip ci]" || exit 0
+          git push
