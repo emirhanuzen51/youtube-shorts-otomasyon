@@ -166,7 +166,7 @@ def get_next_video(profile_key: str, folder: str, history_file: str):
     for asset in remote_assets:
         if profile_key == "animai_studio" and re.search(r"^\d+\.mp4$", asset):
             candidate_remotes.append(asset)
-        elif profile_key == "minik_maceralar" and asset.startswith("leowildadventures-"):
+        elif profile_key == "minik_maceralar" and (asset.startswith("leowildadventures-") or asset.startswith("mellofromars-") or not re.search(r"^\d+\.mp4$", asset)):
             candidate_remotes.append(asset)
             
     candidate_remotes = sorted(candidate_remotes, key=extract_episode_num)
