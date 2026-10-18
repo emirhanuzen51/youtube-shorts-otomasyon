@@ -86,10 +86,10 @@ BEBEK_TITLES = [
     "Günün En Tatlı Videosu ile Gülümseyin! 💖 | Smile with Cute Baby 🍼 #Shorts"
 ]
 
-def extract_episode_num(filename: str) -> int:
+def extract_episode_num(filename: str):
     name = os.path.splitext(os.path.basename(filename))[0]
     matches = re.findall(r"(\d+)", name)
-    return int(matches[-1]) if matches else 9999
+    return int(matches[-1]) if matches else None
 
 def auto_listen_and_summarize(video_path: str, ep_num: int):
     temp_wav = os.path.join(os.path.dirname(video_path), f"temp_listen_{ep_num}.wav")
@@ -154,7 +154,7 @@ def get_next_video(profile_key: str, folder: str, history_file: str):
             
     uploaded_files = {item.get("filename") for item in history}
     
-    local_videos = sorted(glob.glob(os.path.join(folder, "*.mp4")), key=extract_episode_num) if os.path.exists(folder) else []
+    local_videos = sorted(glob.glob(os.path.join(folder, "*.mp4")), key=lambda x: (0, extract_episode_num(x)) if extract_episode_num(x) is not None else (1, os.path.basename(x).lower())) if os.path.exists(folder) else []
     for v in local_videos:
         base = os.path.basename(v)
         if base not in uploaded_files:
@@ -168,7 +168,7 @@ def get_next_video(profile_key: str, folder: str, history_file: str):
         elif profile_key == "minik_maceralar" and (asset.startswith("leowildadventures-") or asset.startswith("mellofromars-") or not re.search(r"^\d+\.mp4$", asset)):
             candidate_remotes.append(asset)
             
-    candidate_remotes = sorted(candidate_remotes, key=extract_episode_num)
+    candidate_remotes = sorted(candidate_remotes, key=lambda x: (0, extract_episode_num(x)) if extract_episode_num(x) is not None else (1, x.lower()))
     for asset in candidate_remotes:
         if asset not in uploaded_files:
             downloaded = download_video_from_vault(asset, folder)
@@ -188,18 +188,32 @@ def build_metadata(profile_key: str, video_path: str, history: list):
         
     if profile_key == "animai_studio":
         ep_num = extract_episode_num(base)
-        if ep_num in HIKAYE_TOPICS:
-            topic, desc_plot = HIKAYE_TOPICS[ep_num]
-        else:
-            print(f"Yeni video tespit edildi ({base}), içeriği otomatik dinleniyor...")
-            topic, desc_plot = auto_listen_and_summarize(video_path, ep_num)
+        is_kasa_katlama = (ep_num is not None) and (ep_num in HIKAYE_TOPICS or re.match(r"^\d+\.mp4$", base) or "kasa" in base.lower())
         
-        title = f"Kasa Katlama Bölüm {ep_num}: {topic} #Shorts"
+        if is_kasa_katlama:
+            ep_disp = ep_num if ep_num is not None else 1
+            if ep_disp in HIKAYE_TOPICS:
+                topic, desc_plot = HIKAYE_TOPICS[ep_disp]
+            else:
+                print(f"Yeni video tespit edildi ({base}), içeriği otomatik dinleniyor...")
+                topic, desc_plot = auto_listen_and_summarize(video_path, ep_disp)
+            title = f"Kasa Katlama Bölüm {ep_disp}: {topic} #Shorts"
+            series_header = f"🎬 Kasa Katlama Serisi - Bölüm {ep_disp}: {topic}"
+            call_action = "🔥 Kasa Katlama Bölüm " + str(ep_disp) + " yayında!\nSizce bir sonraki bölümde kasayı neye basmalılar? En iyi tahmini sabitleyeceğim! 👇👇"
+        else:
+            print(f"Özel/Bağımsız video tespit edildi ({base}), içerik dinleniyor...")
+            clean_name = os.path.splitext(base)[0].replace("_", " ").replace("-", " ").title()
+            topic, desc_plot = auto_listen_and_summarize(video_path, 0)
+            actual_topic = topic if topic != "Sıfırdan Zirveye Ticaret" else clean_name
+            title = f"AnimAI Özel: {actual_topic} 🎬 #Shorts"
+            series_header = f"🎬 AnimAI Özel Gösterim: {actual_topic}"
+            call_action = "🔥 Yeni AnimAI macerası yayında!\nVideo hakkındaki düşüncelerinizi yorumlarda belirtin! 👇👇"
+        
         if len(title) > 100:
             title = title[:97] + "..."
             
         description = (
-            f"🎬 Kasa Katlama Serisi - Bölüm {ep_num}: {topic}\n\n"
+            f"{series_header}\n\n"
             f"📌 Bu Bölümde: {desc_plot}\n\n"
             f"{prev_link_text}"
             f"⏭️ Sonraki bölümleri kaçırmamak için Abone Olun & Bildirimleri Açın! 🔔\n\n"
@@ -207,14 +221,15 @@ def build_metadata(profile_key: str, video_path: str, history: list):
             f"#AnimAIStudio #KasaKatlama #SıfırdanZengin #AlSat #Ticaret #KeşfetBeniÖneÇıkar #TrendShorts #AIAnimasyon #ViralShorts #3DAnimation #Shorts #YapayZeka"
         )
         tags = [
-            "AnimAI Studio", "kasa katlama", f"kasa katlama bölüm {ep_num}", "sıfırdan zengin", 
+            "AnimAI Studio", "kasa katlama", "sıfırdan zengin", 
             "al sat", "ticaret", "keşfet", "trend shorts", "shorts", "yapay zeka", "ai animasyon", 
             "3d animasyon", "hikaye", "animasyon", "viral shorts"
         ]
+        if ep_num is not None:
+            tags.append(f"kasa katlama bölüm {ep_num}")
         pinned_comment = (
-            f"🔥 Kasa Katlama Bölüm {ep_num} yayında!\n"
-            f"Sizce bir sonraki bölümde kasayı neye basmalılar? En iyi tahmini sabitleyeceğim! 👇👇\n"
-            f"🔔 Serinin devamı için abone olmayı unutmayın!"
+            f"{call_action}\n"
+            f"🔔 Yeni videoları kaçırmamak için abone olmayı unutmayın!"
         )
         category_id = "1"
         
@@ -338,11 +353,15 @@ def upload_prerendered_video(profile_key: str):
     post_comment(youtube, video_id, pinned_comment)
 
     # Otomatik Oynatma Listesine Ekle
-    playlist_map = {
-        'animai_studio': os.environ.get('ANIMAI_PLAYLIST_ID', 'PLKdPAh8ARgHA'),
-        'minik_maceralar': os.environ.get('MINIKMACERALAR_PLAYLIST_ID', 'PLEiYrhkomZ2k')
-    }
-    target_pl = playlist_map.get(channel_key)
+    ep_num = extract_episode_num(base)
+    is_kasa = (ep_num is not None) and (ep_num in HIKAYE_TOPICS or re.match(r"^\d+\.mp4$", base) or "kasa" in base.lower())
+    
+    target_pl = None
+    if channel_key == 'animai_studio' and is_kasa:
+        target_pl = os.environ.get('ANIMAI_PLAYLIST_ID', 'PLKdPAh8ARgHA')
+    elif channel_key == 'minik_maceralar':
+        target_pl = os.environ.get('MINIKMACERALAR_PLAYLIST_ID', 'PLEiYrhkomZ2k')
+
     if target_pl:
         try:
             youtube.playlistItems().insert(
