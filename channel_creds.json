@@ -1,0 +1,20 @@
+{
+  "animai_studio": {
+    "channel_name": "AnimAI Studio",
+    "client_id": "411534970985-v213do73im4uk4rusqrm34uocsebnuil.apps.googleusercontent.com",
+    "client_secret": "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",
+    "refresh_token": "1//03XgWEWKB8VwnCgYIARAAGAMSNwF-L9Irvwd0wyMQE1qqu7vSp2FCwKvSYc9JQ7aQvYpYT131iLwYswKsjD2xp0kvDaE29YVLJ_I",
+    "folder": "C:\\Users\\emirhan\\Desktop\\youtube\\Yeni klasör\\Hikaye_ai",
+    "history_file": "C:\\Users\\emirhan\\Desktop\\youtube\\data\\history_animai_studio.json",
+    "playlist_id": "PLKdPAh8ARgHA"
+  },
+  "minik_maceralar": {
+    "channel_name": "Minik Maceralar",
+    "client_id": "411534970985-v213do73im4uk4rusqrm34uocsebnuil.apps.googleusercontent.com",
+    "client_secret": "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",
+    "refresh_token": "1//03MJU3PG470sBCgYIARAAGAMSNwF-L9IrKjqWNWAEYHtz6mSU5Sc1HOF4vHaVt76FOkoNNWZS-ceSPVqLQPjpAW0MeGpVdm0OhI8",
+    "folder": "C:\\Users\\emirhan\\Desktop\\youtube\\Yeni klasör\\Bebek",
+    "history_file": "C:\\Users\\emirhan\\Desktop\\youtube\\data\\history_minik_maceralar.json",
+    "playlist_id": "PLEiYrhkomZ2k"
+  }
+}

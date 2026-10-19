@@ -2,7 +2,7 @@ name: Daily Minik Maceralar Short (Öğlen)
 
 on:
   schedule:
-    - cron: "0 10 * * *"   # 13:00 Turkey time (UTC+3)
+    - cron: "0 8 * * *"   # 11:00 Turkey time (UTC+3)
   workflow_dispatch: {}
 
 permissions:
@@ -11,7 +11,7 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v7
 
@@ -32,6 +32,9 @@ jobs:
           MINIKMACERALAR_YT_CLIENT_SECRET: ${{ secrets.MINIKMACERALAR_YT_CLIENT_SECRET }}
           MINIKMACERALAR_YT_REFRESH_TOKEN: ${{ secrets.MINIKMACERALAR_YT_REFRESH_TOKEN }}
         run: |
+          python src/upload_prerendered.py minik_maceralar && exit 0
+          echo "First attempt failed - waiting 5 minutes before retrying once..."
+          sleep 300
           python src/upload_prerendered.py minik_maceralar
 
       - name: Commit updated history

@@ -4,10 +4,12 @@ Auth uses a pre-obtained OAuth refresh token (see setup/get_refresh_token.py)
 supplied through environment variables so this can run unattended in CI.
 """
 import os
+import time
 
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
+from googleapiclient.errors import HttpError
 
 from profiles import get_profile
 
@@ -49,33 +51,70 @@ def build_title_description(question: dict, profile: dict):
 
 def upload_video(video_path: str, question: dict, thumbnail_path: str | None = None, profile: dict | None = None) -> str:
     profile = profile or get_profile()
-    creds = _get_credentials()
-    youtube = build("youtube", "v3", credentials=creds)
+    
+    # Retry mechanism for YouTube upload - handles network issues, rate limits, and transient errors
+    max_attempts = 3
+    retry_delay = 30  # seconds between retries
+    video_id = None
+    
+    for attempt in range(1, max_attempts + 1):
+        try:
+            print(f"Upload attempt {attempt}/{max_attempts}...")
+            creds = _get_credentials()
+            youtube = build("youtube", "v3", credentials=creds)
 
-    title, description, tags = build_title_description(question, profile)
+            title, description, tags = build_title_description(question, profile)
 
-    body = {
-        "snippet": {
-            "title": title,
-            "description": description,
-            "tags": tags,
-            "categoryId": "27",  # Education
-        },
-        "status": {
-            "privacyStatus": "public",
-            "selfDeclaredMadeForKids": False,
-        },
-    }
+            body = {
+                "snippet": {
+                    "title": title,
+                    "description": description,
+                    "tags": tags,
+                    "categoryId": "27",  # Education
+                },
+                "status": {
+                    "privacyStatus": "public",
+                    "selfDeclaredMadeForKids": False,
+                },
+            }
 
-    media = MediaFileUpload(video_path, mimetype="video/mp4", resumable=True)
-    request = youtube.videos().insert(part="snippet,status", body=body, media_body=media)
+            media = MediaFileUpload(video_path, mimetype="video/mp4", resumable=True)
+            request = youtube.videos().insert(part="snippet,status", body=body, media_body=media)
 
-    response = None
-    while response is None:
-        status, response = request.next_chunk()
+            response = None
+            while response is None:
+                status, response = request.next_chunk()
 
-    video_id = response["id"]
-    print(f"Uploaded: https://youtube.com/shorts/{video_id}")
+            video_id = response["id"]
+            print(f"Uploaded: https://youtube.com/shorts/{video_id}")
+            
+            # If we get here, upload succeeded - break out of retry loop
+            break
+            
+        except HttpError as e:
+            if e.resp.status in [403, 429, 500, 502, 503, 504]:
+                # Retryable errors: rate limit (429), server errors (5xx), forbidden (403 - sometimes transient)
+                if attempt < max_attempts:
+                    print(f"Upload failed with HTTP {e.resp.status}: {e}")
+                    print(f"Retrying in {retry_delay} seconds...")
+                    time.sleep(retry_delay)
+                    retry_delay *= 2  # Exponential backoff
+                    continue
+                else:
+                    raise RuntimeError(f"YouTube upload failed after {max_attempts} attempts: {e}")
+            else:
+                # Non-retryable errors (400, 401, 404) - raise immediately
+                raise RuntimeError(f"YouTube upload failed with non-retryable error HTTP {e.resp.status}: {e}")
+        except Exception as e:
+            # Network errors, timeouts, etc.
+            if attempt < max_attempts:
+                print(f"Upload failed with error: {e}")
+                print(f"Retrying in {retry_delay} seconds...")
+                time.sleep(retry_delay)
+                retry_delay *= 2  # Exponential backoff
+                continue
+            else:
+                raise RuntimeError(f"YouTube upload failed after {max_attempts} attempts: {e}")
 
     comment_text = profile.get("comment_cta", "Bu konuda ne düşünüyorsun? Yorumlarda paylaş 👇")
     if comment_text:

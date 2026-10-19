@@ -1623,7 +1623,41 @@ veri toplayıp organik olarak büyütmek daha sağlıklıdır.
 
 ---
 
-## 9. Özet — Bir Cümlede
+## 9. GitHub Personal Access Token (PAT) Alma - cron-job.org İçin
+
+**Neden Gerekli?**
+- GitHub Actions'ın kendi cron zamanlayıcısı 2-9 saat gecikme yaşayabilir
+- cron-job.org ile tam saatte tetiklemek için PAT şarttır
+- PAT, dış servisin GitHub repo'nu tetiklemesine izin verir
+
+**Adımlar:**
+1. GitHub'da sağ üstteki profil resmine tıkla > **Settings** seç.
+2. En soldaki menünün en altından **Developer settings**'e tıkla.
+3. **Personal access tokens > Tokens (classic)** seçeneğine gir.
+4. **Generate new token (classic)** de.
+5. **Note:** `cron-job-token` yaz (bu sadece senin için bir etiket).
+6. **Expiration:** `No expiration` (Süresiz) seç - token süresi dolarsa cron-job.org çalışmaz.
+7. **İzinler (Scopes):** Sadece şu iki kutucuğu işaretle:
+   - ✅ **repo** (repo'nun okunması/yazılması için)
+   - ✅ **workflow** (workflow'ların tetiklenmesi için)
+8. En alttan **Generate token** de.
+9. `ghp_...` ile başlayan şifreyi kopyala ve güvenli bir yerde sakla.
+
+**⚠️ ÖNEMLİ:**
+- Bu token'ı asla GitHub'a commitleme (`.gitignore` dosyasında `client_secret.json` gibi)
+- Token'ı sadece cron-job.org'da kullanacaksın
+- Token çalınırsa hemen GitHub'dan sil ve yenisini oluştur
+
+**cron-job.org'da Kullanımı:**
+- URL: `https://api.github.com/repos/KULLANICI_ADIN/REPO_ADIN/actions/workflows/WORKFLOW_ADIN.yml/dispatches`
+- Headers:
+  - `Accept: application/vnd.github+json`
+  - `Authorization: Bearer ghp_SENIN_TOKENIN` (Bearer kelimesinden sonra 1 boşluk var!)
+- Body: `{"ref":"main"}`
+
+---
+
+## 10. Özet — Bir Cümlede
 
 Tek bir Python kod tabanı + `profiles.py`'daki konfigürasyon + her kanal
 için ayrı bir OAuth token/GitHub secret seti + ayrı bir GitHub Actions

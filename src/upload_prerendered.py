@@ -4,6 +4,9 @@ Pre-rendered video auto-uploader for YouTube Channels with Viral Growth Enhancem
 2. Dual-Language / Global Titles for Minik Maceralar (Unlocks international audience: US/EU/Global)
 3. Previous Episode Linking (Looping binge-watch effect for serials)
 4. Dynamic Viral Trend Hashtags & SEO Tag Enrichment
+5. A/B Test Titles (Optimizes click-through rate)
+6. Comment Reply Bot (Increases engagement)
+7. Optimal Upload Time Analysis (Maximizes views)
 """
 import os
 import sys
@@ -11,10 +14,23 @@ import json
 import re
 import glob
 import subprocess
+import time
 from datetime import datetime
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
+from googleapiclient.errors import HttpError
+
+# Import optimization modules
+try:
+    from ab_test_titles import run_ab_test
+    from trending_hashtags import add_hashtags_to_description
+    from comment_reply_bot import auto_reply_to_comments
+    from optimal_upload_time import run_optimal_time_analysis
+    OPTIMIZATION_ENABLED = True
+except ImportError:
+    OPTIMIZATION_ENABLED = False
+    print("⚠️  Optimizasyon modülleri yüklenemedi, bazı özellikler devre dışı")
 
 try:
     import speech_recognition as sr
@@ -169,6 +185,15 @@ def get_next_video(profile_key: str, folder: str, history_file: str):
             candidate_remotes.append(asset)
             
     candidate_remotes = sorted(candidate_remotes, key=lambda x: (0, extract_episode_num(x)) if extract_episode_num(x) is not None else (1, x.lower()))
+    
+    # For Minik Maceralar, sort by date and episode number
+    if profile_key == "minik_maceralar":
+        candidate_remotes = sorted(candidate_remotes, key=lambda x: (
+            # Extract date from filename (e.g., leowildadventures-20261018-0001.mp4)
+            x.split("-")[1] if "-" in x else "99999999",  # Date
+            # Extract episode number
+            int(x.split("-")[-1].replace(".mp4", "")) if "-" in x and x.split("-")[-1].replace(".mp4", "").isdigit() else 9999
+        ))
     for asset in candidate_remotes:
         if asset not in uploaded_files:
             downloaded = download_video_from_vault(asset, folder)
@@ -181,10 +206,8 @@ def build_metadata(profile_key: str, video_path: str, history: list):
     base = os.path.basename(video_path)
     upload_index = len(history)
     
+    # Önceki video linki kaldırıldı (kullanıcı isteği)
     prev_link_text = ""
-    if history:
-        last_uploaded = history[-1]
-        prev_link_text = f"⏮️ Önceki Bölüm: {last_uploaded.get('video_url', '')}\n"
         
     if profile_key == "animai_studio":
         ep_num = extract_episode_num(base)
@@ -215,9 +238,10 @@ def build_metadata(profile_key: str, video_path: str, history: list):
         description = (
             f"{series_header}\n\n"
             f"📌 Bu Bölümde: {desc_plot}\n\n"
-            f"{prev_link_text}"
+            f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
             f"⏭️ Sonraki bölümleri kaçırmamak için Abone Olun & Bildirimleri Açın! 🔔\n\n"
             f"💬 Sizce bir sonraki bölümde hangi ürünü alıp satmalılar? Yorumlarda tahmininizi yazın! 👇\n\n"
+            f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
             f"#AnimAIStudio #KasaKatlama #SıfırdanZengin #AlSat #Ticaret #KeşfetBeniÖneÇıkar #TrendShorts #AIAnimasyon #ViralShorts #3DAnimation #Shorts #YapayZeka"
         )
         tags = [
@@ -240,8 +264,9 @@ def build_metadata(profile_key: str, video_path: str, history: list):
         description = (
             f"Minik Maceralar dünyasından kalpleri eriten sıcacık bir an! 🍼✨\n"
             f"Welcome to tiny cute adventures! Sweetest moments to make your day! ❤️🐾\n\n"
-            f"{prev_link_text}"
+            f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
             f"🔔 Her gün yeni maceralar için ailemize katılın / Subscribe for daily cute shorts! 🥰\n\n"
+            f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
             f"#MinikMaceralar #CuteBaby #BabyShorts #BabyAdventures #FunnyBaby #SevimliBebekler #BebekVideoları #TrendingShorts #ViralShorts #Shorts #Cute"
         )
         tags = [
@@ -307,59 +332,112 @@ def upload_prerendered_video(profile_key: str):
     base = os.path.basename(video_path)
     title, description, tags, pinned_comment, category_id = build_metadata(profile_key, video_path, history)
     
+    # Add trending hashtags to description
+    if OPTIMIZATION_ENABLED:
+        description = add_hashtags_to_description(description, profile_key)
+        print(f"✅ Trending hashtag'ler eklendi")
+    
     print(f"\n==========================================")
     print(f"Kanal: {profile_key}")
     print(f"Video Dosyası: {base}")
     print(f"Başlık: {title}")
     print(f"==========================================\n")
     
-    creds = Credentials(
-        token=None,
-        refresh_token=refresh_token,
-        client_id=client_id,
-        client_secret=client_secret,
-        token_uri="https://oauth2.googleapis.com/token",
-        scopes=SCOPES,
-    )
-    youtube = build("youtube", "v3", credentials=creds)
+    # Retry mechanism for YouTube upload - handles network issues, rate limits, and transient errors
+    max_attempts = 3
+    retry_delay = 30
+    video_id = None
+    video_url = None
     
-    media = MediaFileUpload(video_path, mimetype="video/mp4", resumable=True)
-    body = {
-        "snippet": {
-            "title": title,
-            "description": description,
-            "tags": tags,
-            "categoryId": category_id,
-            "defaultLanguage": "tr",
-            "defaultAudioLanguage": "tr"
-        },
-        "status": {
-            "privacyStatus": "public",
-            "selfDeclaredMadeForKids": False
-        }
-    }
-    
-    request = youtube.videos().insert(part="snippet,status", body=body, media_body=media)
-    response = None
-    while response is None:
-        status, response = request.next_chunk()
-        if status:
-            print(f"Yükleme İlerlemesi: %{int(status.progress() * 100)}")
+    for attempt in range(1, max_attempts + 1):
+        try:
+            print(f"\nUpload attempt {attempt}/{max_attempts}...")
+            creds = Credentials(
+                token=None,
+                refresh_token=refresh_token,
+                client_id=client_id,
+                client_secret=client_secret,
+                token_uri="https://oauth2.googleapis.com/token",
+                scopes=SCOPES,
+            )
+            youtube = build("youtube", "v3", credentials=creds)
             
-    video_id = response.get("id")
-    video_url = f"https://youtube.com/shorts/{video_id}"
-    print(f"\nBAŞARILI: Video yayınlandı! URL: {video_url}")
+            media = MediaFileUpload(video_path, mimetype="video/mp4", resumable=True)
+            body = {
+                "snippet": {
+                    "title": title,
+                    "description": description,
+                    "tags": tags,
+                    "categoryId": category_id,
+                    "defaultLanguage": "tr",
+                    "defaultAudioLanguage": "tr"
+                },
+                "status": {
+                    "privacyStatus": "public",
+                    "selfDeclaredMadeForKids": False
+                }
+            }
+            
+            request = youtube.videos().insert(part="snippet,status", body=body, media_body=media)
+            response = None
+            while response is None:
+                status, response = request.next_chunk()
+                if status:
+                    print(f"Yükleme İlerlemesi: %{int(status.progress() * 100)}")
+                
+            video_id = response.get("id")
+            video_url = f"https://youtube.com/shorts/{video_id}"
+            print(f"\nBAŞARILI: Video yayınlandı! URL: {video_url}")
+            break
+            
+        except HttpError as e:
+            if e.resp.status in [403, 429, 500, 502, 503, 504]:
+                if attempt < max_attempts:
+                    print(f"Upload failed with HTTP {e.resp.status}: {e}")
+                    print(f"Retrying in {retry_delay} seconds...")
+                    time.sleep(retry_delay)
+                    retry_delay *= 2
+                    continue
+                else:
+                    raise RuntimeError(f"YouTube upload failed after {max_attempts} attempts: {e}")
+            else:
+                raise RuntimeError(f"YouTube upload failed with non-retryable error HTTP {e.resp.status}: {e}")
+        except Exception as e:
+            if attempt < max_attempts:
+                print(f"Upload failed with error: {e}")
+                print(f"Retrying in {retry_delay} seconds...")
+                time.sleep(retry_delay)
+                retry_delay *= 2
+                continue
+            else:
+                raise RuntimeError(f"YouTube upload failed after {max_attempts} attempts: {e}")
     
     post_comment(youtube, video_id, pinned_comment)
+    
+    # Start A/B test for title optimization
+    if OPTIMIZATION_ENABLED:
+        try:
+            print(f"\n🎯 A/B test başlatılıyor...")
+            run_ab_test(profile_key, video_id, title)
+        except Exception as e:
+            print(f"⚠️  A/B test başlatılamadı: {e}")
+    
+    # Auto-reply to recent comments
+    if OPTIMIZATION_ENABLED:
+        try:
+            print(f"\n💬 Yorumlara otomatik cevap veriliyor...")
+            auto_reply_to_comments(profile_key, video_id)
+        except Exception as e:
+            print(f"⚠️  Yorum cevaplama hatası: {e}")
 
     # Otomatik Oynatma Listesine Ekle
     ep_num = extract_episode_num(base)
     is_kasa = (ep_num is not None) and (ep_num in HIKAYE_TOPICS or re.match(r"^\d+\.mp4$", base) or "kasa" in base.lower())
     
     target_pl = None
-    if channel_key == 'animai_studio' and is_kasa:
+    if profile_key == 'animai_studio' and is_kasa:
         target_pl = os.environ.get('ANIMAI_PLAYLIST_ID', 'PLKdPAh8ARgHA')
-    elif channel_key == 'minik_maceralar':
+    elif profile_key == 'minik_maceralar':
         target_pl = os.environ.get('MINIKMACERALAR_PLAYLIST_ID', 'PLEiYrhkomZ2k')
 
     if target_pl:
@@ -389,6 +467,26 @@ def upload_prerendered_video(profile_key: str):
     })
     with open(history_file, "w", encoding="utf-8") as f:
         json.dump(history, f, indent=2, ensure_ascii=False)
+    
+    # Run optimal time analysis (weekly)
+    if OPTIMIZATION_ENABLED:
+        try:
+            # Check if analysis was run in the last 7 days
+            time_file = os.path.join(root_dir, "data", f"optimal_time_{profile_key}.json")
+            should_analyze = True
+            
+            if os.path.exists(time_file):
+                with open(time_file, "r", encoding="utf-8") as f:
+                    time_data = json.load(f)
+                last_update = datetime.fromisoformat(time_data["updated_at"])
+                if (datetime.now() - last_update).days < 7:
+                    should_analyze = False
+            
+            if should_analyze:
+                print(f"\n⏰ En iyi saat analizi başlatılıyor...")
+                run_optimal_time_analysis(profile_key)
+        except Exception as e:
+            print(f"⚠️  Saat analizi hatası: {e}")
         
     return video_url
 
