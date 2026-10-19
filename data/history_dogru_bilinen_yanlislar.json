@@ -309,6 +309,11 @@
       "category": "dil ve kelime yanılgıları",
       "question": "Haber anlamına gelen İngilizce News kelimesi North, East, West ve South yönlerinin baş harfleridir. Dünyanın dört bir yanından toplanan havadisleri özetlediği için bu kısaltmanın doğduğu anlatılır.",
       "answer": "Hayır, News kelimesi bir kısaltma değildir!"
+    },
+    {
+      "category": "gündelik hayat mitleri",
+      "question": "Parmaklarınızı çıtlatmak eklemlerinizde kireçlenmeye ve kalıcı eklem hasarına yol açar. Çocukluğumuzdan beri büyüklerimiz parmaklarımızı kütletmememiz için bizi sertçe uyarır!",
+      "answer": "Hayır, parmak çıtlatmak asla kireçlenme yapmaz!"
     }
   ]
 }
