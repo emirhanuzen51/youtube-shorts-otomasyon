@@ -2,7 +2,7 @@ name: Daily Minik Maceralar Short (Öğlen)
 
 on:
   schedule:
-    - cron: "5 10 * * *"   # 10:05 UTC = 13:05 Turkey time (UTC+3)
+    - cron: "40 10 * * *"   # 10:40 UTC = 13:40 Turkey time (UTC+3)
   workflow_dispatch: {}
 
 permissions:
