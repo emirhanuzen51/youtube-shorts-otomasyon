@@ -2,11 +2,9 @@
 Pre-rendered video auto-uploader for YouTube Channels with Viral Growth Enhancements:
 1. Auto Pinned/Engaging Comment (Drives comment section activity & algorithmic boost)
 2. Dual-Language / Global Titles for Minik Maceralar (Unlocks international audience: US/EU/Global)
-3. Previous Episode Linking (Looping binge-watch effect for serials)
-4. Dynamic Viral Trend Hashtags & SEO Tag Enrichment
-5. A/B Test Titles (Optimizes click-through rate)
-6. Comment Reply Bot (Increases engagement)
-7. Optimal Upload Time Analysis (Maximizes views)
+3. Dynamic Viral Trend Hashtags & SEO Tag Enrichment
+4. Comment Reply Bot (Increases engagement)
+5. Optimal Upload Time Analysis (Maximizes views)
 """
 import os
 import sys
@@ -21,9 +19,11 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.errors import HttpError
 
+# Add parent directory to path for imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 # Import optimization modules
 try:
-    from ab_test_titles import run_ab_test
     from trending_hashtags import add_hashtags_to_description
     from comment_reply_bot import auto_reply_to_comments
     from optimal_upload_time import run_optimal_time_analysis
@@ -415,13 +415,6 @@ def upload_prerendered_video(profile_key: str):
     post_comment(youtube, video_id, pinned_comment)
     
     # Start A/B test for title optimization
-    if OPTIMIZATION_ENABLED:
-        try:
-            print(f"\n🎯 A/B test başlatılıyor...")
-            run_ab_test(profile_key, video_id, title)
-        except Exception as e:
-            print(f"⚠️  A/B test başlatılamadı: {e}")
-    
     # Auto-reply to recent comments
     if OPTIMIZATION_ENABLED:
         try:
