@@ -314,6 +314,11 @@
       "category": "gündelik hayat mitleri",
       "question": "Parmaklarınızı çıtlatmak eklemlerinizde kireçlenmeye ve kalıcı eklem hasarına yol açar. Çocukluğumuzdan beri büyüklerimiz parmaklarımızı kütletmememiz için bizi sertçe uyarır!",
       "answer": "Hayır, parmak çıtlatmak asla kireçlenme yapmaz!"
+    },
+    {
+      "category": "hayvanlar hakkında yanlış bilgiler",
+      "question": "Develer günlerce süren çöl yolculuklarında hayatta kalmak için hörgüçlerinde devasa miktarda su depolar. Çölde susadıkça bu gizli su deposunu kullanarak susuzluklarını giderdikleri söylenir.",
+      "answer": "Hayır, develerin hörgüçlerinde tek bir damla bile su yoktur!"
     }
   ]
 }
