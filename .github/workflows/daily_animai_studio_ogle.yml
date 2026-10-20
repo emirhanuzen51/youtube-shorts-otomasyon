@@ -2,7 +2,7 @@ name: Daily AnimAI Studio Short (Öğlen)
 
 on:
   schedule:
-    - cron: "0 7 * * *"   # 10:00 Turkey time (UTC+3)
+    - cron: "5 10 * * *"   # 13:05 Turkey time (UTC+3)
   workflow_dispatch: {}
 
 permissions:
