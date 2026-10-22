@@ -319,6 +319,11 @@
       "category": "hayvanlar hakkında yanlış bilgiler",
       "question": "Develer günlerce süren çöl yolculuklarında hayatta kalmak için hörgüçlerinde devasa miktarda su depolar. Çölde susadıkça bu gizli su deposunu kullanarak susuzluklarını giderdikleri söylenir.",
       "answer": "Hayır, develerin hörgüçlerinde tek bir damla bile su yoktur!"
+    },
+    {
+      "category": "hayvanlar hakkında yanlış bilgiler",
+      "question": "Kocaman cüssesiyle vahşi doğanın devi olan filler küçücük bir fareden ölesiye korkar! Hatta farenin hortumlarına girip onları boğacağı korkusuyla kaçıştıkları anlatılır.",
+      "answer": "Hayır, filler farelerden asla korkmaz!"
     }
   ]
 }
