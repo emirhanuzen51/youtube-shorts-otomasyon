@@ -324,6 +324,11 @@
       "category": "hayvanlar hakkında yanlış bilgiler",
       "question": "Kocaman cüssesiyle vahşi doğanın devi olan filler küçücük bir fareden ölesiye korkar! Hatta farenin hortumlarına girip onları boğacağı korkusuyla kaçıştıkları anlatılır.",
       "answer": "Hayır, filler farelerden asla korkmaz!"
+    },
+    {
+      "category": "hayvanlar hakkında yanlış bilgiler",
+      "question": "Kutup ayıları bembeyaz ve kalın kürkleri sayesinde karlı buzullarda kusursuzca kamufle olurlar. Çoğu insan onların tüylerinin kar gibi bembeyaz olduğuna adı gibi emindir!",
+      "answer": "Hayır, kutup ayılarının tüyleri aslında tamamen şeffaftır!"
     }
   ]
 }
