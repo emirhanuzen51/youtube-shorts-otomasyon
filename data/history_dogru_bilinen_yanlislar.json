@@ -329,6 +329,11 @@
       "category": "hayvanlar hakkında yanlış bilgiler",
       "question": "Kutup ayıları bembeyaz ve kalın kürkleri sayesinde karlı buzullarda kusursuzca kamufle olurlar. Çoğu insan onların tüylerinin kar gibi bembeyaz olduğuna adı gibi emindir!",
       "answer": "Hayır, kutup ayılarının tüyleri aslında tamamen şeffaftır!"
+    },
+    {
+      "category": "hayvanlar hakkında yanlış bilgiler",
+      "question": "Balinalar nefes alırken sırtlarındaki delikten gökyüzüne devasa su fıskiyeleri fışkırtır. Çizgi filmlerden beri okyanusun devlerinin ciğerlerindeki suyu bu delikten boşalttığına inanırız.",
+      "answer": "Hayır, balinalar asla su püskürtmez!"
     }
   ]
 }
