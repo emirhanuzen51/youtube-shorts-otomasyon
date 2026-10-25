@@ -334,6 +334,11 @@
       "category": "hayvanlar hakkında yanlış bilgiler",
       "question": "Balinalar nefes alırken sırtlarındaki delikten gökyüzüne devasa su fıskiyeleri fışkırtır. Çizgi filmlerden beri okyanusun devlerinin ciğerlerindeki suyu bu delikten boşalttığına inanırız.",
       "answer": "Hayır, balinalar asla su püskürtmez!"
+    },
+    {
+      "category": "hayvanlar hakkında yanlış bilgiler",
+      "question": "Yarasalar zifiri karanlıkta yönlerini sadece sesle bulurlar çünkü gözleri tamamen kördür! Bu yüzden gece avlanan bu canlıların dünyayı hiç göremediğine inanılır.",
+      "answer": "Hayır, hiçbir yarasa türü kör değildir!"
     }
   ]
 }
