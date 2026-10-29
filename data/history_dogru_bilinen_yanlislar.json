@@ -344,6 +344,11 @@
       "category": "bilim ve doğa yanılgıları",
       "question": "Yıldırımın aynı yere asla iki kez düşmediğini duymuşsunuzdur. Hatta bu yüzden bir kez şimşek çakan yerin en güvenli sığınak olduğuna inanırız!",
       "answer": "Hayır, yıldırımlar aynı noktayı defalarca vurur!"
+    },
+    {
+      "category": "sağlık ve beden mitleri",
+      "question": "Islak saçla dışarı çıkmak veya cereyanda kalmak insanı anında şifayı kapıp hasta eder. Annelerimiz hasta olmamamız için saçımızı kurutmadan kapının önüne bile çıkarmazdı!",
+      "answer": "Hayır, soğuk hava sizi tek başına asla hasta edemez!"
     }
   ]
 }
