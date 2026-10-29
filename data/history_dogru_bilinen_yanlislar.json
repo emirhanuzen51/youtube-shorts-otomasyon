@@ -339,6 +339,11 @@
       "category": "hayvanlar hakkında yanlış bilgiler",
       "question": "Yarasalar zifiri karanlıkta yönlerini sadece sesle bulurlar çünkü gözleri tamamen kördür! Bu yüzden gece avlanan bu canlıların dünyayı hiç göremediğine inanılır.",
       "answer": "Hayır, hiçbir yarasa türü kör değildir!"
+    },
+    {
+      "category": "bilim ve doğa yanılgıları",
+      "question": "Yıldırımın aynı yere asla iki kez düşmediğini duymuşsunuzdur. Hatta bu yüzden bir kez şimşek çakan yerin en güvenli sığınak olduğuna inanırız!",
+      "answer": "Hayır, yıldırımlar aynı noktayı defalarca vurur!"
     }
   ]
 }
