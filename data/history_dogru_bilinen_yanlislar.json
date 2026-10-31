@@ -354,6 +354,11 @@
       "category": "hayvanlar hakkında yanlış bilgiler",
       "question": "Karasineklerin dünyadaki tüm ömrü sadece yirmi dört saattir. Sabah dünyaya gelip gün batımında hemen hayatını kaybettiklerine neredeyse eminizdir!",
       "answer": "Hayır, karasinekler tek bir günde ölmez!"
+    },
+    {
+      "category": "dil ve kelime yanılgıları",
+      "question": "Eskimo dillerinde kar için yüzlerce farklı kelime olduğunu mutlaka duymuşsunuzdur. Kar ve buzla kaplı bu coğrafyada yaşayanların her kar türüne ayrı bir isim taktığı anlatılır.",
+      "answer": "Hayır, Eskimoların kardan bahseden yüzlerce kelimesi yok!"
     }
   ]
 }
