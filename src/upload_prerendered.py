@@ -329,20 +329,21 @@ def build_metadata(profile_key: str, video_path: str, history: list):
         title = BEBEK_TITLES[title_idx]
         
         description = (
-            f"Minik Maceralar dünyasından kalpleri eriten sıcacık bir an! 🍼✨\n"
-            f"Welcome to tiny cute adventures! Sweetest moments to make your day! ❤️🐾\n\n"
+            f"Minik Maceralar: Çocuklar için eğlenceli ve eğitici kısa videolar! 🍼📚\n"
+            f"Fun and educational shorts for kids! Learn colors, numbers, animals and more! 🌈🔢🐾\n\n"
             f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-            f"🔔 Her gün yeni maceralar için ailemize katılın / Subscribe for daily cute shorts! 🥰\n\n"
+            f"🔔 Her gün yeni maceralar ve öğrenme fırsatları için abone olun! / Subscribe for daily adventures! 🥰\n\n"
             f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-            f"#MinikMaceralar #CuteBaby #BabyShorts #BabyAdventures #FunnyBaby #SevimliBebekler #BebekVideoları #TrendingShorts #ViralShorts #Shorts #Cute"
+            f"#MinikMaceralar #CuteBaby #BabyShorts #BabyAdventures #FunnyBaby #SevimliBebekler #BebekVideoları #TrendingShorts #ViralShorts #Shorts #Cute #KidsLearning #Educational #LearnColors #LearnNumbers #KidsVideos"
         )
         tags = [
             "Minik Maceralar", "cute baby", "baby shorts", "baby adventures", "funny baby",
             "sevimli bebekler", "bebek videoları", "tatlı bebek", "cute animals", "cute moments",
-            "trending shorts", "viral shorts", "shorts", "for kids"
+            "trending shorts", "viral shorts", "shorts", "for kids", "kids learning", "educational",
+            "learn colors", "learn numbers", "kids videos", "children videos"
         ]
         pinned_comment = (
-            f"Bu tatlılığa 10 üzerinden kaç verirsiniz? 🍼❤️ / Rate this cuteness from 1 to 10! 👇🥰\n"
+            f"Bu videoyu beğendiniz mi? ❤️ Yorumlarda paylaşın! / Did you like this video? Share in comments! 👇🥰\n"
             f"Her gün yeni videolar için abone olmayı unutmayın! 🔔"
         )
         category_id = "15"
