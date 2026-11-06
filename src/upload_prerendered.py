@@ -579,7 +579,7 @@ def upload_prerendered_video(profile_key: str):
             
             if should_analyze:
                 print(f"\n⏰ En iyi saat analizi başlatılıyor...")
-                run_optimal_time_analysis(profile_key)
+                run_optimal_time_analysis(profile_key, client_id, client_secret, refresh_token)
         except Exception as e:
             print(f"⚠️  Saat analizi hatası: {e}")
         
