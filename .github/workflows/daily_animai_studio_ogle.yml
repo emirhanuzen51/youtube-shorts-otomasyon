@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: animai-studio-upload
+  cancel-in-progress: false
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -24,6 +28,11 @@ jobs:
           pip install -r requirements.txt
           pip install SpeechRecognition pynacl google-genai
 
+      - name: Verify video tools
+        run: |
+          ffmpeg -version
+          ffprobe -version
+
       - name: Run AnimAI Studio prerendered uploader
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -31,13 +40,11 @@ jobs:
           ANIMAI_YT_CLIENT_ID: ${{ secrets.ANIMAI_YT_CLIENT_ID }}
           ANIMAI_YT_CLIENT_SECRET: ${{ secrets.ANIMAI_YT_CLIENT_SECRET }}
           ANIMAI_YT_REFRESH_TOKEN: ${{ secrets.ANIMAI_YT_REFRESH_TOKEN }}
-        run: |
-          python src/upload_prerendered.py animai_studio && exit 0
-          echo "First attempt failed - waiting 5 minutes before retrying once..."
-          sleep 300
-          python src/upload_prerendered.py animai_studio
+          MAHALLE_PLAYLIST_ID: ${{ secrets.MAHALLE_PLAYLIST_ID }}
+        run: python src/upload_prerendered.py animai_studio
 
       - name: Commit updated history
+        if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"

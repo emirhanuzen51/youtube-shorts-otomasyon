@@ -10,3 +10,5 @@ output/
 venv/
 .venv/
 manual_uploads/
+data/youtube_refresh_token.txt
+data/animai_youtube_refresh_token.txt

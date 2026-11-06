@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: minik-maceralar-upload
+  cancel-in-progress: false
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -24,6 +28,11 @@ jobs:
           pip install -r requirements.txt
           pip install SpeechRecognition pynacl google-genai
 
+      - name: Verify video tools
+        run: |
+          ffmpeg -version
+          ffprobe -version
+
       - name: Run Minik Maceralar prerendered uploader
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -31,13 +40,10 @@ jobs:
           MINIKMACERALAR_YT_CLIENT_ID: ${{ secrets.MINIKMACERALAR_YT_CLIENT_ID }}
           MINIKMACERALAR_YT_CLIENT_SECRET: ${{ secrets.MINIKMACERALAR_YT_CLIENT_SECRET }}
           MINIKMACERALAR_YT_REFRESH_TOKEN: ${{ secrets.MINIKMACERALAR_YT_REFRESH_TOKEN }}
-        run: |
-          python src/upload_prerendered.py minik_maceralar && exit 0
-          echo "First attempt failed - waiting 5 minutes before retrying once..."
-          sleep 300
-          python src/upload_prerendered.py minik_maceralar
+        run: python src/upload_prerendered.py minik_maceralar
 
       - name: Commit updated history
+        if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"

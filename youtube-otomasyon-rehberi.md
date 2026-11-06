@@ -1064,9 +1064,10 @@ Run this once on your own machine (NOT in CI):
     python setup/get_refresh_token.py
 
 It opens a browser for you to sign in with the Google account that owns
-your YouTube channel, then prints the refresh token to copy into your
-GitHub repo secrets as YT_REFRESH_TOKEN (along with YT_CLIENT_ID and
-YT_CLIENT_SECRET taken from client_secret.json).
+your YouTube channel, then saves the refresh token to
+`data/youtube_refresh_token.txt`. Copy that value into the GitHub repo secret
+`YT_REFRESH_TOKEN`; get the client ID and secret from `client_secret.json`.
+The token is not printed in the terminal.
 
 Requires a `client_secret.json` (OAuth "Desktop app" client) downloaded
 from Google Cloud Console, placed next to this script or in the project root.
@@ -1105,15 +1106,16 @@ def main():
     # Force Google to show account/channel selection again instead of silently
     # reusing a previously-granted (possibly wrong) channel.
     creds = flow.run_local_server(port=0, prompt="consent select_account")
+    if not creds.refresh_token:
+        raise RuntimeError("Google OAuth completed without returning a refresh token")
 
-    key = "installed" if "installed" in client_config else "web"
-    client_id = client_config[key]["client_id"]
-    client_secret = client_config[key]["client_secret"]
-
-    print("\nSuccess! Add these as GitHub repo secrets:\n")
-    print(f"YT_CLIENT_ID={client_id}")
-    print(f"YT_CLIENT_SECRET={client_secret}")
-    print(f"YT_REFRESH_TOKEN={creds.refresh_token}")
+    output_path = os.path.join(os.path.dirname(__file__), "..", "data", "youtube_refresh_token.txt")
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(creds.refresh_token)
+    print(f"Refresh token saved to {os.path.abspath(output_path)}.")
+    print("Copy it to the appropriate GitHub Secret, then remove the local file.")
+    print("The token and OAuth client credentials are not displayed in the terminal.")
 
 
 if __name__ == "__main__":
@@ -1407,12 +1409,10 @@ Bu adımlar **her yeni kanal için tekrarlanır**. İlk kanaldan başlayın.
    python setup/get_refresh_token.py
    ```
    Açılan tarayıcı ekranında doğru Google hesabıyla giriş yap, izin ver.
-   Script şunu yazdıracak:
-   ```
-   YT_CLIENT_ID=...
-   YT_CLIENT_SECRET=...
-   YT_REFRESH_TOKEN=...
-   ```
+   Refresh token `data/youtube_refresh_token.txt` dosyasına kaydedilir; bu
+   dosya `.gitignore` içindedir. Client ID ve secret'ı `client_secret.json`
+   dosyasından al. Değerleri kaynak koda veya terminal komut geçmişine yazma;
+   GitHub Secrets arayüzünden ekledikten sonra yerel token dosyasını sil.
 
 3. **Doğrula** — bu token'ın gerçekten doğru kanala bağlandığını kontrol et
    (bu adımı ASLA atlama, yanlış kanala bağlanma çok sık yaşanan bir hata):
@@ -1625,35 +1625,106 @@ veri toplayıp organik olarak büyütmek daha sağlıklıdır.
 
 ## 9. GitHub Personal Access Token (PAT) Alma - cron-job.org İçin
 
-**Neden Gerekli?**
-- GitHub Actions'ın kendi cron zamanlayıcısı 2-9 saat gecikme yaşayabilir
-- cron-job.org ile tam saatte tetiklemek için PAT şarttır
-- PAT, dış servisin GitHub repo'nu tetiklemesine izin verir
+cron-job.org gibi GitHub dışındaki bir servis, GitHub Actions workflow'unu
+GitHub API üzerinden başlatmak için bir erişim belirtecine ihtiyaç duyar.
+GitHub'ın `schedule` tetikleyicisi ayrıca kullanılabilir; zamanlaması yoğunluk
+nedeniyle gecikebilir. Dış servisle belirli bir saatte tetiklemek istiyorsanız
+aşağıdaki kurulumu yapın.
 
-**Adımlar:**
-1. GitHub'da sağ üstteki profil resmine tıkla > **Settings** seç.
-2. En soldaki menünün en altından **Developer settings**'e tıkla.
-3. **Personal access tokens > Tokens (classic)** seçeneğine gir.
-4. **Generate new token (classic)** de.
-5. **Note:** `cron-job-token` yaz (bu sadece senin için bir etiket).
-6. **Expiration:** `No expiration` (Süresiz) seç - token süresi dolarsa cron-job.org çalışmaz.
-7. **İzinler (Scopes):** Sadece şu iki kutucuğu işaretle:
-   - ✅ **repo** (repo'nun okunması/yazılması için)
-   - ✅ **workflow** (workflow'ların tetiklenmesi için)
-8. En alttan **Generate token** de.
-9. `ghp_...` ile başlayan şifreyi kopyala ve güvenli bir yerde sakla.
+**Bu projedeki AnimAI Studio ve Minik Maceralar workflow'ları yerleşik GitHub
+Actions `schedule` tetikleyicisini kullanır; bunları çalıştırmak için PAT veya
+cron-job.org gerekmez.** Minik Maceralar yayınları 13:40 ve 21:00 Türkiye
+saatine göre zamanlanmıştır. Bölümlerin yalnızca dış bir servis tarafından
+`workflow_dispatch` ile başlatılması istenirse PAT kurulumunu kullanın.
 
-**⚠️ ÖNEMLİ:**
-- Bu token'ı asla GitHub'a commitleme (`.gitignore` dosyasında `client_secret.json` gibi)
-- Token'ı sadece cron-job.org'da kullanacaksın
-- Token çalınırsa hemen GitHub'dan sil ve yenisini oluştur
+### 9.1. Fine-grained PAT oluşturma
 
-**cron-job.org'da Kullanımı:**
-- URL: `https://api.github.com/repos/KULLANICI_ADIN/REPO_ADIN/actions/workflows/WORKFLOW_ADIN.yml/dispatches`
-- Headers:
-  - `Accept: application/vnd.github+json`
-  - `Authorization: Bearer ghp_SENIN_TOKENIN` (Bearer kelimesinden sonra 1 boşluk var!)
-- Body: `{"ref":"main"}`
+Geniş yetkili klasik token yerine yalnızca bu depo ve Actions izniyle sınırlı
+bir **fine-grained personal access token** oluşturun:
+
+1. GitHub'da **Settings > Developer settings > Personal access tokens >
+   Fine-grained tokens** sayfasına gidip **Generate new token** seçin.
+2. Token'a `cron-job-org` gibi bir ad verin; **Expiration** için ihtiyacınız
+   olan en kısa süreyi seçin.
+3. **Resource owner** olarak deponun sahibini seçin.
+4. **Repository access > Only select repositories** seçip yalnızca bu projeyi
+   (`youtube-shorts-otomasyon`) işaretleyin.
+5. **Repository permissions > Actions** iznini **Read and write** yapın.
+   Başka izin eklemeyin.
+6. Token'ı oluşturup gösterildiği anda güvenli bir yere kopyalayın. Token
+   değerini daha sonra GitHub tekrar göstermez.
+
+Token'ın süresi dolmadan yenisini oluşturup cron-job.org'daki değeri
+güncelleyin. Süresiz token kullanmayın. Fine-grained token hesabınızda veya
+kurumunuzda kullanılamıyorsa, klasik token için GitHub'ın bu API uç noktasında
+istediği `repo` kapsamı gerekir; bu kapsam daha geniş yetki verdiğinden son
+çare olarak kullanın.
+
+### 9.2. cron-job.org isteğini ayarlama
+
+Önce tetiklenecek workflow dosyasının GitHub'daki varsayılan dalda bulunduğunu
+ve `on` altında `workflow_dispatch: {}` tanımlı olduğunu doğrulayın. Ardından
+cron-job.org'da bir job oluşturup isteği şöyle ayarlayın:
+
+- **Request method:** `POST`
+- **URL:** `https://api.github.com/repos/KULLANICI_ADI/youtube-shorts-otomasyon/actions/workflows/WORKFLOW_DOSYASI.yml/dispatches`
+  - `KULLANICI_ADI` yerine GitHub kullanıcı/kurum adınızı, `WORKFLOW_DOSYASI.yml`
+    yerine `.github/workflows/` altındaki dosyanın adını yazın. Örneğin:
+    `daily_minik_maceralar_aksam.yml`.
+- **Headers** (her birini ayrı başlık/değer olarak ekleyin):
+  - `Accept` → `application/vnd.github+json`
+  - `Content-Type` → `application/json`
+  - `Authorization` başlığının değerinde `Bearer` yazıp bir boşluk bırakın,
+    ardından oluşturduğunuz PAT'i ekleyin.
+- **Request body:** `{"ref":"master"}`
+  - Bu depoda varsayılan dal `master`'dır. Başka bir depoda kullanırken
+    `ref` değerini o deponun varsayılan dalıyla değiştirin.
+- cron-job.org'da çalıştırma zamanını ve saat dilimini seçip job'ı kaydedin.
+
+PAT'i URL'ye, request body'ye veya kaynak koda koymayın; sadece
+`Authorization` header değerinde kullanın. Job'ı **Run now** ile bir kez
+deneyin ve GitHub deposunun **Actions** sekmesinde ilgili workflow'un
+başladığını doğrulayın. Başarılı workflow-dispatch isteği `204 No Content`
+döndürür; yanıt gövdesi boştur. Token açığa çıkarsa GitHub'dan hemen iptal edip
+yenisini oluşturun.
+
+## 10. AnimAI Studio ve Minik Maceralar'ın hazır video akışları
+
+Bu iki kanalın hazır MP4 yükleyicileri bilgisayar kapalıyken GitHub Actions
+üzerinde çalışır. Release'deki `videos-vault-v1` video deposu kullanılır;
+yükleme geçmişi `data/history_<kanal>.json` dosyasında tutulur.
+
+- **Minik Maceralar:** Her gün 13:40 ve 21:00 Türkiye saati (UTC+3) için
+  ayrı workflow çalışır. Her çalışmada geçmişte yüklenmemiş
+  `minik_kesifler-*` videolarından rastgele seçim yapılır; bu havuz tükendikten
+  sonra eski Leo/Mello videoları kullanılır. Yüklemeler çocuklara yönelik
+  (`Made for Kids`) olarak işaretlenir; yorum ve otomatik yanıt adımları
+  çalıştırılmaz.
+- **AnimAI Studio:** Akşam workflow'u Mahalle Maçı bölümlerini 1'den 11'e
+  sırayla seçer ve `MAHALLE_PLAYLIST_ID` secret'ındaki oynatma listesine ekler.
+  Bu seri bitince Kasa Katlama videoları seçilebilir. Öğlen workflow'u manuel
+  tetikleme içindir; etkin bir zamanlanmış öğlen yayını değildir.
+- Yatay kaynaklar yüklemeden önce Shorts biçimine dönüştürülür; kaynak MP4
+  dosyaları değiştirilmez. 180 saniyeyi aşan veya dönüştürülemeyen videoda
+  yükleme hata verir. GitHub-hosted Ubuntu runner'ında `ffmpeg` ve `ffprobe`
+  bulunması her çalışmada doğrulanır.
+
+Bu zamanlamalar GitHub Actions'ın yerleşik `schedule` özelliğidir; bu
+workflow'lar için cron-job.org PAT'i gerekmez. Workflow hatası halinde video
+yüklemesi otomatik olarak baştan tekrarlanmaz; böylece belirsiz bir ağ
+hatasından sonra aynı videonun iki kez yüklenmesi riski azaltılır. Yükleme
+sonrası playlist ekleme yarım kalırsa durum geçmişe kaydedilir ve sonraki
+çalışmada tamamlanmaya çalışılır.
+
+YouTube OAuth access token'ı her çalışmada refresh token kullanılarak otomatik
+yenilenir; normal şartlarda access token'ı elle üretmek gerekmez. Ancak GitHub
+cron'u YouTube refresh token'ının iptal edilmesini veya sona ermesini önleyemez.
+Google Cloud OAuth consent screen **External / Testing** durumundaysa refresh
+token 7 gün sonra sona erer; sürekli otomasyon için uygulamanın yayın durumunu
+Google Cloud Console'da kontrol edip **In production** durumuna almak gerekir.
+Üretimde de kullanıcı erişimi iptali, uzun süre kullanılmama veya Google
+güvenlik politikaları token'ı geçersiz kılabilir. Bu durumda yeniden OAuth
+onayı gerekir; hiçbir cron servisi bu kullanıcı onayının yerini alamaz.
 
 ---
 

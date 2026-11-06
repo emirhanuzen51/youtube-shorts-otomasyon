@@ -11,16 +11,18 @@ import sys
 import json
 import re
 import glob
+import random
 import subprocess
-import time
 from datetime import datetime
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
-from googleapiclient.errors import HttpError
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from prerendered_queue import MAHALLE_RELEASE_ASSETS, canonical_asset_name, select_next_asset
+from shorts_video import prepare_shorts_video
 
 # Import optimization modules
 try:
@@ -97,29 +99,26 @@ HIKAYE_TOPICS = {
 }
 
 BEBEK_TITLES = [
-    "Minik Kahramanın Büyük Keşfi! 🍼 | Cute Baby Big Adventure ✨ #Shorts",
-    "Dünyanın En Tatlı Bebeği ve Sevimli Dostu 🐾 | Cute Baby & Puppy 👶 #Shorts",
-    "Gülümsemenizi Garanti Eden Anlar! ❤️ | Sweetest Baby Moments 🍼 #Shorts",
-    "Minik Kaşifin İlk Adımları 🌟 | Little Baby Steps to Adventure 👶 #Shorts",
-    "Günün Neşesi: Sevimli Bebeğin Komik Halleri! 😂 | Funny Baby Moments 🍼 #Shorts",
-    "Minik Kahraman Orman Maceralarında! 🌲 | Cute Baby in the Wild 👶 #Shorts",
-    "Tatlılık Abidesi: Sevimli Dostuyla Oyunda! 🐶 | Baby & Animal Friends 🍼 #Shorts",
-    "Kalpleri Eriten En Tatlı Bebek Anı! 🥰 | Heartwarming Cute Baby ✨ #Shorts",
-    "Minik Mucize: Eğlenceli Dakikalar 🍼 | Tiny Wonders & Baby Fun 🎈 #Shorts",
-    "Bebek Leo'nun Macera Dolu Günü! 🦁 | Baby Leo's Fun Day 👶 #Shorts",
-    "En Komik ve Tatlı Bebek Hareketleri! 👶 | Adorable Baby Laughs 💖 #Shorts",
-    "Bebek ve Minik Hayvan Dostunun Maceraları 🐾 | Baby & Little Buddy ✨ #Shorts",
-    "Neşe Dolu Minik Gülüşler! 🍼 | Sweetest Baby Smiles 🌈 #Shorts",
-    "Gözlerinizi Alamayacağınız Sevimli Anlar! 😍 | Cutest Baby Ever 👶 #Shorts",
-    "Minik Dünyanın Büyük Kahramanı! 🌟 | Tiny Hero Baby 🍼 #Shorts",
-    "Eğlenceli Oyun Zamanı: Sevimli Bebek! 🧸 | Baby Playtime Fun 👶 #Shorts",
-    "Günün En Tatlı Videosu ile Gülümseyin! 💖 | Smile with Cute Baby 🍼 #Shorts"
+    "Minik Maceralar: Öğren, Keşfet ve Eğlen! 🌈🎵 #Shorts",
+    "Renkler, Sayılar ve Minik Keşifler! 🌈🔢 #Shorts",
+    "Eğitici Şarkılar ve Eğlenceli Keşif Zamanı! 🎶🌿 #Shorts",
+    "Minik Maceralar: Çocuklar İçin Eğlenceli Öğrenme! 🐾📚 #Shorts",
+    "Şarkılarla ve Keşiflerle Öğreniyoruz! 🎵🌱 #Shorts",
 ]
 
 def extract_episode_num(filename: str):
     name = os.path.splitext(os.path.basename(filename))[0]
     matches = re.findall(r"(\d+)", name)
     return int(matches[-1]) if matches else None
+
+
+def is_mahalle_video(video_path: str) -> bool:
+    basename = os.path.basename(video_path)
+    return (
+        "mahalle" in video_path.lower()
+        or canonical_asset_name(basename) in MAHALLE_RELEASE_ASSETS
+    )
+
 
 def auto_listen_and_summarize(video_path: str, ep_num: int):
     temp_wav = os.path.join(os.path.dirname(video_path), f"temp_listen_{ep_num}.wav")
@@ -152,13 +151,15 @@ def auto_listen_and_summarize(video_path: str, ep_num: int):
     return "Sıfırdan Zirveye Ticaret", "Kasa katlama serisinde heyecan ve yeni ticaret fırsatları hız kesmeden devam ediyor!"
 
 def get_remote_assets():
-    try:
-        res = subprocess.run(["gh", "release", "view", RELEASE_TAG, "--json", "assets", "--jq", ".assets[].name"], capture_output=True, text=True)
-        if res.returncode == 0:
-            return set(res.stdout.split())
-    except Exception:
-        pass
-    return set()
+    result = subprocess.run(
+        ["gh", "release", "view", RELEASE_TAG, "--json", "assets", "--jq", ".assets[].name"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode:
+        raise RuntimeError(f"Could not list video vault assets: {result.stderr.strip()}")
+    return set(result.stdout.split())
 
 def download_video_from_vault(filename: str, dest_dir: str):
     os.makedirs(dest_dir, exist_ok=True)
@@ -167,77 +168,151 @@ def download_video_from_vault(filename: str, dest_dir: str):
         return out_path
     print(f"GitHub Release Vault'tan indiriliyor: {filename}...")
     cmd = ["gh", "release", "download", RELEASE_TAG, "-p", filename, "-D", dest_dir, "--clobber"]
-    ret = subprocess.run(cmd)
-    if ret.returncode == 0 and os.path.exists(out_path):
-        return out_path
-    return None
+    result = subprocess.run(cmd, capture_output=True, text=True, check=False)
+    if result.returncode or not os.path.exists(out_path):
+        raise RuntimeError(
+            f"Could not download {filename} from the video vault: {result.stderr.strip()}"
+        )
+    return out_path
 
 def get_next_video(profile_key: str, folder: str, history_file: str):
     os.makedirs(os.path.dirname(os.path.abspath(history_file)), exist_ok=True)
-    history = []
-    if os.path.exists(history_file):
-        try:
-            with open(history_file, "r", encoding="utf-8") as f:
-                history = json.load(f)
-        except Exception:
-            history = []
-            
-    uploaded_files = {item.get("filename") for item in history}
-    
-    # Check Mahalle_maçı subfolder first for AnimAI Studio (priority)
+    if not os.path.isfile(history_file):
+        raise FileNotFoundError(
+            f"Upload history {history_file} is missing; refusing to risk a duplicate upload"
+        )
+    try:
+        with open(history_file, "r", encoding="utf-8") as f:
+            history = json.load(f)
+    except (OSError, json.JSONDecodeError) as error:
+        raise RuntimeError(
+            f"Cannot read upload history {history_file}; refusing to risk a duplicate upload"
+        ) from error
+    if not isinstance(history, list):
+        raise ValueError(f"Upload history {history_file} must contain a JSON list")
+    if any(not isinstance(item, dict) or not isinstance(item.get("filename"), str) for item in history):
+        raise ValueError(f"Upload history {history_file} contains an invalid entry")
+
+    local_mahalle_assets = []
     if profile_key == "animai_studio":
         mahalle_folder = os.path.join(folder, "Mahalle_maçı")
-        if os.path.exists(mahalle_folder):
-            mahalle_videos = sorted(glob.glob(os.path.join(mahalle_folder, "*.mp4")), key=lambda x: (0, extract_episode_num(x)) if extract_episode_num(x) is not None else (1, os.path.basename(x).lower()))
-            for v in mahalle_videos:
-                base = os.path.basename(v)
-                if base not in uploaded_files:
-                    return v, history
-    
-    # Skip main folder for AnimAI Studio (Kasa Katlama videos)
-    # Only check main folder for Minik Maceralar
-    if profile_key == "minik_maceralar":
-        local_videos = sorted(glob.glob(os.path.join(folder, "*.mp4")), key=lambda x: (0, extract_episode_num(x)) if extract_episode_num(x) is not None else (1, os.path.basename(x).lower())) if os.path.exists(folder) else []
-        for v in local_videos:
-            base = os.path.basename(v)
-            if base not in uploaded_files:
-                return v, history
+        if os.path.isdir(mahalle_folder):
+            local_mahalle_assets = glob.glob(os.path.join(mahalle_folder, "*.mp4"))
+
+    local_minik_assets = []
+    if profile_key == "minik_maceralar" and os.path.isdir(folder):
+        local_minik_assets = glob.glob(os.path.join(folder, "*.mp4"))
 
     remote_assets = get_remote_assets()
-    candidate_remotes = []
-    for asset in remote_assets:
-        if profile_key == "animai_studio" and re.search(r"^\d+\.mp4$", asset):
-            candidate_remotes.append(asset)
-        elif profile_key == "minik_maceralar" and (asset.startswith("leowildadventures-") or asset.startswith("mellofromars-") or not re.search(r"^\d+\.mp4$", asset)):
-            candidate_remotes.append(asset)
-            
-    candidate_remotes = sorted(candidate_remotes, key=lambda x: (0, extract_episode_num(x)) if extract_episode_num(x) is not None else (1, x.lower()))
-    
-    # For Minik Maceralar, sort by date and episode number
-    if profile_key == "minik_maceralar":
-        candidate_remotes = sorted(candidate_remotes, key=lambda x: (
-            # Extract date from filename (e.g., leowildadventures-20261018-0001.mp4)
-            x.split("-")[1] if "-" in x else "99999999",  # Date
-            # Extract episode number
-            int(x.split("-")[-1].replace(".mp4", "")) if "-" in x and x.split("-")[-1].replace(".mp4", "").isdigit() else 9999
-        ))
-    for asset in candidate_remotes:
-        if asset not in uploaded_files:
-            downloaded = download_video_from_vault(asset, folder)
-            if downloaded:
-                return downloaded, history
+    selected = select_next_asset(
+        profile_key,
+        local_mahalle_assets or local_minik_assets,
+        remote_assets,
+        history,
+    )
+    if selected is None:
+        return None, history
 
-    return None, history
+    source, asset = selected
+    if source == "local":
+        return os.path.join(
+            os.path.join(folder, "Mahalle_maçı") if profile_key == "animai_studio" else folder,
+            asset,
+        ), history
+    return download_video_from_vault(asset, folder), history
+
+
+def save_history(history: list, history_file: str):
+    temp_path = f"{history_file}.tmp"
+    with open(temp_path, "w", encoding="utf-8") as f:
+        json.dump(history, f, indent=2, ensure_ascii=False)
+    os.replace(temp_path, history_file)
+
+
+def _is_mahalle_filename(filename: str) -> bool:
+    return canonical_asset_name(filename) in MAHALLE_RELEASE_ASSETS
+
+
+def _resolve_target_playlist(profile_key: str, video_path: str) -> str | None:
+    base = os.path.basename(video_path)
+    episode = extract_episode_num(base)
+    is_mahalle = is_mahalle_video(video_path)
+    is_kasa = (
+        episode is not None
+        and (episode in HIKAYE_TOPICS or re.fullmatch(r"\d+\.mp4", base) or "kasa" in base.lower())
+    )
+
+    if profile_key == "animai_studio" and is_mahalle:
+        playlist_id = os.environ.get("MAHALLE_PLAYLIST_ID")
+        if not playlist_id:
+            raise ValueError("MAHALLE_PLAYLIST_ID is required before uploading a Mahalle Maçı video")
+        return playlist_id
+    if profile_key == "animai_studio" and is_kasa:
+        return os.environ.get("ANIMAI_PLAYLIST_ID", "PLKdPAh8ARgHA")
+    if profile_key == "minik_maceralar":
+        return os.environ.get("MINIKMACERALAR_PLAYLIST_ID", "PLEiYrhkomZ2k")
+    return None
+
+
+def _video_is_in_playlist(youtube, playlist_id: str, video_id: str) -> bool:
+    page_token = None
+    while True:
+        response = youtube.playlistItems().list(
+            part="snippet",
+            playlistId=playlist_id,
+            maxResults=50,
+            pageToken=page_token,
+        ).execute()
+        for item in response.get("items", []):
+            resource = item.get("snippet", {}).get("resourceId", {})
+            if resource.get("videoId") == video_id:
+                return True
+        page_token = response.get("nextPageToken")
+        if not page_token:
+            return False
+
+
+def repair_pending_playlist_items(youtube, profile_key: str, history: list, history_file: str):
+    changed = False
+    mahalle_playlist_id = os.environ.get("MAHALLE_PLAYLIST_ID")
+    for item in history:
+        filename = item.get("filename")
+        if profile_key == "animai_studio" and _is_mahalle_filename(filename or ""):
+            if not mahalle_playlist_id:
+                raise ValueError("MAHALLE_PLAYLIST_ID is required to maintain the Mahalle Maçı playlist")
+            if item.get("playlist_id") != mahalle_playlist_id:
+                item["playlist_id"] = mahalle_playlist_id
+                item["playlist_added"] = False
+                changed = True
+            elif "playlist_added" not in item:
+                item["playlist_added"] = False
+                changed = True
+    if changed:
+        save_history(history, history_file)
+
+    for item in history:
+        playlist_id = item.get("playlist_id")
+        video_id = item.get("video_id")
+        if not playlist_id or not video_id or item.get("playlist_added") is not False:
+            continue
+        if not _video_is_in_playlist(youtube, playlist_id, video_id):
+            youtube.playlistItems().insert(
+                part="snippet",
+                body={
+                    "snippet": {
+                        "playlistId": playlist_id,
+                        "resourceId": {"kind": "youtube#video", "videoId": video_id},
+                    }
+                },
+            ).execute()
+        item["playlist_added"] = True
+        save_history(history, history_file)
+        print(f"Video {video_id} doğrulandı ve oynatma listesine ({playlist_id}) eklendi.")
+
 
 def build_metadata(profile_key: str, video_path: str, history: list):
     base = os.path.basename(video_path)
-    upload_index = len(history)
-    
-    # Önceki video linki kaldırıldı (kullanıcı isteği)
-    prev_link_text = ""
-    
-    # Check if this is a Mahalle_maçı video
-    is_mahalle = "mahalle" in video_path.lower() or "mahalle" in base.lower()
+    is_mahalle = is_mahalle_video(video_path)
         
     if profile_key == "animai_studio":
         ep_num = extract_episode_num(base)
@@ -330,28 +405,26 @@ def build_metadata(profile_key: str, video_path: str, history: list):
             category_id = "1"
         
     else:  # minik_maceralar
-        title_idx = upload_index % len(BEBEK_TITLES)
-        title = BEBEK_TITLES[title_idx]
+        title = random.choice(BEBEK_TITLES)
         
         description = (
-            f"Minik Maceralar: Çocuklar için eğlenceli ve eğitici kısa videolar! 🍼📚\n"
-            f"Fun and educational shorts for kids! Learn colors, numbers, animals and more! 🌈🔢🐾\n\n"
+            f"Minik Maceralar'da renkleri, sayıları, bitkileri ve hayvanları keşfediyoruz; "
+            f"çocuk şarkıları ve günlük minik keşiflerle eğlenerek öğreniyoruz! 🌈🔢🌿🐾🎵\n"
+            f"Fun and educational Shorts for children: colors, numbers, plants, animals, "
+            f"children's songs and little everyday discoveries!\n\n"
             f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-            f"🔔 Her gün yeni maceralar ve öğrenme fırsatları için abone olun! / Subscribe for daily adventures! 🥰\n\n"
+            f"🔔 Yeni eğlenceli keşifler için abone olun! / Subscribe for more fun learning and songs! 🥰\n\n"
             f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-            f"#MinikMaceralar #CuteBaby #BabyShorts #BabyAdventures #FunnyBaby #SevimliBebekler #BebekVideoları #TrendingShorts #ViralShorts #Shorts #Cute #KidsLearning #Educational #LearnColors #LearnNumbers #KidsVideos"
+            f"#MinikMaceralar #Çocuklarİçin #EğiticiVideolar #Renkler #Sayılar #Bitkiler "
+            f"#Hayvanlar #ÇocukŞarkıları #KidsLearning #Educational #KidsSongs #Shorts"
         )
         tags = [
-            "Minik Maceralar", "cute baby", "baby shorts", "baby adventures", "funny baby",
-            "sevimli bebekler", "bebek videoları", "tatlı bebek", "cute animals", "cute moments",
-            "trending shorts", "viral shorts", "shorts", "for kids", "kids learning", "educational",
-            "learn colors", "learn numbers", "kids videos", "children videos"
+            "Minik Maceralar", "çocuklar için", "eğitici videolar", "renkleri öğren",
+            "sayıları öğren", "bitkiler", "hayvanlar", "çocuk şarkıları",
+            "kids learning", "educational videos", "kids songs", "shorts",
         ]
-        pinned_comment = (
-            f"Bu videoyu beğendiniz mi? ❤️ Yorumlarda paylaşın! / Did you like this video? Share in comments! 👇🥰\n"
-            f"Her gün yeni videolar için abone olmayı unutmayın! 🔔"
-        )
-        category_id = "15"
+        pinned_comment = ""
+        category_id = "27"
         
     return title, description, tags, pinned_comment, category_id
 
@@ -398,15 +471,34 @@ def upload_prerendered_video(profile_key: str):
     history_file = os.path.join(root_dir, "data", f"history_{profile_key}.json")
     
     video_path, history = get_next_video(profile_key, folder, history_file)
+    creds = Credentials(
+        token=None,
+        refresh_token=refresh_token,
+        client_id=client_id,
+        client_secret=client_secret,
+        token_uri="https://oauth2.googleapis.com/token",
+        scopes=SCOPES,
+    )
+    youtube = build("youtube", "v3", credentials=creds)
+    repair_pending_playlist_items(youtube, profile_key, history, history_file)
     if not video_path:
         print(f"[{profile_key}] Yüklenecek yeni video kalmadı!")
         return None
         
     base = os.path.basename(video_path)
+    is_mahalle = is_mahalle_video(video_path)
+    target_pl = _resolve_target_playlist(profile_key, video_path)
+    upload_path = prepare_shorts_video(
+        video_path,
+        os.path.join(root_dir, "data", "shorts_converted", profile_key),
+    )
+    if upload_path != video_path:
+        print(f"Yatay video Shorts formatına dönüştürüldü: {os.path.basename(upload_path)}")
+
     title, description, tags, pinned_comment, category_id = build_metadata(profile_key, video_path, history)
-    
+
     # Add trending hashtags to description (skip for Mahalle Maçı - already has custom hashtags)
-    if OPTIMIZATION_ENABLED and not is_mahalle:
+    if OPTIMIZATION_ENABLED and profile_key == "animai_studio" and not is_mahalle:
         description = add_hashtags_to_description(description, profile_key)
         print(f"✅ Trending hashtag'ler eklendi")
     
@@ -416,127 +508,61 @@ def upload_prerendered_video(profile_key: str):
     print(f"Başlık: {title}")
     print(f"==========================================\n")
     
-    # Retry mechanism for YouTube upload - handles network issues, rate limits, and transient errors
-    max_attempts = 3
-    retry_delay = 30
-    video_id = None
-    video_url = None
+    media = MediaFileUpload(upload_path, mimetype="video/mp4", resumable=True)
+    body = {
+        "snippet": {
+            "title": title,
+            "description": description,
+            "tags": tags,
+            "categoryId": category_id,
+            "defaultLanguage": "tr",
+            "defaultAudioLanguage": "tr"
+        },
+        "status": {
+            "privacyStatus": "public",
+            "selfDeclaredMadeForKids": profile_key == "minik_maceralar"
+        }
+    }
+
+    request = youtube.videos().insert(part="snippet,status", body=body, media_body=media)
+    response = None
+    while response is None:
+        status, response = request.next_chunk(num_retries=5)
+        if status:
+            print(f"Yükleme İlerlemesi: %{int(status.progress() * 100)}")
+
+    video_id = response.get("id")
+    if not video_id:
+        raise RuntimeError("YouTube reported upload success without returning a video ID")
+    video_url = f"https://youtube.com/shorts/{video_id}"
+    print(f"\nBAŞARILI: Video yayınlandı! URL: {video_url}")
     
-    for attempt in range(1, max_attempts + 1):
-        try:
-            print(f"\nUpload attempt {attempt}/{max_attempts}...")
-            creds = Credentials(
-                token=None,
-                refresh_token=refresh_token,
-                client_id=client_id,
-                client_secret=client_secret,
-                token_uri="https://oauth2.googleapis.com/token",
-                scopes=SCOPES,
-            )
-            youtube = build("youtube", "v3", credentials=creds)
-            
-            media = MediaFileUpload(video_path, mimetype="video/mp4", resumable=True)
-            body = {
-                "snippet": {
-                    "title": title,
-                    "description": description,
-                    "tags": tags,
-                    "categoryId": category_id,
-                    "defaultLanguage": "tr",
-                    "defaultAudioLanguage": "tr"
-                },
-                "status": {
-                    "privacyStatus": "public",
-                    "selfDeclaredMadeForKids": False
-                }
-            }
-            
-            request = youtube.videos().insert(part="snippet,status", body=body, media_body=media)
-            response = None
-            while response is None:
-                status, response = request.next_chunk()
-                if status:
-                    print(f"Yükleme İlerlemesi: %{int(status.progress() * 100)}")
-                
-            video_id = response.get("id")
-            video_url = f"https://youtube.com/shorts/{video_id}"
-            print(f"\nBAŞARILI: Video yayınlandı! URL: {video_url}")
-            break
-            
-        except HttpError as e:
-            if e.resp.status in [403, 429, 500, 502, 503, 504]:
-                if attempt < max_attempts:
-                    print(f"Upload failed with HTTP {e.resp.status}: {e}")
-                    print(f"Retrying in {retry_delay} seconds...")
-                    time.sleep(retry_delay)
-                    retry_delay *= 2
-                    continue
-                else:
-                    raise RuntimeError(f"YouTube upload failed after {max_attempts} attempts: {e}")
-            else:
-                raise RuntimeError(f"YouTube upload failed with non-retryable error HTTP {e.resp.status}: {e}")
-        except Exception as e:
-            if attempt < max_attempts:
-                print(f"Upload failed with error: {e}")
-                print(f"Retrying in {retry_delay} seconds...")
-                time.sleep(retry_delay)
-                retry_delay *= 2
-                continue
-            else:
-                raise RuntimeError(f"YouTube upload failed after {max_attempts} attempts: {e}")
-    
-    post_comment(youtube, video_id, pinned_comment)
+    history_entry = {
+        "filename": base,
+        "video_id": video_id,
+        "video_url": video_url,
+        "title": title,
+        "uploaded_at": datetime.now().isoformat(),
+    }
+    if target_pl:
+        history_entry["playlist_id"] = target_pl
+        history_entry["playlist_added"] = False
+    history.append(history_entry)
+    save_history(history, history_file)
+    repair_pending_playlist_items(youtube, profile_key, history, history_file)
+
+    if pinned_comment:
+        post_comment(youtube, video_id, pinned_comment)
     
     # Start A/B test for title optimization
     # Auto-reply to recent comments
-    if OPTIMIZATION_ENABLED:
+    if OPTIMIZATION_ENABLED and profile_key != "minik_maceralar":
         try:
             print(f"\n💬 Yorumlara otomatik cevap veriliyor...")
             auto_reply_to_comments(profile_key, video_id)
         except Exception as e:
             print(f"⚠️  Yorum cevaplama hatası: {e}")
 
-    # Otomatik Oynatma Listesine Ekle
-    ep_num = extract_episode_num(base)
-    is_kasa = (ep_num is not None) and (ep_num in HIKAYE_TOPICS or re.match(r"^\d+\.mp4$", base) or "kasa" in base.lower())
-    is_mahalle = "mahalle" in video_path.lower() or "mahalle" in base.lower()
-    
-    target_pl = None
-    if profile_key == 'animai_studio' and is_mahalle:
-        target_pl = os.environ.get('MAHALLE_PLAYLIST_ID')  # Mahalle Maçı playlist ID - GitHub secret gerekiyor
-    elif profile_key == 'animai_studio' and is_kasa:
-        target_pl = os.environ.get('ANIMAI_PLAYLIST_ID', 'PLKdPAh8ARgHA')
-    elif profile_key == 'minik_maceralar':
-        target_pl = os.environ.get('MINIKMACERALAR_PLAYLIST_ID', 'PLEiYrhkomZ2k')
-
-    if target_pl:
-        try:
-            youtube.playlistItems().insert(
-                part='snippet',
-                body={
-                    'snippet': {
-                        'playlistId': target_pl,
-                        'resourceId': {
-                            'kind': 'youtube#video',
-                            'videoId': video_id
-                        }
-                    }
-                }
-            ).execute()
-            print(f'Video {video_id} otomatik olarak oynatma listesine ({target_pl}) eklendi!')
-        except Exception as pl_err:
-            print(f'Oynatma listesine eklenirken hata olustu: {pl_err}')
-    
-    history.append({
-        "filename": base,
-        "video_id": video_id,
-        "video_url": video_url,
-        "title": title,
-        "uploaded_at": datetime.now().isoformat()
-    })
-    with open(history_file, "w", encoding="utf-8") as f:
-        json.dump(history, f, indent=2, ensure_ascii=False)
-    
     # Run optimal time analysis (weekly)
     if OPTIMIZATION_ENABLED:
         try:
