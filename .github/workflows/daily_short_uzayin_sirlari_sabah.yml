@@ -1,8 +1,8 @@
 name: Daily Uzayin Sirlari Short (Sabah)
 
 on:
-  schedule:
-    - cron: "30 6 * * *"   # 09:30 Turkey time (UTC+3)
+  # schedule:
+  #   - cron: "30 6 * * *"   # 09:30 Turkey time (UTC+3) - DISABLED
   workflow_dispatch: {}
 
 permissions:
