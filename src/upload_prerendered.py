@@ -503,7 +503,7 @@ def upload_prerendered_video(profile_key: str):
     
     target_pl = None
     if profile_key == 'animai_studio' and is_mahalle:
-        target_pl = os.environ.get('MAHALLE_PLAYLIST_ID', 'PLKdPAh8ARgHA')  # Mahalle Maçı playlist ID
+        target_pl = os.environ.get('MAHALLE_PLAYLIST_ID')  # Mahalle Maçı playlist ID - GitHub secret gerekiyor
     elif profile_key == 'animai_studio' and is_kasa:
         target_pl = os.environ.get('ANIMAI_PLAYLIST_ID', 'PLKdPAh8ARgHA')
     elif profile_key == 'minik_maceralar':
