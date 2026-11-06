@@ -2,7 +2,7 @@ name: Daily AnimAI Studio Short (Akşam)
 
 on:
   schedule:
-    - cron: "0 17 * * *"   # 17:00 UTC = 20:00 Turkey time (UTC+3)
+    - cron: "0 18 * * *"   # 18:00 UTC = 21:00 Turkey time (UTC+3)
   workflow_dispatch: {}
 
 permissions:

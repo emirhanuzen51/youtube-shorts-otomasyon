@@ -45,6 +45,20 @@ except Exception:
 SCOPES = ["https://www.googleapis.com/auth/youtube", "https://www.googleapis.com/auth/youtube.force-ssl"]
 RELEASE_TAG = "videos-vault-v1"
 
+MAHALLE_TOPICS = {
+    1: ("İlk Maç Heyecanı", "Mahalle maçının ilk bölümü! Komik ve heyecanlı anlar dolu bir maç başlıyor."),
+    2: ("Gol Krizi", "Mahalle maçında gol krizi! Ekip gol atmak için her şeyi deniyor."),
+    3: ("Kaleci Dönüyor", "Yıllar sonra kaleci geri dönüyor! Mahalle maçında büyük sürpriz."),
+    4: ("Penaltı Draması", "Mahalle maçında penaltı draması! Kim atacak, kim tutacak?"),
+    5: ("Yeni Transfer", "Mahalle takımına yeni transfer! Herkes şaşkın."),
+    6: ("Derbi Heyecanı", "Mahalle derbisi! Komik anlar ve büyük mücadele."),
+    7: ("Kaptanlık Krizi", "Kaptan kim olacak? Mahalle takımında kaptanlık krizi."),
+    8: ("Hakem Tartışması", "Mahalle maçında hakem tartışması! Komik anlar."),
+    9: ("Şampiyonluk Maçı", "Mahalle şampiyonluk maçı! Büyük heyecan."),
+    10: ("Final Maçı", "Mahalle final maçı! Kazanan kim olacak?"),
+    11: ("Sezon Sonu", "Mahalle maç sezon sonu! Özet ve komik anlar."),
+}
+
 HIKAYE_TOPICS = {
     1: ("Eski Çaydanlık ile İlk Ticaret", "Eski bir çaydanlığı 25 TL'ye kapatıp parlatıp satarak ilk kasayı katlama macerası başlıyor!"),
     2: ("Bit Pazarından Hurda Teyp", "Bit pazarında hurda teyp pazarlığı yapıp ucuza alarak kasayı büyütme peşindeler."),
@@ -66,14 +80,14 @@ HIKAYE_TOPICS = {
     18: ("4000 TL'lik Antika Avize", "Eski bir avizeyi ucuza kapatıp zenginlere satma planı ortalığı karıştırıyor."),
     19: ("Kasa Katlandı: 120.000 TL!", "Büyük ticaretler tutunca kasadaki para 120.000 TL barajını aşıyor!"),
     20: ("Orman Yollarında Macera", "Orman havası alalım derken arabayla bilmedikleri patikalarda heyecan dolu anlar."),
-    21: ("Roket Gibi Satış: 200.000 TL", "Pazarcı gibi bağırıp çağırarak rekor satış yapıp kasayı 200 bine uçuruyorlar!"),
+    21: ("Roket Gibi Satış: 200.000 TL", "Pazarcı gibi bağırıp çağırarak rekor satış yapıp kasayı 200 bine uçuruyorlar."),
     22: ("Evdeki Bakırları Satınca Annem!", "Evdeki eski bakırları habersiz satmaya kalkınca anneden terlik yeme tehlikesi!"),
     23: ("Dededen Kalma Hurda Araba", "Dededen kalma eski arabayı 115 bine alıp sanayide toplayıp satma operasyonu."),
     24: ("300 Bine Bursa'dan Mercedes!", "Bursa'ya gidip 300 bin TL'ye efsane W124 kasa Mercedes kapıyorlar!"),
     25: ("E-Ticarete Girdik: Letgo ve Paketler", "Elektronik ürünleri internetten satmak için e-ticaret eğitimi ve paket alıyorlar."),
-    26: ("Sanayide Turbo Masrafı ve Satış", "Aldıkları arabaya turbo yaptırıp 450 bine okutarak büyük vurgun yapıyorlar!"),
+    26: ("Sanayide Turbo Masrafı ve Satış", "Aldıkları arabaya turbo yaptırıp 450 bine okutarak büyük vurgun yapıyorlar."),
     28: ("Mercedes Çalındı mı?!", "Park ettikleri yerde Mercedes'i bulamayınca yaşanan büyük panik ve şok!"),
-    30: ("Dubai'ye İndik Babalar!", "Kasa öyle bir katlandı ki soluğu çöllerin ve gökdelenlerin şehri Dubai'de alıyorlar!"),
+    30: ("Dubai'ye İndik Babalar!", "Kasa öyle bir katlandı ki soluğu çöllerin ve gökdelenlerin şehri Dubai'de alıyorlar."),
     31: ("Dubai'de Traktör Mü Alınır?", "Dubai'ye gidip traktör ilanı kovalayan ortağa gelen çıldırma anları!"),
     32: ("Kaç Kerkenez Arkana Bakma!", "Dubai sokaklarında beklenmedik bir kovalamaca ve kaçış macerası."),
     34: ("Dükkandaki Malları Kapatıyoruz", "Batan bir dükkanın tüm mutfak ve cafe ekipmanlarını toptan kapatma hamlesi."),
@@ -170,11 +184,24 @@ def get_next_video(profile_key: str, folder: str, history_file: str):
             
     uploaded_files = {item.get("filename") for item in history}
     
-    local_videos = sorted(glob.glob(os.path.join(folder, "*.mp4")), key=lambda x: (0, extract_episode_num(x)) if extract_episode_num(x) is not None else (1, os.path.basename(x).lower())) if os.path.exists(folder) else []
-    for v in local_videos:
-        base = os.path.basename(v)
-        if base not in uploaded_files:
-            return v, history
+    # Check Mahalle_maçı subfolder first for AnimAI Studio (priority)
+    if profile_key == "animai_studio":
+        mahalle_folder = os.path.join(folder, "Mahalle_maçı")
+        if os.path.exists(mahalle_folder):
+            mahalle_videos = sorted(glob.glob(os.path.join(mahalle_folder, "*.mp4")), key=lambda x: (0, extract_episode_num(x)) if extract_episode_num(x) is not None else (1, os.path.basename(x).lower()))
+            for v in mahalle_videos:
+                base = os.path.basename(v)
+                if base not in uploaded_files:
+                    return v, history
+    
+    # Skip main folder for AnimAI Studio (Kasa Katlama videos)
+    # Only check main folder for Minik Maceralar
+    if profile_key == "minik_maceralar":
+        local_videos = sorted(glob.glob(os.path.join(folder, "*.mp4")), key=lambda x: (0, extract_episode_num(x)) if extract_episode_num(x) is not None else (1, os.path.basename(x).lower())) if os.path.exists(folder) else []
+        for v in local_videos:
+            base = os.path.basename(v)
+            if base not in uploaded_files:
+                return v, history
 
     remote_assets = get_remote_assets()
     candidate_remotes = []
@@ -208,12 +235,51 @@ def build_metadata(profile_key: str, video_path: str, history: list):
     
     # Önceki video linki kaldırıldı (kullanıcı isteği)
     prev_link_text = ""
+    
+    # Check if this is a Mahalle_maçı video
+    is_mahalle = "mahalle" in video_path.lower() or "mahalle" in base.lower()
         
     if profile_key == "animai_studio":
         ep_num = extract_episode_num(base)
         is_kasa_katlama = (ep_num is not None) and (ep_num in HIKAYE_TOPICS or re.match(r"^\d+\.mp4$", base) or "kasa" in base.lower())
         
-        if is_kasa_katlama:
+        if is_mahalle:
+            ep_disp = ep_num if ep_num is not None else 1
+            if ep_disp in MAHALLE_TOPICS:
+                topic, desc_plot = MAHALLE_TOPICS[ep_disp]
+            else:
+                print(f"Yeni Mahalle Maçı bölümü tespit edildi ({base}), içeriği otomatik dinleniyor...")
+                topic, desc_plot = auto_listen_and_summarize(video_path, ep_disp)
+            title = f"Mahalle Maçı Bölüm {ep_disp}: {topic} #Shorts"
+            series_header = f"⚽ Mahalle Maçı Serisi - Bölüm {ep_disp}: {topic}"
+            call_action = f"⚽ Mahalle Maçı Bölüm {ep_disp} yayında!\nSizce bir sonraki bölümde ne olacak? En iyi tahmini sabitleyeceğim! 👇👇"
+            
+            if len(title) > 100:
+                title = title[:97] + "..."
+                
+            description = (
+                f"{series_header}\n\n"
+                f"📌 Bu Bölümde: {desc_plot}\n\n"
+                f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+                f"⏭️ Sonraki bölümleri kaçırmamak için Abone Olun & Bildirimleri Açın! 🔔\n\n"
+                f"💬 Sizce bir sonraki bölümde ne olacak? Yorumlarda tahmininizi yazın! 👇\n\n"
+                f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+                f"#AnimAIStudio #MahalleMaçı #Futbol #Komik #MahalleMaçı #TrendShorts #ViralShorts #Shorts #Animasyon"
+            )
+            tags = [
+                "AnimAI Studio", "mahalle maçı", "futbol", "komik", 
+                "mahalle", "trend shorts", "shorts", "animasyon", 
+                "viral shorts", "mahalle maçları", "komik futbol"
+            ]
+            if ep_num is not None:
+                tags.append(f"mahalle maçı bölüm {ep_num}")
+            pinned_comment = (
+                f"{call_action}\n"
+                f"🔔 Yeni videoları kaçırmamak için abone olmayı unutmayın!"
+            )
+            category_id = "17"  # Sports category
+            
+        elif is_kasa_katlama:
             ep_disp = ep_num if ep_num is not None else 1
             if ep_disp in HIKAYE_TOPICS:
                 topic, desc_plot = HIKAYE_TOPICS[ep_disp]
@@ -232,30 +298,31 @@ def build_metadata(profile_key: str, video_path: str, history: list):
             series_header = f"🎬 AnimAI Özel Gösterim: {actual_topic}"
             call_action = "🔥 Yeni AnimAI macerası yayında!\nVideo hakkındaki düşüncelerinizi yorumlarda belirtin! 👇👇"
         
-        if len(title) > 100:
-            title = title[:97] + "..."
-            
-        description = (
-            f"{series_header}\n\n"
-            f"📌 Bu Bölümde: {desc_plot}\n\n"
-            f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-            f"⏭️ Sonraki bölümleri kaçırmamak için Abone Olun & Bildirimleri Açın! 🔔\n\n"
-            f"💬 Sizce bir sonraki bölümde hangi ürünü alıp satmalılar? Yorumlarda tahmininizi yazın! 👇\n\n"
-            f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-            f"#AnimAIStudio #KasaKatlama #SıfırdanZengin #AlSat #Ticaret #KeşfetBeniÖneÇıkar #TrendShorts #AIAnimasyon #ViralShorts #3DAnimation #Shorts #YapayZeka"
-        )
-        tags = [
-            "AnimAI Studio", "kasa katlama", "sıfırdan zengin", 
-            "al sat", "ticaret", "keşfet", "trend shorts", "shorts", "yapay zeka", "ai animasyon", 
-            "3d animasyon", "hikaye", "animasyon", "viral shorts"
-        ]
-        if ep_num is not None:
-            tags.append(f"kasa katlama bölüm {ep_num}")
-        pinned_comment = (
-            f"{call_action}\n"
-            f"🔔 Yeni videoları kaçırmamak için abone olmayı unutmayın!"
-        )
-        category_id = "1"
+        if not is_mahalle:
+            if len(title) > 100:
+                title = title[:97] + "..."
+                
+            description = (
+                f"{series_header}\n\n"
+                f"📌 Bu Bölümde: {desc_plot}\n\n"
+                f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+                f"⏭️ Sonraki bölümleri kaçırmamak için Abone Olun & Bildirimleri Açın! 🔔\n\n"
+                f"💬 Sizce bir sonraki bölümde hangi ürünü alıp satmalılar? Yorumlarda tahmininizi yazın! 👇\n\n"
+                f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+                f"#AnimAIStudio #KasaKatlama #SıfırdanZengin #AlSat #Ticaret #KeşfetBeniÖneÇıkar #TrendShorts #AIAnimasyon #ViralShorts #3DAnimation #Shorts #YapayZeka"
+            )
+            tags = [
+                "AnimAI Studio", "kasa katlama", "sıfırdan zengin", 
+                "al sat", "ticaret", "keşfet", "trend shorts", "shorts", "yapay zeka", "ai animasyon", 
+                "3d animasyon", "hikaye", "animasyon", "viral shorts"
+            ]
+            if ep_num is not None:
+                tags.append(f"kasa katlama bölüm {ep_num}")
+            pinned_comment = (
+                f"{call_action}\n"
+                f"🔔 Yeni videoları kaçırmamak için abone olmayı unutmayın!"
+            )
+            category_id = "1"
         
     else:  # minik_maceralar
         title_idx = upload_index % len(BEBEK_TITLES)
@@ -426,9 +493,12 @@ def upload_prerendered_video(profile_key: str):
     # Otomatik Oynatma Listesine Ekle
     ep_num = extract_episode_num(base)
     is_kasa = (ep_num is not None) and (ep_num in HIKAYE_TOPICS or re.match(r"^\d+\.mp4$", base) or "kasa" in base.lower())
+    is_mahalle = "mahalle" in video_path.lower() or "mahalle" in base.lower()
     
     target_pl = None
-    if profile_key == 'animai_studio' and is_kasa:
+    if profile_key == 'animai_studio' and is_mahalle:
+        target_pl = os.environ.get('MAHALLE_PLAYLIST_ID', 'PLKdPAh8ARgHA')  # Mahalle Maçı playlist ID
+    elif profile_key == 'animai_studio' and is_kasa:
         target_pl = os.environ.get('ANIMAI_PLAYLIST_ID', 'PLKdPAh8ARgHA')
     elif profile_key == 'minik_maceralar':
         target_pl = os.environ.get('MINIKMACERALAR_PLAYLIST_ID', 'PLEiYrhkomZ2k')
