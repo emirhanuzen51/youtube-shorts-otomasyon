@@ -245,11 +245,8 @@ def build_metadata(profile_key: str, video_path: str, history: list):
         
         if is_mahalle:
             ep_disp = ep_num if ep_num is not None else 1
-            if ep_disp in MAHALLE_TOPICS:
-                topic, desc_plot = MAHALLE_TOPICS[ep_disp]
-            else:
-                print(f"Yeni Mahalle Maçı bölümü tespit edildi ({base}), içeriği otomatik dinleniyor...")
-                topic, desc_plot = auto_listen_and_summarize(video_path, ep_disp)
+            print(f"Mahalle Maçı bölüm {ep_disp} tespit edildi ({base}), içeriği otomatik dinleniyor...")
+            topic, desc_plot = auto_listen_and_summarize(video_path, ep_disp)
             title = f"Mahalle Maçı Bölüm {ep_disp}: {topic} #Shorts"
             series_header = f"⚽ Mahalle Maçı Serisi - Bölüm {ep_disp}: {topic}"
             call_action = f"⚽ Mahalle Maçı Bölüm {ep_disp} yayında!\nSizce bir sonraki bölümde ne olacak? En iyi tahmini sabitleyeceğim! 👇👇"
