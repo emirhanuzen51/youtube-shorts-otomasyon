@@ -46,17 +46,17 @@ SCOPES = ["https://www.googleapis.com/auth/youtube", "https://www.googleapis.com
 RELEASE_TAG = "videos-vault-v1"
 
 MAHALLE_TOPICS = {
-    1: ("Çocuk Futbolcuların İlk Maçı", "Çocuk Ronaldo ve Messi takım kuruyor! Mahallede ilk büyük maç başlıyor."),
-    2: ("Mbappe ile İlk Karşılaşma", "Ronaldo ve Messi'nin takımı Mbappe ile karşılaşıyor! Heyecan dolu maç."),
-    3: ("Neymar Takıma Katılıyor", "Neymar da mahalle takımına katılıyor! Üçlü güç birleşiyor."),
-    4: ("Derbi Maçı", "Mahalle derbisi! Ronaldo, Messi ve Neymar Mbappe'e karşı büyük mücadele."),
-    5: ("Penaltı Draması", "Mahalle maçında penaltı draması! Kim atacak, kim tutacak?"),
-    6: ("Yeni Transfer", "Mahalle takımına yeni transfer! Herkes şaşkın."),
-    7: ("Kaptanlık Krizi", "Kaptan kim olacak? Mahalle takımında kaptanlık krizi."),
-    8: ("Hakem Tartışması", "Mahalle maçında hakem tartışması! Komik anlar."),
-    9: ("Şampiyonluk Maçı", "Mahalle şampiyonluk maçı! Büyük heyecan."),
-    10: ("Final Maçı", "Mahalle final maçı! Kazanan kim olacak?"),
-    11: ("Sezon Sonu", "Mahalle maç sezon sonu! Özet ve komik anlar."),
+    1: ("Ronaldo vs Messi İlk Maç", "10 yaşındaki Ronaldo ve Messi sokakta takım kuruyor! Ronaldo hile yapıp Neymar'ı alıyor, Messi Zidane'ı çağırıyor. Büyük rekabet başlıyor!"),
+    2: ("Ronaldo'dan Füze Şut", "Ronaldo'dan füze gibi şut! Messi sinirlenip şova başlıyor. Kimse durduramıyor! Mbappe geliyor ve sadece gülüyor. Gol mü, direk mi?"),
+    3: ("Zidane'dan Vole Gol", "Mbappe köşede izlerken maç devam ediyor. Neymar Messi'yi geçiyor, Ramos topu kazanıyor, Zidane inanılmaz vole golü atıyor! Sokak yıkılıyor!"),
+    4: ("Takımlar Kuruluyor", "Mbappé maç teklifini kabul ediyor. Iniesta, Casillas ve Buffon gelmiyor. Ekipte 5 kişi: Ronaldo, Messi, Neymar, Zidane, Ramos. Neymar kuzenini çağırıyor. Son kişi kim?"),
+    5: ("Ronaldinho Geliyor", "MAÇ GÜNÜ! Neymar kuzenini çağırıyor... RONALDINHO! Mbappé takımı savaş modunda! Haaland ortaya çıkıyor. Gizemli son oyuncu kim? Ronaldo'ya top öğreten çocuk kim?"),
+    6: ("Haaland'dan Füze Gol", "Ronaldo, Messi, Neymar vs Mbappé! Ricardo Quaresma ortaya çıkıyor! Haaland gelişine vurdu! Dembélé'den mükemmel orta. Maç başladı!"),
+    7: ("Savunma Yok", "Mbappé hızlandırıyor, Vinícius çalımlarla karıştırıyor. Dembélé tehlikeyi büyütüyor. Messi & Ronaldinho sahneye çıkıyor. Quaresma'dan EFSANE TRIVELA!"),
+    8: ("Arda Güler Golü", "Arda Güler uzaktan golle maçı başlattı! Maldini oyuna dahil oldu. Mbappé takımı uzaktan şut stratejisi! Skor 5-2. Kaleci eksik! Geri dönüş mümkün mü?"),
+    9: ("Buffon Refleksi", "Mbappé penaltısında Buffon'dan inanılmaz refleks! Ronaldo, Neymar ve Messi sahayı domine ediyor. Messi Antonela'yı görüyor. Messi'nin önünde ne yapacak?"),
+    10: ("Messi Ankara Modu", "Messi Antonela'nın gelmesiyle Ankara modu açıyor! Golle takım oyuna dönüyor. Ronaldo müthiş frikik! Neymar inanılmaz gol! Skor 5-5! Mbappé: 'Atan kazanır!'"),
+    11: ("Final Röveşata", "Son pozisyon! Orta açılıyor... RONALDO YÜKSELİYOR... RÖVEŞATAAAA!!! Maç bitiyor. Kazanan kim?"),
 }
 
 HIKAYE_TOPICS = {
@@ -264,12 +264,17 @@ def build_metadata(profile_key: str, video_path: str, history: list):
                 f"⏭️ Sonraki bölümleri kaçırmamak için Abone Olun & Bildirimleri Açın! 🔔\n\n"
                 f"💬 Sizce bir sonraki bölümde ne olacak? Yorumlarda tahmininizi yazın! 👇\n\n"
                 f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-                f"#AnimAIStudio #MahalleMaçı #Futbol #Komik #MahalleMaçı #TrendShorts #ViralShorts #Shorts #Animasyon"
+                f"#AnimAIStudio #MahalleMaçı #Futbol #Komik #MahalleMaçı #TrendShorts #ViralShorts #Shorts #Animasyon #Ronaldo #Messi #Neymar #Mbappe #Zidane #Ronaldinho #Haaland #ArdaGuler #Football #Soccer #FYP #Viral #Keşfet #MessiVsRonaldo #FutbolAnimasyon #SokakMaçı #ÇocukFutbol #FutbolEdit #FootballEdits #Gol #Şov"
             )
             tags = [
-                "AnimAI Studio", "mahalle maçı", "futbol", "komik", 
-                "mahalle", "trend shorts", "shorts", "animasyon", 
-                "viral shorts", "mahalle maçları", "komik futbol"
+                "AnimAI Studio", "mahalle maçı", "futbol", "komik",
+                "mahalle", "trend shorts", "shorts", "animasyon",
+                "viral shorts", "mahalle maçları", "komik futbol",
+                "ronaldo", "messi", "neymar", "mbappe", "zidane",
+                "ronaldinho", "haaland", "arda güler", "football",
+                "soccer", "fyp", "viral", "keşfet", "messivsronaldo",
+                "futbol animasyon", "sokak maçı", "çocuk futbol",
+                "futbol edit", "football edits", "gol", "şov"
             ]
             if ep_num is not None:
                 tags.append(f"mahalle maçı bölüm {ep_num}")
