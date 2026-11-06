@@ -405,8 +405,8 @@ def upload_prerendered_video(profile_key: str):
     base = os.path.basename(video_path)
     title, description, tags, pinned_comment, category_id = build_metadata(profile_key, video_path, history)
     
-    # Add trending hashtags to description
-    if OPTIMIZATION_ENABLED:
+    # Add trending hashtags to description (skip for Mahalle Maçı - already has custom hashtags)
+    if OPTIMIZATION_ENABLED and not is_mahalle:
         description = add_hashtags_to_description(description, profile_key)
         print(f"✅ Trending hashtag'ler eklendi")
     
