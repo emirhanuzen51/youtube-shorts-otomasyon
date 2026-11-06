@@ -42,10 +42,17 @@ def upload_to_github_release(file_path: str, profile: str):
     
     # Upload the file
     try:
+        # Change to the directory containing the file
+        original_dir = os.getcwd()
+        os.chdir(os.path.dirname(file_path))
+        
         result = subprocess.run([
             "gh", "release", "upload", RELEASE_TAG,
-            filename, "--clobber", "--dir", os.path.dirname(file_path)
+            filename, "--clobber"
         ], capture_output=True, text=True)
+        
+        # Change back to original directory
+        os.chdir(original_dir)
         
         if result.returncode == 0:
             print(f"✅ Successfully uploaded: {filename}")
@@ -78,6 +85,10 @@ def upload_all_videos(profile: str):
     # Determine folder based on profile
     if profile == "animai_studio":
         folder = os.path.join(root_dir, "Yeni klasör", "Hikaye_ai")
+        # Check Mahalle_maçı subfolder first
+        mahalle_folder = os.path.join(folder, "Mahalle_maçı")
+        if os.path.exists(mahalle_folder):
+            folder = mahalle_folder
     elif profile == "minik_maceralar":
         folder = os.path.join(root_dir, "Yeni klasör", "Bebek")
     else:
@@ -88,8 +99,8 @@ def upload_all_videos(profile: str):
         print(f"❌ Folder not found: {folder}")
         return
     
-    # Get all MP4 files
-    video_files = glob.glob(os.path.join(folder, "*.mp4"))
+    # Get all MP4 files (skip .trashed files)
+    video_files = [f for f in glob.glob(os.path.join(folder, "*.mp4")) if not os.path.basename(f).startswith(".trashed")]
     
     if not video_files:
         print(f"❌ No MP4 files found in: {folder}")
