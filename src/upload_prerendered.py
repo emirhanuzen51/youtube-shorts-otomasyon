@@ -46,12 +46,12 @@ SCOPES = ["https://www.googleapis.com/auth/youtube", "https://www.googleapis.com
 RELEASE_TAG = "videos-vault-v1"
 
 MAHALLE_TOPICS = {
-    1: ("İlk Maç Heyecanı", "Mahalle maçının ilk bölümü! Komik ve heyecanlı anlar dolu bir maç başlıyor."),
-    2: ("Gol Krizi", "Mahalle maçında gol krizi! Ekip gol atmak için her şeyi deniyor."),
-    3: ("Kaleci Dönüyor", "Yıllar sonra kaleci geri dönüyor! Mahalle maçında büyük sürpriz."),
-    4: ("Penaltı Draması", "Mahalle maçında penaltı draması! Kim atacak, kim tutacak?"),
-    5: ("Yeni Transfer", "Mahalle takımına yeni transfer! Herkes şaşkın."),
-    6: ("Derbi Heyecanı", "Mahalle derbisi! Komik anlar ve büyük mücadele."),
+    1: ("Çocuk Futbolcuların İlk Maçı", "Çocuk Ronaldo ve Messi takım kuruyor! Mahallede ilk büyük maç başlıyor."),
+    2: ("Mbappe ile İlk Karşılaşma", "Ronaldo ve Messi'nin takımı Mbappe ile karşılaşıyor! Heyecan dolu maç."),
+    3: ("Neymar Takıma Katılıyor", "Neymar da mahalle takımına katılıyor! Üçlü güç birleşiyor."),
+    4: ("Derbi Maçı", "Mahalle derbisi! Ronaldo, Messi ve Neymar Mbappe'e karşı büyük mücadele."),
+    5: ("Penaltı Draması", "Mahalle maçında penaltı draması! Kim atacak, kim tutacak?"),
+    6: ("Yeni Transfer", "Mahalle takımına yeni transfer! Herkes şaşkın."),
     7: ("Kaptanlık Krizi", "Kaptan kim olacak? Mahalle takımında kaptanlık krizi."),
     8: ("Hakem Tartışması", "Mahalle maçında hakem tartışması! Komik anlar."),
     9: ("Şampiyonluk Maçı", "Mahalle şampiyonluk maçı! Büyük heyecan."),
@@ -245,8 +245,11 @@ def build_metadata(profile_key: str, video_path: str, history: list):
         
         if is_mahalle:
             ep_disp = ep_num if ep_num is not None else 1
-            print(f"Mahalle Maçı bölüm {ep_disp} tespit edildi ({base}), içeriği otomatik dinleniyor...")
-            topic, desc_plot = auto_listen_and_summarize(video_path, ep_disp)
+            if ep_disp in MAHALLE_TOPICS:
+                topic, desc_plot = MAHALLE_TOPICS[ep_disp]
+            else:
+                print(f"Yeni Mahalle Maçı bölümü tespit edildi ({base}), içeriği otomatik dinleniyor...")
+                topic, desc_plot = auto_listen_and_summarize(video_path, ep_disp)
             title = f"Mahalle Maçı Bölüm {ep_disp}: {topic} #Shorts"
             series_header = f"⚽ Mahalle Maçı Serisi - Bölüm {ep_disp}: {topic}"
             call_action = f"⚽ Mahalle Maçı Bölüm {ep_disp} yayında!\nSizce bir sonraki bölümde ne olacak? En iyi tahmini sabitleyeceğim! 👇👇"
