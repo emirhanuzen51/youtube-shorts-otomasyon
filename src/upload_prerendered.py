@@ -559,7 +559,13 @@ def upload_prerendered_video(profile_key: str):
     if OPTIMIZATION_ENABLED and profile_key != "minik_maceralar":
         try:
             print(f"\n💬 Yorumlara otomatik cevap veriliyor...")
-            auto_reply_to_comments(profile_key, video_id)
+            auto_reply_to_comments(
+                profile_key,
+                video_id,
+                client_id,
+                client_secret,
+                refresh_token,
+            )
         except Exception as e:
             print(f"⚠️  Yorum cevaplama hatası: {e}")
 
