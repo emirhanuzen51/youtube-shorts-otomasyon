@@ -51,7 +51,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/history_animai_studio.json
+          git add data/history_animai_studio.json data/optimal_time_animai_studio.json
           git diff --cached --quiet && exit 0
           git commit -m "chore: log today's AnimAI Studio short"
           for i in 1 2 3 4 5; do
