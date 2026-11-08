@@ -1,0 +1,59 @@
+name: Repair AnimAI Mahalle Maçı Episodes 3 and 4
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: animai-studio-upload
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install SpeechRecognition pynacl google-genai
+
+      - name: Install video tools
+        timeout-minutes: 5
+        run: |
+          sudo apt-get update -o Acquire::Retries=1 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30
+          sudo apt-get install --no-install-recommends -y ffmpeg
+          ffmpeg -version
+          ffprobe -version
+
+      - name: Publish episode 3 and remove episode 4
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ANIMAI_YT_CLIENT_ID: ${{ secrets.ANIMAI_YT_CLIENT_ID }}
+          ANIMAI_YT_CLIENT_SECRET: ${{ secrets.ANIMAI_YT_CLIENT_SECRET }}
+          ANIMAI_YT_REFRESH_TOKEN: ${{ secrets.ANIMAI_YT_REFRESH_TOKEN }}
+          MAHALLE_PLAYLIST_ID: ${{ secrets.MAHALLE_PLAYLIST_ID }}
+        run: python scripts/repair_animai_mahalle_episodes.py
+
+      - name: Commit updated history
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/history_animai_studio.json data/optimal_time_animai_studio.json
+          git diff --cached --quiet && exit 0
+          git commit -m "fix: repair AnimAI Mahalle episode publication history"
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin master && git push && exit 0
+            sleep 5
+          done
+          exit 1
