@@ -1,9 +1,11 @@
 import json
 import os
 import sys
+import time
 
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT_DIR)
@@ -69,13 +71,25 @@ def make_public(youtube, video):
 
 
 def publish_episode_three(youtube):
-    video = get_video(youtube, EPISODE_THREE_ID)
-    if video:
-        print(f"Episode 3 already exists with privacy status {video['status'].get('privacyStatus')}.")
-        return make_public(youtube, video)
-
     history = load_history()
     canonical_episode_three = canonical_asset_name(EPISODE_THREE_FILE)
+    episode_three_ids = [EPISODE_THREE_ID]
+    episode_three_ids.extend(
+        item["video_id"]
+        for item in history
+        if canonical_asset_name(item.get("filename", "")) == canonical_episode_three
+        and isinstance(item.get("video_id"), str)
+        and item["video_id"] not in episode_three_ids
+    )
+    for video_id in reversed(episode_three_ids):
+        video = get_video(youtube, video_id)
+        if video:
+            print(
+                "Episode 3 already exists with privacy status "
+                f"{video['status'].get('privacyStatus')}."
+            )
+            return make_public(youtube, video)
+
     history = [
         item
         for item in history
@@ -105,10 +119,20 @@ def delete_episode_four(youtube):
     if not video:
         print("Episode 4 is already absent from YouTube.")
         return
-    youtube.videos().delete(id=EPISODE_FOUR_ID).execute()
-    if get_video(youtube, EPISODE_FOUR_ID):
-        raise RuntimeError("Episode 4 still exists after the delete request")
-    print(f"Deleted episode 4 ({EPISODE_FOUR_ID}).")
+    try:
+        youtube.videos().delete(id=EPISODE_FOUR_ID).execute()
+    except HttpError as error:
+        if error.resp.status == 404:
+            print("Episode 4 is already absent from YouTube.")
+            return
+        raise
+    for _ in range(12):
+        video = get_video(youtube, EPISODE_FOUR_ID)
+        if not video or video.get("status", {}).get("uploadStatus") == "deleted":
+            print(f"Deleted episode 4 ({EPISODE_FOUR_ID}).")
+            return
+        time.sleep(5)
+    raise RuntimeError("Episode 4 remains available after the delete request")
 
 
 def main():
